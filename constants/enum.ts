@@ -1,0 +1,16 @@
+export const 
+  NEW_PLAYER_JOINED = 0, 
+  PLAYER_LEFT = 1, 
+  READY = 2,
+  UNREADY = 3,
+  START = 4,
+  PLAY = 5,
+  UNPLAY = 6,
+  ROW = 7,
+  INIT = 8,
+  CHOOSE_CARD = 9,
+  CHOOSE_ROW = 10,
+  CALCULATING = 11,
+  ROUND_END = 12,
+  GAME_END = 13,
+  LOBBY = 14
