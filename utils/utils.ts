@@ -1,8 +1,16 @@
 import { PlayerDisplay } from "@/structs/structs";
+const isDebug = true;
+
+export function SortPlayers (players: PlayerDisplay[]) {
+  players.sort((a: any, b: any) => {
+    return nameToNum( a.name ) - nameToNum( b.name );
+  })
+  return players
+}
 
 export function GetWinner (players: PlayerDisplay[]) {
   players.sort((a: any, b: any) => {
-    return b.score - a.score;
+    return a.score - b.score;
   })
 
   const bestScore = players[0].score;
@@ -23,10 +31,46 @@ export function hasWhiteSpace(s: string) {
   return /\s/g.test(s);
 }
 
-export function GetPlayer() {
-  const player = localStorage.getItem("Player")
-  if (player) {
-    return JSON.parse(player)
+export function GetID() {
+  if (!checkLocalStorage()) {
+    return "" 
   }
-  return null
+  const id = localStorage.getItem("id") 
+  if (id !== null) {
+    return id
+  }
+  return ""
+}
+
+export function resOk(res: any) {
+  return res.statusText == "OK"
+} 
+
+export function checkLocalStorage(){
+  var test = 'test';
+  try {
+      localStorage.setItem(test, test);
+      localStorage.removeItem(test);
+      return true;
+  } catch(e) {
+      return false;
+  }
+}
+
+function nameToNum(name: string) {
+  let nameScore : number = 0
+  for (var i = 0; i < name.length; i++) {
+    if (name.charCodeAt(i) > 96) {
+      nameScore = (nameScore*100) + name.charCodeAt(i) - 96
+    } else {
+      nameScore = (nameScore*100) + name.charCodeAt(i) - 54
+    }
+  }
+  return nameScore
+}
+
+export function lg(msg: any, sel?: boolean) {
+  if (isDebug || sel) {
+    console.log(msg)
+  }
 }

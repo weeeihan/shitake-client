@@ -25,15 +25,15 @@ export type Message = {
   remark: string
 }
 
-export type Player = {
-  id: string
-  name: string
-  roomID: string
-  hands?: number[]  
-  score?: number 
-}
+// export type Player = {
+//   id: string
+//   // name: string
+//   // roomID: string
+//   // hands?: number[]  
+//   // score?: number 
+// }
 
-export type PlayerData = {
+export type Player = {
   id: string
   name: string
   score: number

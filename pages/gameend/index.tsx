@@ -1,6 +1,7 @@
-import { Game, PlayerData, UserInfo } from "@/structs/structs";
+import { Game, PlayerData, Player } from "@/structs/structs";
 import React, { use, useContext, useEffect, useState } from "react";
 import * as handlers from "@/handlers/handlers";
+import * as utils from "@/utils/utils";
 import { WebsocketContext } from "@/modules/websocket_provider";
 import { useRouter } from "next/router";
 import Scoreboard from "@/components/scoreboard";
@@ -8,7 +9,11 @@ import { CHOOSE_CARD, READY, LOBBY } from "@/constants/enum";
 import { actions } from "@/constants/actions";
 
 const index = () => {
-  const [user, setUser] = useState<UserInfo>({ name: "", roomID: "" });
+  const [player, setPlayer] = useState<Player>({
+    id: "",
+    name: "",
+    roomID: "",
+  });
   const [gamedata, setGamedata] = useState<Game>({
     id: "",
     deck: [],
@@ -27,21 +32,19 @@ const index = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { conn, setConn } = useContext(WebsocketContext);
 
-  // getUser first
+  // getPlayer first
   useEffect(() => {
-    setUser(handlers.GetUser());
+    setPlayer(utils.GetPlayer());
   }, []);
 
   // Connect to game, gamedata and PlayerData
   useEffect(() => {
-    if (user.name !== "") {
-      if (!conn) {
-        handlers.ConnectToGame(user, setConn);
-      }
-      handlers.GetGameData(user.roomID, setGamedata, router);
-      handlers.GetPlayer(user.name + user.roomID, setPlayerData);
+    if (player.name !== "") {
+      handlers.ConnectToGame(player, setConn);
+      handlers.GetGameData(player.roomID, setGamedata, router);
+      handlers.GetPlayer(player, setPlayerData);
     }
-  }, [user]);
+  }, [player]);
 
   // Display page
   useEffect(() => {

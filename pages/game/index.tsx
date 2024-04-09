@@ -2,14 +2,16 @@ import React, { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import * as handlers from "@/handlers/handlers";
 import { WebsocketContext } from "@/modules/websocket_provider";
-import { Game, PlayerData } from "@/structs/structs";
+import { Game, Player, PlayerData } from "@/structs/structs";
 import { Button } from "@/components/ui/button";
+import * as utils from "@/utils/utils";
 import Deck from "@/components/deck";
 import Hand from "@/components/hand";
 import {
   CALCULATING,
   CHOOSE_CARD,
   CHOOSE_ROW,
+  GAME_END,
   PLAY,
   ROUND_END,
   ROW,
@@ -38,22 +40,27 @@ const index = () => {
     hand: [],
   });
 
+  const [player, setPlayer] = useState<Player>({
+    id: "",
+    name: "",
+    roomID: "",
+  });
+
   const [chosenCard, setChosenCard] = useState<number>(0);
 
   const { setConn, conn } = useContext(WebsocketContext);
 
   useEffect(() => {
-    const user = handlers.GetUser();
-    if (user == null) {
-      router.push("/");
-      return;
-    }
-    if (conn == null) {
-      handlers.ConnectToGame(user, setConn);
-    }
-    handlers.GetGameData(user.roomID, setGamedata, router);
-    handlers.GetPlayer(user.name + user.roomID, setPlayerData);
+    setPlayer(utils.GetPlayer());
   }, []);
+
+  useEffect(() => {
+    if (player.id !== "") {
+      handlers.ConnectToGame(player, setConn);
+      handlers.GetGameData(player.roomID, setGamedata, router);
+      handlers.GetPlayer(player, setPlayerData);
+    }
+  }, [player]);
 
   useEffect(() => {
     if (gamedata.id != "") {
@@ -62,15 +69,14 @@ const index = () => {
   }, [gamedata]);
 
   useEffect(() => {
-    if (conn != null) {
+    if (conn != null && player.id != "") {
       conn.onmessage = (message) => {
-        const user = handlers.GetUser();
         const m = JSON.parse(message.data);
         console.log(m);
         if (m.state == CHOOSE_ROW) {
           console.log(m.remark);
           setShowHands(false);
-          if (m.remark == user.name + user.roomID) {
+          if (m.remark == player.id) {
             setIsChooser(true);
           }
           setGameState("Choose row");
@@ -79,14 +85,14 @@ const index = () => {
           setShowHands(true);
           setGameState("Choose card");
           setChosenCard(0);
-          handlers.GetGameData(handlers.GetUser().roomID, setGamedata, router);
-          handlers.GetPlayer(
-            handlers.GetUser().name + handlers.GetUser().roomID,
-            setPlayerData
-          );
+          handlers.GetGameData(player.roomID, setGamedata, router);
+          handlers.GetPlayer(player, setPlayerData);
         }
         if (m.state == ROUND_END) {
           router.push("/roundend");
+        }
+        if (m.state == GAME_END) {
+          router.push("/gameend");
         }
       };
     }
@@ -117,7 +123,10 @@ const index = () => {
   return (
     <div>
       {isLoading ? (
-        <div>Loading...</div>
+        <>
+          <div>Loading...</div>
+          <Button onClick={debug}>Debug</Button>
+        </>
       ) : (
         <>
           <div>

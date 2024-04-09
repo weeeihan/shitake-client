@@ -1,101 +1,86 @@
 import { CONNECT_API, GET_ROOM_API, JOIN_ROOM_API, CREATE_ROOM_API, LEAVE_ROOM_API, GET_GAME_API, GET_PLAYER_API  } from "@/constants/api";
-import { Game, PlayerData, Player } from "@/structs/structs";
+import { Game, Player  } from "@/structs/structs";
 import { Room } from "@/structs/structs";
 import { NextRouter } from "next/router";
+import { resOk, lg } from "@/utils/utils";
+
+
+const axios = require('axios')
 
 export async function JoinRoom (name: string, roomID: string, router: NextRouter) {
   
   try {
-    const res = await fetch(JOIN_ROOM_API(name, roomID), {
-      method: "GET",
-      headers : {"Content-Type" : "application/json"},
-    })
-    const data = await res.json()
-    if (res.ok) {
-      const player : Player = {id: data.PlayerID, name: name, roomID: roomID}
-      localStorage.setItem("Player",JSON.stringify(player))
-      console.log(player)
+    const res = await axios.get(JOIN_ROOM_API(name, roomID))
+    if (resOk(res)) {
+      localStorage.setItem("id",res.data.PlayerID)
       router.push("/lobby")
-      return
-      // join room
     }
-    alert(data.Message)
   } catch (error: any) {
-    console.log(error)
+    lg(error)
   }
 
 }
 
-export async function LeaveRoom (player: Player, router: NextRouter) {
+export async function LeaveRoom (id:string, router: NextRouter) {
   try {
-    const res = await fetch(LEAVE_ROOM_API(player), {
-      method: "GET",
-      headers : {"Content-Type" : "application/json"},
-    })
-    if (res.ok) {
+    const res = await axios.get(LEAVE_ROOM_API(id))
+    if (resOk(res)) {
       localStorage.clear()
       router.push("/")
     }
   } catch (error) {
-    console.log(error)
+    lg(error)
   }
 }
 
-export async function ConnectToGame(player:Player, setConn: (conn: WebSocket) => void) {
-  const ws = new WebSocket(CONNECT_API(player))
+export async function ConnectToGame(id: string, setConn: (conn: WebSocket) => void) {
+  lg("Connect to game")
+  const ws = new WebSocket(CONNECT_API(id))
   if (ws.OPEN) {
     setConn(ws)
     return
   }
 }
 
-export async function CheckRoom (roomID: string, router: NextRouter) {
+export async function CheckRoom (playerID: string, router: NextRouter) {
+  const roomID : string = playerID.slice(-4) 
   try {
-    const res = await fetch(GET_ROOM_API(roomID), {
-      method: "GET",
-      headers : {"Content-Type" : "application/json"},
-    })
-    const data = await res.json()
-    if (res.ok) {
+    const res = await axios.get(GET_ROOM_API(roomID)) 
+    if (resOk(res)) {
+      console.log("Going back to LOBBY")
       router.push("/lobby")
-      return
     }
     // if room not found, clear localstorage
-    localStorage.clear()
+    // localStorage.clear()
   } catch (error) {
     localStorage.clear()
     router.push("/")
-    console.log(error)
+    lg(error)
   }
 }
 
 export async function CreateRoom(name: string, router: NextRouter) {
   try {
-    const res = await fetch(CREATE_ROOM_API(name), {
-      method: "GET",
-      headers : {"Content-Type" : "application/json", 'ngrok-skip-browser-warning':true},
-    })
-    const data = await res.json() 
-    if (res.ok) {
-      console.log(data)
-      var player : Player = {id: data.playerID ,name: name, roomID: data.roomID}
-      localStorage.setItem("Player",JSON.stringify(player))
+    const res = await axios.get(CREATE_ROOM_API(name))
+    lg(res.data)
+    if (resOk(res)) {
+      lg(res)
+      localStorage.setItem("id",res.data.playerID)
       router.push("/lobby")
     }
   } catch (error) {
-    console.log(error)
+    lg(error)
   }
 }
 
-export async function GetRoomData(roomID: string, router: NextRouter ,setRoomData: React.Dispatch<React.SetStateAction<Room>> ) {
+export async function GetRoomData(id: string, router: NextRouter ,setRoomData: React.Dispatch<React.SetStateAction<Room>> ) {
+  const roomID : string = id.slice(-4)
+  lg("Get room")
   try {
-    const res = await fetch(GET_ROOM_API(roomID), {
-      method: "GET",
-      headers : {"Content-Type" : "application/json", "Accept" : "application/json", 'ngrok-skip-browser-warning':true},
-    })
-    const data = await res.json()
-    if (res.ok) {
-      setRoomData(data)
+    const res = await axios.get(GET_ROOM_API(roomID))
+    if (resOk(res)) {
+      setRoomData(res.data)
+      lg(res.data)
     } else {
       localStorage.clear()
       router.push("/")
@@ -103,46 +88,42 @@ export async function GetRoomData(roomID: string, router: NextRouter ,setRoomDat
   } catch (error) {
     localStorage.clear()
     router.push("/")
-    console.log(error)
+    lg(error)
   }
 }
 
-export async function GetGameData(roomID: string, setGamedata: React.Dispatch<React.SetStateAction<Game>>, router : NextRouter) {
+export async function GetGameData(id: string, setGamedata: React.Dispatch<React.SetStateAction<Game>>, router : NextRouter) {
+  const roomID : string = id.slice(-4)
   try {
-    const res = await fetch(GET_GAME_API(roomID), {
-      method: "GET",
-      headers : {"Content-Type" : "application/json"},
-    })
-    const data = await res.json()
-    if (data.Message == "Game does not exist") {
+    const res = await axios.get(GET_GAME_API(roomID))
+    if (res.data.Message == "Game does not exist") {
       localStorage.clear()
       router.push("/")
       return
     }
-    if (res.ok) {
-      setGamedata(data)
-      console.log("here?")
+    if (resOk(res)) {
+      setGamedata(res.data)
+      lg("here?")
     }
   } catch (error) {
-    // console.log("here")
+    lg("error!")
     // localStorage.clear()
-    // console.log(error)
+    // lg(error)
   }
 }
 
 // get player
-export async function GetPlayer(player: Player, setPlayerData: React.Dispatch<React.SetStateAction<PlayerData>>) {
+export async function GetPlayer(id: string, setPlayer: React.Dispatch<React.SetStateAction<Player>>, setIsReady: React.Dispatch<React.SetStateAction<boolean>>) {
+  lg("Get player")
   try {
-    const res = await fetch(GET_PLAYER_API(player.id, player.roomID), {
-      method: "GET",
-      headers : {"Content-Type" : "application/json"},
-    })
-    const data = await res.json()
-    if (res.ok) {
-      setPlayerData(data)
+    const res = await axios.get(GET_PLAYER_API(id)) 
+    if (resOk(res)) {
+      setPlayer(res.data)
+      lg(res.data)
+      setIsReady(res.data.ready)
     }
   } catch (error) {
-    console.log(error)
+    lg(error)
   } 
 }
 
