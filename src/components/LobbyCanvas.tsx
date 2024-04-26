@@ -6,7 +6,7 @@ import * as utils from "../utils/utils";
 type Props = {
   player: Player;
   roomData: Room;
-  handleReady: (e: React.SyntheticEvent, name: string) => void;
+  handleReady: (e: React.SyntheticEvent) => void;
   handleLeaveRoom: (e: React.SyntheticEvent) => void;
   isAlready: boolean;
 };
@@ -111,9 +111,7 @@ const LobbyCanvas = ({
                   : "absolute scale-x-[-1] drop-shadow-lg -ml-[3.5rem] cursor-pointer"
               }
               onClick={
-                player.name == p.name
-                  ? (e) => handleReady(e, p.name)
-                  : undefined
+                player.name == p.name ? (e) => handleReady(e) : undefined
               }
             />
             <span

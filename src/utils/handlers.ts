@@ -1,25 +1,47 @@
 import axios from "axios"; 
 import {  NavigateFunction } from "react-router-dom";
-import { CONNECT_API, CREATE_ROOM_API, GET_PLAYER_API, GET_ROOM_API, JOIN_ROOM_API, LEAVE_ROOM_API } from "./api";
+import { CHECK_PLAYER_API, CONNECT_API, CREATE_ROOM_API, GET_PLAYER_API, GET_ROOM_API, JOIN_ROOM_API, LEAVE_ROOM_API } from "./api";
 import { resOk } from "./utils";
 import React from "react";
 import { Room, Player } from "./struct";
 
+export async function CheckPlayer(playerID: string, navigate: NavigateFunction, location: string, setIsPlayer?: React.Dispatch<React.SetStateAction<boolean>>){
+  try {
+    const res = await axios.get(CHECK_PLAYER_API(playerID))
+    if (resOk(res)) {
+      if (location == "/") {
+        navigate("/lobby")
+        return
+      }
+      if (setIsPlayer !== undefined) {
+        setIsPlayer(true)
+      }
 
-
-export async function GetRoom(playerID: string, navigate: NavigateFunction, pathname: string, setRoom?:React.Dispatch<React.SetStateAction<Room>>) {
+    }
+  } catch (error) {
+    if (location !== "/") {
+      navigate("/")
+    }
+    localStorage.clear()
+  }
+}
+export async function GetRoom(playerID: string, navigate: NavigateFunction, location: string, setRoom:React.Dispatch<React.SetStateAction<Room>>, State: any) {
   try {
     const roomID = playerID.slice(-4);
     const res = await axios.get(GET_ROOM_API(roomID));
     if (resOk(res)) {
-      if (setRoom == undefined) {
-        return navigate("/lobby")
+      if (location == "/lobby" && res.data.state !== State.INIT) {
+        navigate("/game")
+        return
       }
+      if (location == "/game" && res.data.state == State.INIT) {
+        navigate("/lobby")
+        return
+      }
+
       return setRoom(res.data)
     }
-    if (pathname !== "/") {
-      navigate("/")
-    }
+
     localStorage.clear();
   } catch (error) {
     navigate("/")
@@ -28,23 +50,30 @@ export async function GetRoom(playerID: string, navigate: NavigateFunction, path
   }
   
 }
-export async function JoinRoom(name: string, roomID: string, navigate: NavigateFunction) {
+export async function JoinRoom(name: string, roomID: string, navigate: NavigateFunction, setId: (id: string) => void) {
   try {
     const res = await axios.get(JOIN_ROOM_API(name, roomID))
     if (resOk(res)) {
-      localStorage.setItem("id",res.data.PlayerID)
+      const playerID = res.data.PlayerID
+      localStorage.setItem("id",playerID)
+      setId(playerID)
       navigate("/lobby")
     }
   } catch (error: any) {
     alert(error.response.data.Message)
   }
 }
-export async function CreateRoom(name: string, navigate: NavigateFunction) {
+export async function CreateRoom(name: string, navigate: NavigateFunction, setId: (id: string) => void){
+
   try {
     const res = await axios.get(CREATE_ROOM_API(name))
     if (resOk(res)) {
+
+      const playerID = res.data.playerID
       localStorage.setItem("id",res.data.playerID)
+      setId(playerID)
       navigate("/lobby")
+
     }
   } catch (error) {
     console.log(error)
@@ -59,14 +88,12 @@ export async function ConnectToGame(id: string, setConn: (conn: WebSocket)=> voi
   }
 }
 
-export async function GetPlayer(id: string, setPlayer: React.Dispatch<React.SetStateAction<Player>>, setIsReady?: React.Dispatch<React.SetStateAction<boolean>>) {
+export async function GetPlayer(id: string, setPlayer: React.Dispatch<React.SetStateAction<Player>>) {
   try {
     const res = await axios.get(GET_PLAYER_API(id))
     if (resOk(res)) {
       setPlayer(res.data)
-      if (setIsReady !== undefined) {
-        setIsReady(res.data.ready)
-      }
+
     }
   } catch (error) {
     console.log(error)

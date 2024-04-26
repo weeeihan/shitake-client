@@ -102,23 +102,25 @@ const Hand = ({ data, playCard }: Props) => {
     if (active.id === over.id) return;
 
     if (over.id === "selection") {
-      console.log("Selected " + active.id);
       if (selected !== -1) {
-        console.log("HERE");
-        const selPos = hand.indexOf(selected);
+        console.log(selected);
+        const selPos = hand.indexOf(active.id);
         setHand((hand) => [
           ...hand.slice(0, selPos),
           selected,
           ...hand.slice(selPos),
         ]);
       }
+
       setHand((hand) => hand.filter((num) => num !== active.id));
       setSelected(active.id);
+
+      playCard(active.id);
       return;
     }
 
     setHand((hand) => {
-      console.log("Not")
+      console.log("Not");
       const originalPos = hand.indexOf(active.id);
       const newPos = hand.indexOf(over.id);
       return arrayMove(hand, originalPos, newPos);

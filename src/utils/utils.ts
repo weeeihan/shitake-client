@@ -1,5 +1,6 @@
 import { PlayerDisplay } from "./struct";
 const isDebug = true;
+import { useEffect, useState } from "react";
 
 export function SortPlayers (players: PlayerDisplay[]) {
   players.sort((a: any, b: any) => {
@@ -33,13 +34,13 @@ export function hasWhiteSpace(s: string) {
 
 export function GetID() {
   if (!checkLocalStorage()) {
-    return "" 
+    return "none" 
   }
   const id = localStorage.getItem("id") 
   if (id !== null) {
     return id
   }
-  return ""
+  return "none"
 }
 
 export function resOk(res: any) {
@@ -79,4 +80,25 @@ export const actions = (action: number, card :number = 0, row : number = 0) => {
   return JSON.stringify({action: action, card: card, row: row})
 }
 
+export function useCountdown(seconds: number, onEnd: () => any) {
+  let [remaining, setRemaining] = useState(seconds);
 
+  console.log(remaining)
+  useEffect(() => {
+    console.log("COUNTING")
+    function tick() {
+      setRemaining(remaining - 1);
+    }
+
+    const countdown = setInterval(tick, 1000);
+
+    if (remaining == 0) {
+      clearInterval(countdown);
+      onEnd();
+    }
+
+    return () => clearInterval(countdown);
+  }, [remaining]);
+
+  return remaining;
+}

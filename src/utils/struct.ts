@@ -38,4 +38,5 @@ export type Player = {
   name: string
   score: number
   hand: number[]
+  ready: boolean 
 } 

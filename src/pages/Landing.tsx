@@ -1,5 +1,5 @@
 // Dependencies
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Functions
@@ -9,18 +9,23 @@ import * as handlers from "../utils/handlers";
 // UI Components
 import LandingCanvas from "../components/LandingCanvas";
 
+// Context
+import { GamestateContext } from "../modules/gamestate_provider";
+
 const Landing = () => {
+  const { id, setId } = useContext(GamestateContext);
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [roomID, setRoomID] = useState("");
-  const id: string = utils.GetID();
   const joinCreate: string = roomID === "" ? "Create Room" : "Join Room";
 
   useEffect(() => {
     if (id !== "") {
-      handlers.GetRoom(id, navigate, "/");
+      if (id !== "none") {
+        handlers.CheckPlayer(id, navigate, "/");
+      }
     }
-  }, []);
+  }, [id]);
 
   const handleJoinRoom = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -39,7 +44,7 @@ const Landing = () => {
       return;
     }
 
-    handlers.JoinRoom(name, roomID, navigate);
+    handlers.JoinRoom(name, roomID, navigate, setId);
   };
 
   const handleCreateRoom = (e: React.SyntheticEvent) => {
@@ -54,19 +59,20 @@ const Landing = () => {
       return;
     }
 
-    handlers.CreateRoom(name, navigate);
+    handlers.CreateRoom(name, navigate, setId);
   };
-
   return (
-    <LandingCanvas
-      name={name}
-      roomID={roomID}
-      setName={setName}
-      setRoomID={setRoomID}
-      joinCreate={joinCreate}
-      handleJoinRoom={handleJoinRoom}
-      handleCreateRoom={handleCreateRoom}
-    />
+    <>
+      <LandingCanvas
+        name={name}
+        roomID={roomID}
+        setName={setName}
+        setRoomID={setRoomID}
+        joinCreate={joinCreate}
+        handleJoinRoom={handleJoinRoom}
+        handleCreateRoom={handleCreateRoom}
+      />
+    </>
   );
 };
 
