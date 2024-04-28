@@ -30,12 +30,13 @@ const Game = () => {
     id: "",
     state: "",
     players: [],
+    deck: [],
   });
 
-  // const isLoading =
-  //   roomData.id == "" || player.id == "" || conn == null || State == null
-  //     ? true
-  //     : false;
+  const isLoading =
+    roomData.id == "" || player.id == "" || conn == null || State == null
+      ? true
+      : false;
 
   useEffect(() => {
     if (id !== "") {
@@ -49,12 +50,13 @@ const Game = () => {
 
   useEffect(() => {
     if (isPlayer && State !== null) {
-      console.log(State);
-      handlers.ConnectToGame(id, setConn);
-      // fetch player data
+      if (conn == null) {
+        handlers.ConnectToGame(id, setConn);
+      }
+      // fetch player dat
       handlers.GetPlayer(id, setPlayer);
       // fetch room data
-      // handlers.GetRoom(id, navigate, "/game", setRoomData, State);
+      handlers.GetRoom(id, navigate, "/game", setRoomData, State);
     }
   }, [isPlayer, State]);
 
@@ -67,8 +69,11 @@ const Game = () => {
         const m: Message = JSON.parse(message.data);
         console.log(m);
         if (m.state == State.COUNT) {
-          console.log("here");
           setCountDown(parseInt(m.remark));
+        }
+        if (m.state == State.PROCESS) {
+          handlers.GetRoom(id, navigate, "/game", setRoomData, State);
+          handlers.GetPlayer(id, setPlayer);
         }
       };
 
@@ -88,6 +93,7 @@ const Game = () => {
     console.log("Played card " + card);
     setChosenCard(card);
     if (conn != null && card != 0) {
+      console.log("Played?");
       conn.send(utils.actions(State.PLAY, card));
     }
   };
@@ -110,21 +116,26 @@ const Game = () => {
   const testHand: number[] = [1, 2, 3, 4, 55, 6, 7, 8, 94, 23, 13];
   const testScore: number = 20;
 
-  const debug = () => {
+  const debug = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    // if (conn !== null) {
+    //   conn.send(utils.actions(State.PLAY, 19));
+    // }
+
     if (conn != null) {
       conn.send(utils.actions(State.PING));
     }
   };
-  // if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <>
       <GameCanvas
-        deck={testDeck}
+        deck={roomData.deck}
         isChooser={false}
         chooseRow={chooseRow}
         playCard={playCard}
-        hand={testHand}
+        hand={player.hand}
         countDown={countDown}
       />
       <button onClick={debug}>DEBUG</button>

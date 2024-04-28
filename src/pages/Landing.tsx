@@ -13,7 +13,7 @@ import LandingCanvas from "../components/LandingCanvas";
 import { GamestateContext } from "../modules/gamestate_provider";
 
 const Landing = () => {
-  const { id, setId } = useContext(GamestateContext);
+  const { id, setId, State } = useContext(GamestateContext);
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [roomID, setRoomID] = useState("");
@@ -61,6 +61,10 @@ const Landing = () => {
 
     handlers.CreateRoom(name, navigate, setId);
   };
+
+  const debug = () => {
+    console.log(State);
+  };
   return (
     <>
       <LandingCanvas
@@ -72,6 +76,7 @@ const Landing = () => {
         handleJoinRoom={handleJoinRoom}
         handleCreateRoom={handleCreateRoom}
       />
+      <button onClick={debug}>debug</button>
     </>
   );
 };

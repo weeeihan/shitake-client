@@ -24,12 +24,6 @@ const LandingCanvas = ({
     e.preventDefault();
     localStorage.clear();
   };
-
-  const debug = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    console.log(localStorage.getItem("id"));
-  };
-
   return (
     <div className="flex flex-col items-center justify-center h-screen">
       <div>
@@ -62,12 +56,6 @@ const LandingCanvas = ({
         onClick={clearLocal}
       >
         clear local
-      </button>
-      <button
-        className="font-klee bg-black text-white mt-10 rounded-lg py-2 px-2 drop-shadow-md"
-        onClick={debug}
-      >
-        debug
       </button>
     </div>
   );

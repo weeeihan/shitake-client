@@ -103,7 +103,6 @@ const Hand = ({ data, playCard }: Props) => {
 
     if (over.id === "selection") {
       if (selected !== -1) {
-        console.log(selected);
         const selPos = hand.indexOf(active.id);
         setHand((hand) => [
           ...hand.slice(0, selPos),

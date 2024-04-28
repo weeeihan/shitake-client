@@ -2,6 +2,8 @@ export type Room = {
   id: string
   state: string
   players: PlayerDisplay[]
+  deck: number[][]
+
 }
 
 export type PlayerDisplay = {

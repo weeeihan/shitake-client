@@ -29,6 +29,7 @@ const Lobby = () => {
     id: "",
     state: "",
     players: [],
+    deck: [],
   });
   const isLoading =
     roomData.id == "" || player.id == "" || conn == null || State == null
@@ -96,6 +97,12 @@ const Lobby = () => {
     }
   }, [conn]);
 
+  const handleStartGame = () => {
+    if (conn !== null) {
+      conn.send(utils.actions(State.START));
+    }
+  };
+
   const handleLeaveRoom = (e: React.SyntheticEvent) => {
     e.preventDefault();
     handlers.LeaveRoom(id, navigate);
@@ -116,6 +123,12 @@ const Lobby = () => {
     return <div>Loading...</div>;
   }
 
+  const debug = () => {
+    if (conn !== null) {
+      conn.send(utils.actions(State.PING));
+    }
+  };
+
   return (
     <>
       <LobbyCanvas
@@ -124,7 +137,9 @@ const Lobby = () => {
         handleReady={handleReady}
         handleLeaveRoom={handleLeaveRoom}
         isAlready={isAlready}
+        handleStartGame={handleStartGame}
       />
+      <button onClick={debug}>Debug</button>
     </>
   );
 };

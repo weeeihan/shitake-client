@@ -18,7 +18,9 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   const [gamestate, setGamestate] = useState<any>(null);
   const [id, setId] = useState<string>("");
   useEffect(() => {
-    getGamestate();
+    if (gamestate == null) {
+      getGamestate();
+    }
     setId(GetID());
     async function getGamestate() {
       const res = await axios.get(GET_STATES_API);

@@ -9,6 +9,7 @@ type Props = {
   handleReady: (e: React.SyntheticEvent) => void;
   handleLeaveRoom: (e: React.SyntheticEvent) => void;
   isAlready: boolean;
+  handleStartGame: () => void;
 };
 
 const LobbyCanvas = ({
@@ -17,11 +18,8 @@ const LobbyCanvas = ({
   handleReady,
   handleLeaveRoom,
   isAlready,
+  handleStartGame,
 }: Props) => {
-  const debug = () => {
-    console.log(roomData);
-  };
-
   const [over, setOver] = useState(false);
   const [onLeave, setOnLeave] = useState(false);
   const players = utils.SortPlayers(roomData.players);
@@ -76,7 +74,7 @@ const LobbyCanvas = ({
         {roomData.id}
       </div>
       {isAlready ? (
-        <div className="text-center font-patrick tracking-wide ">
+        <div className=" text-center font-patrick tracking-wide ">
           Click the start button (mushroom) to start!
         </div>
       ) : (
@@ -91,10 +89,14 @@ const LobbyCanvas = ({
               width={130}
               alt="All ready shroom"
               src={images.startButton}
-              className="z-10 absolute -mt-[6rem] mr-1"
+              className="cursor-pointer z-10 absolute -mt-[6rem] mr-1"
+              onClick={handleStartGame}
             />
 
-            <div className="z-10 absolute font-pressStart text-3xl -mt-[4.5rem]">
+            <div
+              className="cursor-pointer z-10 absolute font-pressStart text-3xl -mt-[4.5rem]"
+              onClick={handleStartGame}
+            >
               START
             </div>
           </>
@@ -154,8 +156,6 @@ const LobbyCanvas = ({
           />
         </div>
       </div>
-
-      <button onClick={debug}>Debug</button>
     </>
   );
 };
