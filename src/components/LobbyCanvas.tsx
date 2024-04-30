@@ -1,25 +1,21 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Player, PlayerDisplay, Room } from "../utils/struct";
 import * as images from "../assets/images/images";
 import * as utils from "../utils/utils";
+import { GamestateContext } from "../modules/gamestate_provider";
 
 type Props = {
-  player: Player;
-  roomData: Room;
   handleReady: (e: React.SyntheticEvent) => void;
   handleLeaveRoom: (e: React.SyntheticEvent) => void;
-  isAlready: boolean;
   handleStartGame: () => void;
 };
 
 const LobbyCanvas = ({
-  player,
-  roomData,
   handleReady,
   handleLeaveRoom,
-  isAlready,
   handleStartGame,
 }: Props) => {
+  const { player, roomData, isAlready } = useContext(GamestateContext);
   const [over, setOver] = useState(false);
   const [onLeave, setOnLeave] = useState(false);
   const players = utils.SortPlayers(roomData.players);

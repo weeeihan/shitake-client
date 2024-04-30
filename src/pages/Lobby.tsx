@@ -16,86 +16,88 @@ import LobbyCanvas from "../components/LobbyCanvas";
 
 const Lobby = () => {
   const navigate = useNavigate();
-  const { id, State } = useContext(GamestateContext);
+  const {
+    setRoomData,
+    roomData,
+    player,
+    State,
+    setPlayerStatus,
+    playerStatus,
+  } = useContext(GamestateContext);
   const { setConn, conn } = useContext(WebsocketContext);
-  const [player, setPlayer] = useState<Player>({
-    id: "",
-    name: "",
-    score: 0,
-    hand: [],
-    ready: false,
-  });
-  const [roomData, setRoomData] = useState<Room>({
-    id: "",
-    state: "",
-    players: [],
-    deck: [],
-  });
+  // const [player, setPlayer] = useState<Player>({
+  //   id: "",
+  //   name: "",
+  //   score: 0,
+  //   hand: [],
+  //   ready: false,
+  // });
+  // const [roomData, setRoomData] = useState<Room>({
+  //   id: "",
+  //   state: "",
+  //   players: [],
+  //   deck: [],
+  // });
   const isLoading =
     roomData.id == "" || player.id == "" || conn == null || State == null
       ? true
       : false;
-  const [isAlready, setIsAlready] = useState(false);
-  const [isPlayer, setIsPlayer] = useState(false);
 
   useEffect(() => {
-    if (id !== "") {
-      if (id == "none") {
-        navigate("/");
-        return;
-      }
-      console.log(id);
-      handlers.CheckPlayer(id, navigate, "/lobby", setIsPlayer);
+    console.log(playerStatus);
+    if (playerStatus == "Fail") {
+      navigate("/");
     }
-  }, [id]);
+    if (playerStatus == "Success") {
+      handlers.GetRoom(player.id, setPlayerStatus, setRoomData);
+      handlers.ConnectToGame(player.id, setConn);
+    }
+  }, [playerStatus]);
 
-  useEffect(() => {
-    if (isPlayer && State !== null) {
-      // connect to game
-      handlers.ConnectToGame(id, setConn);
-      // fetch player data
-      handlers.GetPlayer(id, setPlayer);
-      // fetch room data
-      handlers.GetRoom(id, navigate, "/lobby", setRoomData, State);
-    }
-  }, [isPlayer, State]);
+  // useEffect(() => {
+  //   if (isPlayer && State !== null) {
+  //     // connect to game
+  //     handlers.ConnectToGame(id, setConn);
 
-  useEffect(() => {
-    if (conn !== null) {
-      conn.onmessage = (message) => {
-        const m: Message = JSON.parse(message.data);
-        console.log(m);
-        if (m.state == State.REGISTERED) {
-          setIsAlready(false);
-          // refresh when someone refreshes
-          handlers.GetRoom(id, navigate, "/lobby", setRoomData, State);
-        }
-        if (m.state == State.NEW_PLAYER_JOINED) {
-          handlers.GetRoom(id, navigate, "/lobby", setRoomData, State);
-        }
-        if (m.state == State.PLAYER_LEFT) {
-          handlers.GetRoom(id, navigate, "/lobby", setRoomData, State);
-        }
-        if (m.state == State.CHOOSE_CARD) {
-          navigate("/game");
-        }
-        if (
-          m.state == State.ALREADY ||
-          m.state == State.UNREADY ||
-          m.state == State.READY
-        ) {
-          handlers.GetPlayer(id, setPlayer);
-          handlers.GetRoom(id, navigate, "/lobby", setRoomData, State);
-          if (m.state == State.ALREADY) {
-            setIsAlready(true);
-          }
-          if (m.state == State.UNREADY) {
-            setIsAlready(false);
-          }
-        }
-      };
-    }
-  }, [conn]);
+  //   }
+  // }, [isPlayer, State]);
+
+  // useEffect(() => {
+  //   if (conn !== null) {
+  //     conn.onmessage = (message) => {
+  //       const m: Message = JSON.parse(message.data);
+  //       console.log(m);
+  //       if (m.state == State.REGISTERED) {
+  //         setIsAlready(false);
+  //         // refresh when someone refreshes
+  //         handlers.GetRoom(id, navigate, "/lobby", setRoomData, State);
+  //       }
+  //       if (m.state == State.NEW_PLAYER_JOINED) {
+  //         handlers.GetRoom(id, navigate, "/lobby", setRoomData, State);
+  //       }
+  //       if (m.state == State.PLAYER_LEFT) {
+  //         handlers.GetRoom(id, navigate, "/lobby", setRoomData, State);
+  //       }
+  //       if (m.state == State.CHOOSE_CARD) {
+  //         navigate("/game");
+  //       }
+  //       if (
+  //         m.state == State.ALREADY ||
+  //         m.state == State.UNREADY ||
+  //         m.state == State.READY
+  //       ) {
+  //         handlers.GetPlayer(id, setPlayer);
+  //         handlers.GetRoom(id, navigate, "/lobby", setRoomData, State);
+  //         if (m.state == State.ALREADY) {
+  //           setIsAlready(true);
+  //         }
+  //         if (m.state == State.UNREADY) {
+  //           setIsAlready(false);
+  //         }
+  //       }
+  //     };
+  //   }
+  // }, [conn]);
 
   const handleStartGame = () => {
     if (conn !== null) {
@@ -105,7 +107,12 @@ const Lobby = () => {
 
   const handleLeaveRoom = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    handlers.LeaveRoom(id, navigate);
+    if (conn !== null) {
+      conn.send(utils.actions(State.LEAVE));
+      localStorage.clear();
+      setPlayerStatus("Fail");
+      navigate("/");
+    }
   };
 
   const handleReady = (e: React.SyntheticEvent) => {
@@ -119,24 +126,26 @@ const Lobby = () => {
     }
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
   const debug = () => {
-    if (conn !== null) {
-      conn.send(utils.actions(State.PING));
-    }
+    console.log(roomData);
+    // if (conn !== null) {
+    //   conn.send(utils.actions(State.PING));
+    // }
   };
+
+  if (isLoading) {
+    return (
+      <div>
+        Loading...<button onClick={debug}>debug</button>
+      </div>
+    );
+  }
 
   return (
     <>
       <LobbyCanvas
-        player={player}
-        roomData={roomData}
         handleReady={handleReady}
         handleLeaveRoom={handleLeaveRoom}
-        isAlready={isAlready}
         handleStartGame={handleStartGame}
       />
       <button onClick={debug}>Debug</button>

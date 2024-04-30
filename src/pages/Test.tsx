@@ -1,6 +1,11 @@
+import { useContext } from "react";
+import { GamestateContext } from "../modules/gamestate_provider";
+
 const Test = () => {
+  const { player } = useContext(GamestateContext);
+
   const debug = () => {
-    console.log(localStorage.getItem("id"));
+    console.log(player);
   };
   return (
     <div>

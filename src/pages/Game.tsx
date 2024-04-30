@@ -14,10 +14,16 @@ import GameCanvas from "../components/GameCanvas";
 import { WebsocketContext } from "../modules/websocket_provider";
 import { GamestateContext } from "../modules/gamestate_provider";
 
+// Store
+import useStore from "../utils/store";
+
 const Game = () => {
   const { id, State } = useContext(GamestateContext);
   const { conn, setConn } = useContext(WebsocketContext);
+  const [playedCards, setPlayedCards] = useState<string>("");
   const [isPlayer, setIsPlayer] = useState(false);
+
+  const store = useStore();
 
   const [player, setPlayer] = useState<Player>({
     id: "",
@@ -72,8 +78,13 @@ const Game = () => {
           setCountDown(parseInt(m.remark));
         }
         if (m.state == State.PROCESS) {
+          setPlayedCards(m.remark);
           handlers.GetRoom(id, navigate, "/game", setRoomData, State);
           handlers.GetPlayer(id, setPlayer);
+        }
+        if (m.state == State.CHOOSE_ROW) {
+          console.log(m.remark);
+          store.setIsChooseRow(true);
         }
       };
 
@@ -121,10 +132,7 @@ const Game = () => {
     // if (conn !== null) {
     //   conn.send(utils.actions(State.PLAY, 19));
     // }
-
-    if (conn != null) {
-      conn.send(utils.actions(State.PING));
-    }
+    console.log(State);
   };
   if (isLoading) return <div>Loading...</div>;
 
@@ -137,6 +145,7 @@ const Game = () => {
         playCard={playCard}
         hand={player.hand}
         countDown={countDown}
+        playedCards={playedCards}
       />
       <button onClick={debug}>DEBUG</button>
     </>

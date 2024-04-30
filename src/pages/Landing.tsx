@@ -13,19 +13,18 @@ import LandingCanvas from "../components/LandingCanvas";
 import { GamestateContext } from "../modules/gamestate_provider";
 
 const Landing = () => {
-  const { id, setId, State } = useContext(GamestateContext);
+  const { playerStatus, setPlayer, setPlayerStatus } =
+    useContext(GamestateContext);
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [roomID, setRoomID] = useState("");
   const joinCreate: string = roomID === "" ? "Create Room" : "Join Room";
 
   useEffect(() => {
-    if (id !== "") {
-      if (id !== "none") {
-        handlers.CheckPlayer(id, navigate, "/");
-      }
+    if (playerStatus === "Success") {
+      navigate("/lobby");
     }
-  }, [id]);
+  }, [playerStatus]);
 
   const handleJoinRoom = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -44,7 +43,7 @@ const Landing = () => {
       return;
     }
 
-    handlers.JoinRoom(name, roomID, navigate, setId);
+    handlers.JoinRoom(name, roomID, setPlayer, setPlayerStatus);
   };
 
   const handleCreateRoom = (e: React.SyntheticEvent) => {
@@ -59,12 +58,9 @@ const Landing = () => {
       return;
     }
 
-    handlers.CreateRoom(name, navigate, setId);
+    handlers.CreateRoom(name, setPlayer, setPlayerStatus);
   };
 
-  const debug = () => {
-    console.log(State);
-  };
   return (
     <>
       <LandingCanvas
@@ -76,7 +72,6 @@ const Landing = () => {
         handleJoinRoom={handleJoinRoom}
         handleCreateRoom={handleCreateRoom}
       />
-      <button onClick={debug}>debug</button>
     </>
   );
 };

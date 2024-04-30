@@ -42,3 +42,8 @@ export type Player = {
   hand: number[]
   ready: boolean 
 } 
+
+export type Played = {
+  name: string
+  card: string
+}

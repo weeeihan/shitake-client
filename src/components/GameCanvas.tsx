@@ -11,6 +11,7 @@ type Props = {
   hand: number[];
   playCard: (card: number) => void;
   countDown: number;
+  playedCards: string;
 };
 
 const GameCanvas = ({
@@ -20,6 +21,7 @@ const GameCanvas = ({
   isChooser,
   playCard,
   countDown,
+  playedCards,
 }: Props) => {
   const [bottomDisp, setBottomDisp] = useState("Hand");
 
@@ -35,7 +37,7 @@ const GameCanvas = ({
       {bottomDisp === "Hand" && <Hand data={hand} playCard={playCard} />}
       {bottomDisp === "Dashboard" && <Dashboard />}
       {bottomDisp === "Loading" && <div>Loading...</div>}
-      {bottomDisp === "Playing" && <Playing />}
+      {bottomDisp === "Playing" && <Playing playedCards={playedCards} />}
       {countDown !== 0 && <div>{countDown}</div>}
     </div>
   );

@@ -5,78 +5,55 @@ import { resOk } from "./utils";
 import React from "react";
 import { Room, Player } from "./struct";
 
-export async function CheckPlayer(playerID: string, navigate: NavigateFunction, location: string, setIsPlayer?: React.Dispatch<React.SetStateAction<boolean>>){
+export async function GetPlayer(playerID: string, setPlayerStatus: React.Dispatch<React.SetStateAction<string>>, setPlayer: React.Dispatch<React.SetStateAction<Player>>) {
   try {
-    const res = await axios.get(CHECK_PLAYER_API(playerID))
+    const res = await axios.get(GET_PLAYER_API(playerID))
     if (resOk(res)) {
-      if (location == "/") {
-        navigate("/lobby")
-        return
-      }
-      if (setIsPlayer !== undefined) {
-        setIsPlayer(true)
-      }
-
+      setPlayerStatus("Success")
+      setPlayer(res.data)
     }
-  } catch (error) {
-    if (location !== "/") {
-      navigate("/")
-    }
+  } catch (error: any) {
     localStorage.clear()
+    setPlayerStatus("Fail")
   }
 }
-export async function GetRoom(playerID: string, navigate: NavigateFunction, location: string, setRoom:React.Dispatch<React.SetStateAction<Room>>, State: any) {
+export async function GetRoom(playerID: string, setPlayerStatus: React.Dispatch<React.SetStateAction<string>>,  setRoom:React.Dispatch<React.SetStateAction<Room>>) {
   try {
     const roomID = playerID.slice(-4);
     const res = await axios.get(GET_ROOM_API(roomID));
     if (resOk(res)) {
-      if (location == "/lobby" && res.data.state !== State.INIT) {
-        navigate("/game")
-        return
-      }
-      if (location == "/game" && res.data.state == State.INIT) {
-        navigate("/lobby")
-        return
-      }
-
-      return setRoom(res.data)
+      setRoom(res.data)
     }
-
-    localStorage.clear();
   } catch (error) {
-    navigate("/")
+    setPlayerStatus("Fail")
     localStorage.clear()
-    console.log(error);
   }
   
 }
-export async function JoinRoom(name: string, roomID: string, navigate: NavigateFunction, setId: (id: string) => void) {
+export async function JoinRoom(name: string, roomID: string, setPlayer: React.Dispatch<React.SetStateAction<Player>>, setPlayerStatus: React.Dispatch<React.SetStateAction<string>>) {
   try {
     const res = await axios.get(JOIN_ROOM_API(name, roomID))
     if (resOk(res)) {
-      const playerID = res.data.PlayerID
-      localStorage.setItem("id",playerID)
-      setId(playerID)
-      navigate("/lobby")
+      setPlayer(res.data)
+      localStorage.setItem("id",res.data.id)
+      setPlayerStatus("Success")
     }
   } catch (error: any) {
     alert(error.response.data.Message)
   }
 }
-export async function CreateRoom(name: string, navigate: NavigateFunction, setId: (id: string) => void){
+export async function CreateRoom(name: string,setPlayer: React.Dispatch<React.SetStateAction<Player>>, setPlayerStatus: React.Dispatch<React.SetStateAction<string>>) {
 
   try {
     const res = await axios.get(CREATE_ROOM_API(name))
     if (resOk(res)) {
-
-      const playerID = res.data.playerID
-      localStorage.setItem("id",res.data.playerID)
-      setId(playerID)
-      navigate("/lobby")
-
+      setPlayer(res.data)
+      localStorage.setItem("id",res.data.id)
+      setPlayerStatus("Success")
     }
-  } catch (error) {
-    console.log(error)
+  } catch (error:any) {
+    alert(error.response.data.Message)
+
   }
 }
 
@@ -88,17 +65,17 @@ export async function ConnectToGame(id: string, setConn: (conn: WebSocket)=> voi
   }
 }
 
-export async function GetPlayer(id: string, setPlayer: React.Dispatch<React.SetStateAction<Player>>) {
-  try {
-    const res = await axios.get(GET_PLAYER_API(id))
-    if (resOk(res)) {
-      setPlayer(res.data)
+// export async function GetPlayer(id: string, setPlayer: React.Dispatch<React.SetStateAction<Player>>) {
+//   try {
+//     const res = await axios.get(GET_PLAYER_API(id))
+//     if (resOk(res)) {
+//       setPlayer(res.data)
 
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}
+//     }
+//   } catch (error) {
+//     console.log(error)
+//   }
+// }
 
 export async function LeaveRoom(id: string, navigate: NavigateFunction) {
   try {
