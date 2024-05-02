@@ -1,5 +1,5 @@
 // Dependencies
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Functions
@@ -13,18 +13,11 @@ import LandingCanvas from "../components/LandingCanvas";
 import { GamestateContext } from "../modules/gamestate_provider";
 
 const Landing = () => {
-  const { playerStatus, setPlayer, setPlayerStatus } =
-    useContext(GamestateContext);
+  const { setPlayer } = useContext(GamestateContext);
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [roomID, setRoomID] = useState("");
   const joinCreate: string = roomID === "" ? "Create Room" : "Join Room";
-
-  useEffect(() => {
-    if (playerStatus === "Success") {
-      navigate("/lobby");
-    }
-  }, [playerStatus]);
 
   const handleJoinRoom = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -43,7 +36,7 @@ const Landing = () => {
       return;
     }
 
-    handlers.JoinRoom(name, roomID, setPlayer, setPlayerStatus);
+    handlers.JoinRoom(name, roomID, setPlayer, navigate);
   };
 
   const handleCreateRoom = (e: React.SyntheticEvent) => {
@@ -58,9 +51,12 @@ const Landing = () => {
       return;
     }
 
-    handlers.CreateRoom(name, setPlayer, setPlayerStatus);
+    handlers.CreateRoom(name, setPlayer, navigate);
   };
 
+  const redirect = () => {
+    navigate("/test");
+  };
   return (
     <>
       <LandingCanvas
@@ -72,6 +68,7 @@ const Landing = () => {
         handleJoinRoom={handleJoinRoom}
         handleCreateRoom={handleCreateRoom}
       />
+      <button onClick={redirect}>Go test</button>
     </>
   );
 };

@@ -1,7 +1,15 @@
-import React, { useState, createContext, useEffect, useContext } from "react";
+import React, {
+  useState,
+  createContext,
+  useEffect,
+  useContext,
+  useLayoutEffect,
+} from "react";
 import { GamestateContext } from "./gamestate_provider";
-import { Message } from "../utils/struct";
+import { Message, Player } from "../utils/struct";
 import * as handlers from "../utils/handlers";
+import { useLocation, useNavigate } from "react-router-dom";
+import * as utils from "../utils/utils";
 type Conn = WebSocket | null;
 
 export const WebsocketContext = createContext<{
@@ -13,26 +21,38 @@ export const WebsocketContext = createContext<{
 });
 
 const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [conn, setConn] = useState<Conn>(null);
-  const {
-    player,
-    setRoomData,
-    setPlayerStatus,
-    setPlayer,
-    State,
-    setIsAlready,
-  } = useContext(GamestateContext);
+  const { player, setRoomData, setPlayer, State, setIsAlready } =
+    useContext(GamestateContext);
+
+  const id = utils.GetID();
+  // Fetch player and room data
+  function fetchData() {
+    if (id === "none" || id == "") {
+      navigate("/");
+      return;
+    }
+    handlers.GetPlayer(id, setPlayer, location.pathname, navigate);
+    handlers.GetRoom(id, setRoomData, location.pathname, navigate);
+  }
+
+  useEffect(() => {
+    if (player.id !== "" && conn == null) {
+      handlers.ConnectToGame(player.id, setConn);
+    }
+  }, [player]);
+
   useEffect(() => {
     if (conn !== null) {
-      console.log("HERE NIGGA!");
       conn.onmessage = (message) => {
         const m: Message = JSON.parse(message.data);
         console.log(m);
 
         // Someone joined
         if (m.state == State.REGISTERED || m.state == State.PLAYER_LEFT) {
-          handlers.GetPlayer(player.id, setPlayerStatus, setPlayer);
-          handlers.GetRoom(player.id, setPlayerStatus, setRoomData);
+          fetchData();
         }
 
         // Someone ready
@@ -41,14 +61,19 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
           m.state == State.UNREADY ||
           m.state == State.READY
         ) {
-          handlers.GetPlayer(player.id, setPlayerStatus, setPlayer);
-          handlers.GetRoom(player.id, setPlayerStatus, setRoomData);
+          fetchData();
           if (m.state == State.ALREADY) {
             setIsAlready(true);
           }
           if (m.state == State.UNREADY) {
             setIsAlready(false);
           }
+        }
+
+        // Start game!
+        if (m.state == State.CHOOSE_CARD) {
+          navigate("/game");
+          fetchData();
         }
       };
     }

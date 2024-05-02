@@ -1,10 +1,6 @@
-// Types
-import { Message, Player, Room } from "../utils/struct";
-
 // Functions
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import * as utils from "../utils/utils";
-import * as handlers from "../utils/handlers";
 import { useNavigate } from "react-router-dom";
 
 // Contexts
@@ -16,88 +12,14 @@ import LobbyCanvas from "../components/LobbyCanvas";
 
 const Lobby = () => {
   const navigate = useNavigate();
-  const {
-    setRoomData,
-    roomData,
-    player,
-    State,
-    setPlayerStatus,
-    playerStatus,
-  } = useContext(GamestateContext);
+  const { setRoomData, roomData, player, State, setLoc } =
+    useContext(GamestateContext);
   const { setConn, conn } = useContext(WebsocketContext);
-  // const [player, setPlayer] = useState<Player>({
-  //   id: "",
-  //   name: "",
-  //   score: 0,
-  //   hand: [],
-  //   ready: false,
-  // });
-  // const [roomData, setRoomData] = useState<Room>({
-  //   id: "",
-  //   state: "",
-  //   players: [],
-  //   deck: [],
-  // });
+
   const isLoading =
     roomData.id == "" || player.id == "" || conn == null || State == null
       ? true
       : false;
-
-  useEffect(() => {
-    console.log(playerStatus);
-    if (playerStatus == "Fail") {
-      navigate("/");
-    }
-    if (playerStatus == "Success") {
-      handlers.GetRoom(player.id, setPlayerStatus, setRoomData);
-      handlers.ConnectToGame(player.id, setConn);
-    }
-  }, [playerStatus]);
-
-  // useEffect(() => {
-  //   if (isPlayer && State !== null) {
-  //     // connect to game
-  //     handlers.ConnectToGame(id, setConn);
-
-  //   }
-  // }, [isPlayer, State]);
-
-  // useEffect(() => {
-  //   if (conn !== null) {
-  //     conn.onmessage = (message) => {
-  //       const m: Message = JSON.parse(message.data);
-  //       console.log(m);
-  //       if (m.state == State.REGISTERED) {
-  //         setIsAlready(false);
-  //         // refresh when someone refreshes
-  //         handlers.GetRoom(id, navigate, "/lobby", setRoomData, State);
-  //       }
-  //       if (m.state == State.NEW_PLAYER_JOINED) {
-  //         handlers.GetRoom(id, navigate, "/lobby", setRoomData, State);
-  //       }
-  //       if (m.state == State.PLAYER_LEFT) {
-  //         handlers.GetRoom(id, navigate, "/lobby", setRoomData, State);
-  //       }
-  //       if (m.state == State.CHOOSE_CARD) {
-  //         navigate("/game");
-  //       }
-  //       if (
-  //         m.state == State.ALREADY ||
-  //         m.state == State.UNREADY ||
-  //         m.state == State.READY
-  //       ) {
-  //         handlers.GetPlayer(id, setPlayer);
-  //         handlers.GetRoom(id, navigate, "/lobby", setRoomData, State);
-  //         if (m.state == State.ALREADY) {
-  //           setIsAlready(true);
-  //         }
-  //         if (m.state == State.UNREADY) {
-  //           setIsAlready(false);
-  //         }
-  //       }
-  //     };
-  //   }
-  // }, [conn]);
 
   const handleStartGame = () => {
     if (conn !== null) {
@@ -110,7 +32,6 @@ const Lobby = () => {
     if (conn !== null) {
       conn.send(utils.actions(State.LEAVE));
       localStorage.clear();
-      setPlayerStatus("Fail");
       navigate("/");
     }
   };
@@ -127,7 +48,8 @@ const Lobby = () => {
   };
 
   const debug = () => {
-    console.log(roomData);
+    console.log(utils.GetID());
+    // localStorage.clear();
     // if (conn !== null) {
     //   conn.send(utils.actions(State.PING));
     // }

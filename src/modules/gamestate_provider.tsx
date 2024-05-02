@@ -5,10 +5,11 @@ import { resOk } from "../utils/utils";
 import { GetID } from "../utils/utils";
 import { Player, Room } from "../utils/struct";
 import * as handlers from "../utils/handlers";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export const GamestateContext = createContext<{
-  playerStatus: string;
-  setPlayerStatus: React.Dispatch<React.SetStateAction<string>>;
+  loc: string;
+  setLoc: React.Dispatch<React.SetStateAction<string>>;
   player: Player;
   setPlayer: React.Dispatch<React.SetStateAction<Player>>;
   roomData: Room;
@@ -17,8 +18,8 @@ export const GamestateContext = createContext<{
   isAlready: boolean;
   setIsAlready: React.Dispatch<React.SetStateAction<boolean>>;
 }>({
-  playerStatus: "",
-  setPlayerStatus: () => {},
+  loc: "",
+  setLoc: () => {},
   player: {} as Player,
   setPlayer: () => {},
   roomData: {} as Room,
@@ -30,9 +31,11 @@ export const GamestateContext = createContext<{
 });
 
 const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [gamestate, setGamestate] = useState<any>(null);
   const [isAlready, setIsAlready] = useState<boolean>(false);
-  const [playerStatus, setPlayerStatus] = useState<string>("");
+  const [loc, setLoc] = useState<string>("");
 
   const [player, setPlayer] = useState<Player>({
     id: "",
@@ -49,34 +52,38 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     deck: [],
   });
 
-  const id = GetID();
+  function getData(id: string) {
+    handlers.GetPlayer(id, setPlayer, location.pathname, navigate);
+    handlers.GetRoom(id, setRoomData, location.pathname, navigate);
+  }
 
   useEffect(() => {
+    handlers.GetGamestate(setGamestate);
+  }, []);
+
+  useEffect(() => {
+    const id = GetID();
     // GET THE STATES ENUM
-    async function getGamestate() {
-      const res = await axios.get(GET_STATES_API);
-      if (resOk(res)) {
-        setGamestate(res.data);
-      }
+
+    if (id !== "none") {
+      console.log("Checking player...");
+      // check Player
+      getData(id);
     }
 
-    getGamestate();
-    if (id !== "none") {
-      // check Player
-      handlers.GetPlayer(id, setPlayerStatus, setPlayer);
-      handlers.GetRoom(id, setPlayerStatus, setRoomData);
-    }
     if (id === "none") {
-      setPlayerStatus("Fail");
+      if (location.pathname !== "/") {
+        navigate("/");
+      }
     }
-  }, []);
+  }, [location]);
 
   return (
     <GamestateContext.Provider
       value={{
         State: gamestate,
-        playerStatus: playerStatus,
-        setPlayerStatus: setPlayerStatus,
+        loc: loc,
+        setLoc: setLoc,
         player: player,
         setPlayer: setPlayer,
         roomData: roomData,

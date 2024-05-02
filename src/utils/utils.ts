@@ -38,6 +38,7 @@ export function GetID() {
   }
   const id = localStorage.getItem("id") 
   if (id !== null) {
+    if (id == "") return "none"
     return id
   }
   return "none"
