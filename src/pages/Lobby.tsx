@@ -48,8 +48,8 @@ const Lobby = () => {
   };
 
   const debug = () => {
-    console.log(utils.GetID());
     // localStorage.clear();
+    console.log(roomData);
     // if (conn !== null) {
     //   conn.send(utils.actions(State.PING));
     // }

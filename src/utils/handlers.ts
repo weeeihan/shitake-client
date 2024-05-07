@@ -22,6 +22,9 @@ export async function GetPlayer(playerID: string, setPlayer: React.Dispatch<Reac
       }
     }
   } catch (error: any) {
+    if (loc !== "/") {
+      navigate("/")
+    }
     localStorage.clear()
   }
 }

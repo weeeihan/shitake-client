@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   DndContext,
   useSensor,
@@ -14,6 +14,9 @@ import {
 } from "@dnd-kit/core";
 
 import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
+import { GamestateContext } from "../modules/gamestate_provider";
+import { WebsocketContext } from "../modules/websocket_provider";
+import { actions } from "../utils/utils";
 
 import { CSS } from "@dnd-kit/utilities";
 import {
@@ -23,11 +26,6 @@ import {
   sortableKeyboardCoordinates,
   arrayMove,
 } from "@dnd-kit/sortable";
-
-type Props = {
-  data: number[];
-  playCard: (card: number) => void;
-};
 
 const Selection = ({ selected }: { selected: number }) => {
   const { setNodeRef } = useDroppable({
@@ -83,10 +81,20 @@ const Numball = ({ num }: { num: number }) => {
   );
 };
 
-const Hand = ({ data, playCard }: Props) => {
+const Hand = () => {
   const [activeId, setActiveId] = useState(-1);
   const [selected, setSelected] = useState<number>(-1);
-  const [hand, setHand] = useState<number[]>(data);
+  const { conn } = useContext(WebsocketContext);
+  const { State, player } = useContext(GamestateContext);
+  const [hand, setHand] = useState<number[]>(player.hand);
+
+  const playCard = (card: number) => {
+    console.log("Played card " + card);
+    if (conn != null && card != 0) {
+      console.log("Played?");
+      conn.send(actions(State.PLAY, card));
+    }
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor),

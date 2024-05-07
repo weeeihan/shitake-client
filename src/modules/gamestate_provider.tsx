@@ -25,7 +25,6 @@ export const GamestateContext = createContext<{
   roomData: {} as Room,
   setRoomData: () => {},
   State: null,
-
   isAlready: false,
   setIsAlready: () => {},
 });
@@ -33,6 +32,7 @@ export const GamestateContext = createContext<{
 const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [chosenCard, setChosenCard] = useState<number>(0);
   const [gamestate, setGamestate] = useState<any>(null);
   const [isAlready, setIsAlready] = useState<boolean>(false);
   const [loc, setLoc] = useState<string>("");
@@ -50,6 +50,8 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     state: "",
     players: [],
     deck: [],
+    chooser: "",
+    played: null,
   });
 
   function getData(id: string) {
@@ -63,10 +65,10 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const id = GetID();
-    // GET THE STATES ENUM
 
+    // GET THE STATES ENUM
     if (id !== "none") {
-      console.log("Checking player...");
+      // console.log("Checking player...");
       // check Player
       getData(id);
     }
@@ -77,6 +79,18 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
       }
     }
   }, [location]);
+
+  useEffect(() => {
+    // To handle redirecting
+    if (gamestate !== null && roomData.id !== "") {
+      if (roomData.state == gamestate.INIT && location.pathname !== "/lobby") {
+        navigate("/lobby");
+      }
+      if (roomData.state !== gamestate.INIT && location.pathname === "/lobby") {
+        navigate("/game");
+      }
+    }
+  }, [roomData]);
 
   return (
     <GamestateContext.Provider

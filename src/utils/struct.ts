@@ -3,8 +3,11 @@ export type Room = {
   state: string
   players: PlayerDisplay[]
   deck: number[][]
+  chooser: string
+  played: any 
 
 }
+
 
 export type PlayerDisplay = {
   name: string
@@ -45,5 +48,5 @@ export type Player = {
 
 export type Played = {
   name: string
-  card: string
+  card: number
 }

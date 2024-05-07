@@ -54,8 +54,8 @@ const Landing = () => {
     handlers.CreateRoom(name, setPlayer, navigate);
   };
 
-  const redirect = () => {
-    navigate("/test");
+  const debug = () => {
+    console.log(utils.GetID());
   };
   return (
     <>
@@ -68,7 +68,7 @@ const Landing = () => {
         handleJoinRoom={handleJoinRoom}
         handleCreateRoom={handleCreateRoom}
       />
-      <button onClick={redirect}>Go test</button>
+      <button onClick={debug}>Debug</button>
     </>
   );
 };

@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  createContext,
-  useEffect,
-  useContext,
-  useLayoutEffect,
-} from "react";
+import React, { useState, createContext, useEffect, useContext } from "react";
 import { GamestateContext } from "./gamestate_provider";
 import { Message, Player } from "../utils/struct";
 import * as handlers from "../utils/handlers";
@@ -15,14 +9,22 @@ type Conn = WebSocket | null;
 export const WebsocketContext = createContext<{
   conn: Conn;
   setConn: (c: Conn) => void;
+  countDown: number;
+  bottomDisp: string;
+  setBottomDisp: (s: string) => void;
 }>({
   conn: null,
   setConn: () => {},
+  countDown: 0,
+  bottomDisp: "Hand",
+  setBottomDisp: () => {},
 });
 
 const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [countDown, setCountDown] = useState<number>(0);
+  const [bottomDisp, setBottomDisp] = useState("Hand");
   const [conn, setConn] = useState<Conn>(null);
   const { player, setRoomData, setPlayer, State, setIsAlready } =
     useContext(GamestateContext);
@@ -73,8 +75,33 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
         // Start game!
         if (m.state == State.CHOOSE_CARD) {
           navigate("/game");
+          setIsAlready(false);
           fetchData();
         }
+
+        // GAME PHASE
+        if (m.state == State.COUNT) {
+          setCountDown(parseInt(m.remark));
+        }
+
+        if (m.state == State.PROCESS) {
+          fetchData();
+          setBottomDisp("Playing");
+        }
+
+        if (m.state == State.CHOOSE_ROW) {
+          fetchData();
+        }
+
+        if (m.state == State.ROW_SELECTED) {
+          fetchData();
+          setBottomDisp("Playing");
+        }
+      };
+      conn.onclose = (event) => {
+        console.log("Connection closed due to ", event.reason);
+        setConn(null);
+        fetchData();
       };
     }
   }, [conn]);
@@ -84,6 +111,9 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         conn: conn,
         setConn: setConn,
+        countDown: countDown,
+        bottomDisp: bottomDisp,
+        setBottomDisp: setBottomDisp,
       }}
     >
       {children}

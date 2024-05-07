@@ -18,8 +18,8 @@ import { GamestateContext } from "../modules/gamestate_provider";
 import useStore from "../utils/store";
 
 const Game = () => {
-  // const { id, State } = useContext(GamestateContext);
-  // const { conn, setConn } = useContext(WebsocketContext);
+  const { player, roomData, State } = useContext(GamestateContext);
+  const { conn } = useContext(WebsocketContext);
   // const [playedCards, setPlayedCards] = useState<string>("");
   // const [isPlayer, setIsPlayer] = useState(false);
 
@@ -39,10 +39,13 @@ const Game = () => {
   //   deck: [],
   // });
 
-  // const isLoading =
-  //   roomData.id == "" || player.id == "" || conn == null || State == null
-  //     ? true
-  //     : false;
+  const isLoading =
+    roomData.deck.length == 0 ||
+    player.hand.length == 0 ||
+    conn == null ||
+    State == null
+      ? true
+      : false;
 
   // useEffect(() => {
   //   if (id !== "") {
@@ -97,26 +100,17 @@ const Game = () => {
 
   // const navigate = useNavigate();
 
-  // const [chosenCard, setChosenCard] = useState<number>(0);
+  const [chosenCard, setChosenCard] = useState<number>(0);
   // const [countDown, setCountDown] = useState<number>(0);
 
-  // const playCard = (card: number) => {
-  //   console.log("Played card " + card);
-  //   setChosenCard(card);
-  //   if (conn != null && card != 0) {
-  //     console.log("Played?");
-  //     conn.send(utils.actions(State.PLAY, card));
-  //   }
-  // };
-
-  // const chooseRow = (row: number) => {
-  //   console.log(row);
-  //   // setIsChooser(false);
-  //   // console.log("Chose row " + row);
-  //   // if (conn != null && row != -1) {
-  //   //   conn.send(actions(State.ROW, chosenCard, row));
-  //   // }
-  // };
+  const chooseRow = (row: number) => {
+    console.log(row);
+    // setIsChooser(false);
+    // console.log("Chose row " + row);
+    // if (conn != null && row != -1) {
+    //   conn.send(actions(State.ROW, chosenCard, row));
+    // }
+  };
 
   // const testDeck: number[][] = [
   //   [46, 56, 98, 100],
@@ -127,28 +121,11 @@ const Game = () => {
   // const testHand: number[] = [1, 2, 3, 4, 55, 6, 7, 8, 94, 23, 13];
   // const testScore: number = 20;
 
-  // const debug = (e: React.SyntheticEvent) => {
-  //   e.preventDefault();
-  //   // if (conn !== null) {
-  //   //   conn.send(utils.actions(State.PLAY, 19));
-  //   // }
-  //   console.log(State);
-  // };
-  // if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <>
-      game!
-      {/* <GameCanvas
-        deck={roomData.deck}
-        isChooser={false}
-        chooseRow={chooseRow}
-        playCard={playCard}
-        hand={player.hand}
-        countDown={countDown}
-        playedCards={playedCards}
-      /> */}
-      {/* <button onClick={debug}>DEBUG</button> */}
+      <GameCanvas />
     </>
   );
 };
