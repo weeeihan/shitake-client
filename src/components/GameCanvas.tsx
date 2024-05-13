@@ -8,11 +8,14 @@ import { GamestateContext } from "../modules/gamestate_provider";
 
 const GameCanvas = () => {
   let isChooser = false;
-  const { countDown, bottomDisp, setBottomDisp } = useContext(WebsocketContext);
+  const { bottomDisp, setBottomDisp, roomData } = useContext(GamestateContext);
+  const { countDown } = useContext(WebsocketContext);
 
   const debug = () => {
-    console.log(bottomDisp);
+    console.log(roomData);
   };
+
+  // DISABLE USER TO CHECK HAND IF NUMBER OF HAND = 0
   return (
     <div className="flex flex-col items-center justify-center">
       <Deck />

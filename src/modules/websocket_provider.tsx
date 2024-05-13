@@ -2,7 +2,7 @@ import React, { useState, createContext, useEffect, useContext } from "react";
 import { GamestateContext } from "./gamestate_provider";
 import { Message, Player } from "../utils/struct";
 import * as handlers from "../utils/handlers";
-import { useLocation, useNavigate } from "react-router-dom";
+import { redirect, useLocation, useNavigate } from "react-router-dom";
 import * as utils from "../utils/utils";
 type Conn = WebSocket | null;
 
@@ -10,24 +10,26 @@ export const WebsocketContext = createContext<{
   conn: Conn;
   setConn: (c: Conn) => void;
   countDown: number;
-  bottomDisp: string;
-  setBottomDisp: (s: string) => void;
 }>({
   conn: null,
   setConn: () => {},
   countDown: 0,
-  bottomDisp: "Hand",
-  setBottomDisp: () => {},
 });
 
 const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [countDown, setCountDown] = useState<number>(0);
-  const [bottomDisp, setBottomDisp] = useState("Hand");
   const [conn, setConn] = useState<Conn>(null);
-  const { player, setRoomData, setPlayer, State, setIsAlready } =
-    useContext(GamestateContext);
+  const {
+    player,
+    setRoomData,
+    setPlayer,
+    State,
+    setIsAlready,
+    bottomDisp,
+    setBottomDisp,
+  } = useContext(GamestateContext);
 
   const id = utils.GetID();
   // Fetch player and room data
@@ -36,8 +38,8 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
       navigate("/");
       return;
     }
-    handlers.GetPlayer(id, setPlayer, location.pathname, navigate);
-    handlers.GetRoom(id, setRoomData, location.pathname, navigate);
+    handlers.GetPlayer(id, setPlayer);
+    handlers.GetRoom(id, setRoomData);
   }
 
   useEffect(() => {
@@ -47,7 +49,7 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
   }, [player]);
 
   useEffect(() => {
-    if (conn !== null) {
+    if (conn !== null && State !== null) {
       conn.onmessage = (message) => {
         const m: Message = JSON.parse(message.data);
         console.log(m);
@@ -97,14 +99,23 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
           fetchData();
           setBottomDisp("Playing");
         }
+
+        // ROUND END
+        if (m.state == State.ROUND_END) {
+          navigate("/roundend");
+        }
+
+        if (m.state == State.GAME_END) {
+          navigate("/gameend");
+        }
       };
       conn.onclose = (event) => {
         console.log("Connection closed due to ", event.reason);
         setConn(null);
-        fetchData();
+        navigate("/");
       };
     }
-  }, [conn]);
+  }, [conn, State]);
 
   return (
     <WebsocketContext.Provider
@@ -112,8 +123,6 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
         conn: conn,
         setConn: setConn,
         countDown: countDown,
-        bottomDisp: bottomDisp,
-        setBottomDisp: setBottomDisp,
       }}
     >
       {children}

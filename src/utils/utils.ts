@@ -9,11 +9,8 @@ export function SortPlayers (players: PlayerDisplay[]) {
   return players
 }
 
-export function GetWinner (players: PlayerDisplay[]) {
-  players.sort((a: any, b: any) => {
-    return a.score - b.score;
-  })
 
+export function GetWinner (players: PlayerDisplay[]) {
   const bestScore = players[0].score;
   var winner = players.filter((p) => p.score == bestScore)
   if (winner.length == 1){
@@ -23,9 +20,7 @@ export function GetWinner (players: PlayerDisplay[]) {
   for (const w of winner) {
     winners += w.name + " and "
   }
-
   return winners.slice(0, -4)
-
 }
 
 export function hasWhiteSpace(s: string) {
@@ -103,3 +98,4 @@ export function useCountdown(seconds: number, onEnd: () => any) {
 
   return remaining;
 }
+

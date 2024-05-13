@@ -11,63 +11,16 @@ import LandingCanvas from "../components/LandingCanvas";
 
 // Context
 import { GamestateContext } from "../modules/gamestate_provider";
+import { WebsocketContext } from "../modules/websocket_provider";
 
 const Landing = () => {
-  const { setPlayer } = useContext(GamestateContext);
-  const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [roomID, setRoomID] = useState("");
-  const joinCreate: string = roomID === "" ? "Create Room" : "Join Room";
-
-  const handleJoinRoom = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    if (name === "") {
-      alert("PLEASE FILL IN YOUR NAME");
-      return;
-    }
-
-    if (utils.hasWhiteSpace(name)) {
-      alert("NO WHITESPACE ALLOWED IN NAME");
-      return;
-    }
-
-    if (roomID === "") {
-      alert("PLEASE FILL IN THE ROOM CODE");
-      return;
-    }
-
-    handlers.JoinRoom(name, roomID, setPlayer, navigate);
-  };
-
-  const handleCreateRoom = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    if (name === "") {
-      alert("PLEASE FILL IN YOUR NAME");
-      return;
-    }
-
-    if (utils.hasWhiteSpace(name)) {
-      alert("NO WHITESPACE ALLOWED IN NAME");
-      return;
-    }
-
-    handlers.CreateRoom(name, setPlayer, navigate);
-  };
-
+  const { bottomDisp } = useContext(GamestateContext);
   const debug = () => {
     console.log(utils.GetID());
   };
   return (
     <>
-      <LandingCanvas
-        name={name}
-        roomID={roomID}
-        setName={setName}
-        setRoomID={setRoomID}
-        joinCreate={joinCreate}
-        handleJoinRoom={handleJoinRoom}
-        handleCreateRoom={handleCreateRoom}
-      />
+      <LandingCanvas />
       <button onClick={debug}>Debug</button>
     </>
   );

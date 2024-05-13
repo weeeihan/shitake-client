@@ -40,12 +40,7 @@ const Game = () => {
   // });
 
   const isLoading =
-    roomData.deck.length == 0 ||
-    player.hand.length == 0 ||
-    conn == null ||
-    State == null
-      ? true
-      : false;
+    roomData.deck.length == 0 || conn == null || State == null ? true : false;
 
   // useEffect(() => {
   //   if (id !== "") {

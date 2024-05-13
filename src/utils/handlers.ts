@@ -12,37 +12,38 @@ export async function GetGamestate(setGamestate: React.Dispatch<React.SetStateAc
   }
 }
 
-export async function GetPlayer(playerID: string, setPlayer: React.Dispatch<React.SetStateAction<Player>>, loc : string, navigate: NavigateFunction) {  
+export async function GetPlayer(playerID: string, setPlayer: React.Dispatch<React.SetStateAction<Player>>) {  
   try {
     const res = await axios.get(GET_PLAYER_API(playerID))
     if (resOk(res)) {
       setPlayer(res.data)
-      if (loc == "/") {
-        navigate("/lobby")
-      }
+      // if (loc == "/") {
+      //   navigate("/lobby")
+      // }
     }
   } catch (error: any) {
-    if (loc !== "/") {
-      navigate("/")
-    }
+    // if (loc !== "/") {
+    //   navigate("/")
+    // }
     localStorage.clear()
   }
 }
-export async function GetRoom(playerID: string,setRoom:React.Dispatch<React.SetStateAction<Room>>, loc : string, navigate: NavigateFunction) {
+export async function GetRoom(playerID: string,setRoom:React.Dispatch<React.SetStateAction<Room>>) {
   try {
     const roomID = playerID.slice(-4);
     const res = await axios.get(GET_ROOM_API(roomID));
     if (resOk(res)) {
       setRoom(res.data)
-      if (loc == "/") {
-        if (res.data.state == "INIT") {
-          navigate("/lobby")
-        } else {
-          navigate("/game")
-        }
-      }
+      // if (loc == "/") {
+        // if (res.data.state == "INIT") {
+        //   navigate("/lobby")
+        // } else {
+        //   navigate("/game")
+        // }
+      // }
     }
   } catch (error) {
+    setRoom({id: "ERROR", state: "", players: [], deck: [], chooser: "", played: null})
     localStorage.clear()
   }
   

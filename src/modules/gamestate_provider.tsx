@@ -5,7 +5,7 @@ import { resOk } from "../utils/utils";
 import { GetID } from "../utils/utils";
 import { Player, Room } from "../utils/struct";
 import * as handlers from "../utils/handlers";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, NavigateFunction } from "react-router-dom";
 
 export const GamestateContext = createContext<{
   loc: string;
@@ -17,6 +17,9 @@ export const GamestateContext = createContext<{
   State: any;
   isAlready: boolean;
   setIsAlready: React.Dispatch<React.SetStateAction<boolean>>;
+  navigate: NavigateFunction;
+  bottomDisp: string;
+  setBottomDisp: React.Dispatch<React.SetStateAction<string>>;
 }>({
   loc: "",
   setLoc: () => {},
@@ -27,12 +30,15 @@ export const GamestateContext = createContext<{
   State: null,
   isAlready: false,
   setIsAlready: () => {},
+  navigate: () => {},
+  bottomDisp: "Hand",
+  setBottomDisp: () => {},
 });
 
 const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [chosenCard, setChosenCard] = useState<number>(0);
+  const [bottomDisp, setBottomDisp] = useState<string>("Hand");
   const [gamestate, setGamestate] = useState<any>(null);
   const [isAlready, setIsAlready] = useState<boolean>(false);
   const [loc, setLoc] = useState<string>("");
@@ -55,8 +61,12 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   function getData(id: string) {
-    handlers.GetPlayer(id, setPlayer, location.pathname, navigate);
-    handlers.GetRoom(id, setRoomData, location.pathname, navigate);
+    handlers.GetPlayer(id, setPlayer);
+    handlers.GetRoom(id, setRoomData);
+  }
+
+  function redirect(loc: string, des: string) {
+    return loc !== des && navigate(des);
   }
 
   useEffect(() => {
@@ -64,33 +74,59 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    const id = GetID();
+    if (gamestate !== null || player.id === "" || roomData.id === "") {
+      const id = GetID();
 
-    // GET THE STATES ENUM
-    if (id !== "none") {
-      // console.log("Checking player...");
-      // check Player
-      getData(id);
-    }
+      // GET THE STATES ENUM
+      if (id !== "none") {
+        // console.log("Checking player...");
+        // check Player
+        getData(id);
+      }
 
-    if (id === "none") {
-      if (location.pathname !== "/") {
-        navigate("/");
+      if (id === "none") {
+        if (location.pathname !== "/") {
+          navigate("/");
+        }
       }
     }
-  }, [location]);
+  }, [gamestate]);
 
   useEffect(() => {
-    // To handle redirecting
     if (gamestate !== null && roomData.id !== "") {
-      if (roomData.state == gamestate.INIT && location.pathname !== "/lobby") {
-        navigate("/lobby");
+      if (roomData.id == "ERROR") {
+        navigate("/");
       }
-      if (roomData.state !== gamestate.INIT && location.pathname === "/lobby") {
-        navigate("/game");
+
+      if (roomData.id !== "" && gamestate !== null) {
+        switch (roomData.state) {
+          case gamestate.INIT:
+            redirect(location.pathname, "/lobby");
+            break;
+
+          case gamestate.CHOOSE_CARD:
+            redirect(location.pathname, "/game");
+            break;
+
+          case gamestate.CHOOOSE_ROW:
+            redirect(location.pathname, "/game");
+            break;
+
+          case gamestate.ROUND_END:
+            redirect(location.pathname, "/roundend");
+            break;
+        }
       }
+      //handle redirection
     }
   }, [roomData]);
+
+  useEffect(() => {
+    const id = GetID();
+    if (id !== "none") {
+      getData(id);
+    }
+  }, [location]);
 
   return (
     <GamestateContext.Provider
@@ -104,6 +140,9 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
         setRoomData: setRoomData,
         isAlready: isAlready,
         setIsAlready: setIsAlready,
+        navigate: navigate,
+        bottomDisp,
+        setBottomDisp,
       }}
     >
       {children}

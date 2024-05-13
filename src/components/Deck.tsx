@@ -15,8 +15,12 @@ const Deck = () => {
   const isChooser = roomData.chooser === player.name;
   const isChoosing = roomData.chooser !== "";
 
-  const chosenCard = roomData.played[player.name];
+  if (player.id == "" || roomData.id == "") {
+    return <div>Loading</div>;
+  }
 
+  const chosenCard =
+    roomData.played.length == 0 ? "-1" : roomData.played[player.name];
   const handleChosen = (e: React.SyntheticEvent, rowNumber: number) => {
     e.preventDefault();
     setChoice(rowNumber);

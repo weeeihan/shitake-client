@@ -113,13 +113,9 @@ const LobbyCanvas = ({
               }
             />
             <span
-              className={
-                index % 2 == 0
-                  ? "font-patrick tracking-wide absolute"
-                  : "font-patrick tracking-wide absolute"
-              }
+              className="font-patrick tracking-wide absolute"
               style={{
-                marginLeft: index % 2 == 0 ? 120 : -60 - 8 * p.name.length,
+                marginLeft: index % 2 == 0 ? 100 : -100 - 8 * p.name.length,
               }}
             >
               {p.name}

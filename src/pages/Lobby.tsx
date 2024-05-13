@@ -9,10 +9,11 @@ import { GamestateContext } from "../modules/gamestate_provider";
 
 // UI
 import LobbyCanvas from "../components/LobbyCanvas";
+import { Room } from "../utils/struct";
 
 const Lobby = () => {
   const navigate = useNavigate();
-  const { setRoomData, roomData, player, State, setLoc } =
+  const { setRoomData, roomData, player, State, bottomDisp } =
     useContext(GamestateContext);
   const { setConn, conn } = useContext(WebsocketContext);
 
@@ -33,6 +34,7 @@ const Lobby = () => {
       conn.send(utils.actions(State.LEAVE));
       localStorage.clear();
       navigate("/");
+      roomData;
     }
   };
 

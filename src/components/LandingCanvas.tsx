@@ -1,25 +1,50 @@
-import React from "react";
+import React, { useContext, useState } from "react";
 import * as images from "../assets/images/images";
+import { GamestateContext } from "../modules/gamestate_provider";
+import * as utils from "../utils/utils";
+import * as handlers from "../utils/handlers";
 
-type Props = {
-  name: string;
-  roomID: string;
-  setName: (name: string) => void;
-  setRoomID: (roomID: string) => void;
-  joinCreate: string;
-  handleJoinRoom: (e: React.SyntheticEvent) => void;
-  handleCreateRoom: (e: React.SyntheticEvent) => void;
-};
+const LandingCanvas = () => {
+  const { navigate, setPlayer } = useContext(GamestateContext);
+  const [name, setName] = useState("");
+  const [roomID, setRoomID] = useState("");
+  const joinCreate: string = roomID === "" ? "Create Room" : "Join Room";
 
-const LandingCanvas = ({
-  name,
-  roomID,
-  setName,
-  setRoomID,
-  joinCreate,
-  handleJoinRoom,
-  handleCreateRoom,
-}: Props) => {
+  const handleJoinRoom = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    if (name === "") {
+      alert("PLEASE FILL IN YOUR NAME");
+      return;
+    }
+
+    if (utils.hasWhiteSpace(name)) {
+      alert("NO WHITESPACE ALLOWED IN NAME");
+      return;
+    }
+
+    if (roomID === "") {
+      alert("PLEASE FILL IN THE ROOM CODE");
+      return;
+    }
+
+    handlers.JoinRoom(name, roomID, setPlayer, navigate);
+  };
+
+  const handleCreateRoom = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    if (name === "") {
+      alert("PLEASE FILL IN YOUR NAME");
+      return;
+    }
+
+    if (utils.hasWhiteSpace(name)) {
+      alert("NO WHITESPACE ALLOWED IN NAME");
+      return;
+    }
+
+    handlers.CreateRoom(name, setPlayer, navigate);
+  };
+
   const clearLocal = (e: React.SyntheticEvent) => {
     e.preventDefault();
     localStorage.clear();
