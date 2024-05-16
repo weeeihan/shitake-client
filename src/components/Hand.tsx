@@ -13,9 +13,7 @@ import {
   DragOverlay,
 } from "@dnd-kit/core";
 
-import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
 import { GamestateContext } from "../modules/gamestate_provider";
-import { WebsocketContext } from "../modules/websocket_provider";
 import { actions } from "../utils/utils";
 
 import { CSS } from "@dnd-kit/utilities";
@@ -26,6 +24,7 @@ import {
   sortableKeyboardCoordinates,
   arrayMove,
 } from "@dnd-kit/sortable";
+import { WebsocketContext } from "../modules/websocket_provider";
 
 const Selection = ({ selected }: { selected: number }) => {
   const { setNodeRef } = useDroppable({
@@ -47,7 +46,7 @@ const NumRow = ({
   activeId: number;
 }) => {
   return (
-    <div className="flex flex-row  w-2/3 h-[5rem] mt-10 overflow-x-scroll scrollbar">
+    <div className="flex flex-row w-screen  h-[5rem] mt-10 overflow-x-scroll scrollbar">
       <SortableContext
         items={numballs}
         strategy={horizontalListSortingStrategy}
@@ -85,13 +84,12 @@ const Hand = () => {
   const [activeId, setActiveId] = useState(-1);
   const [selected, setSelected] = useState<number>(-1);
   const { conn } = useContext(WebsocketContext);
-  const { State, player } = useContext(GamestateContext);
+  const { player, State } = useContext(GamestateContext);
   const [hand, setHand] = useState<number[]>(player.hand);
 
   const playCard = (card: number) => {
     console.log("Played card " + card);
     if (conn != null && card != 0) {
-      console.log("Played?");
       conn.send(actions(State.PLAY, card));
     }
   };

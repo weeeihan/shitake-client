@@ -10,28 +10,36 @@ const GameCanvas = () => {
   let isChooser = false;
   const { bottomDisp, setBottomDisp, roomData } = useContext(GamestateContext);
   const { countDown } = useContext(WebsocketContext);
+  const showHide = bottomDisp == "Hand" ? "Hide Hand" : "Show Hand";
 
   const debug = () => {
     console.log(roomData);
   };
 
+  const handleShowHand = () => {
+    if (bottomDisp == "Hand") return setBottomDisp("Dashboard");
+    setBottomDisp("Hand");
+  };
+
   // DISABLE USER TO CHECK HAND IF NUMBER OF HAND = 0
   return (
-    <div className="flex flex-col items-center justify-center">
-      <Deck />
-      <div className="flex flex-row space-x-5 mb-5">
-        <button onClick={() => setBottomDisp("Hand")}>Hands</button>
-        <button onClick={() => setBottomDisp("Dashboard")}>Dashboard</button>
-        <button onClick={() => setBottomDisp("Playing")}>Playing</button>
-        <button onClick={() => setBottomDisp("Loading")}>Loading</button>
+    <>
+      <div className="flex flex-col justify-center mt-24">
+        <Deck />
       </div>
-      {bottomDisp === "Hand" && <Hand />}
-      {bottomDisp === "Dashboard" && <Dashboard />}
-      {bottomDisp === "Loading" && <div>Loading...</div>}
-      {bottomDisp === "Playing" && <Playing />}
-      {countDown !== 0 && <div>{countDown}</div>}
-      <button onClick={debug}>Debug</button>
-    </div>
+      <div className="flex flex-col items-center">
+        <div className="flex flex-row space-x-5 mb-5">
+          {roomData.state === State.CHOOSE_CARD && (
+            <button onClick={handleShowHand}>{showHide}</button>
+          )}
+        </div>
+        {bottomDisp === "Hand" && <Hand />}
+        {bottomDisp === "Dashboard" && <Dashboard />}
+        {bottomDisp === "Playing" && <Playing />}
+        {countDown !== 0 && <div>{countDown}</div>}
+        <button onClick={debug}>Debug</button>
+      </div>
+    </>
   );
 };
 

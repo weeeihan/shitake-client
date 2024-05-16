@@ -9,6 +9,7 @@ export async function GetGamestate(setGamestate: React.Dispatch<React.SetStateAc
   const res = await axios.get(GET_STATES_API);
   if (resOk(res)) {
     setGamestate(res.data);
+    // console.log(res.data)
   }
 }
 
@@ -75,9 +76,10 @@ export async function CreateRoom(name: string,setPlayer: React.Dispatch<React.Se
   }
 }
 
-export async function ConnectToGame(id: string, setConn: (conn: WebSocket)=> void) {
+export async function ConnectToGame(id: string, setConn: (conn: WebSocket)=> void, connRef: React.MutableRefObject<WebSocket | null>) {
   const ws = new WebSocket(CONNECT_API(id))
   if (ws.OPEN) {
+    connRef.current = ws
     setConn(ws)
     return
   }

@@ -51,7 +51,7 @@ const Lobby = () => {
 
   const debug = () => {
     // localStorage.clear();
-    console.log(roomData);
+    console.log(conn);
     // if (conn !== null) {
     //   conn.send(utils.actions(State.PING));
     // }

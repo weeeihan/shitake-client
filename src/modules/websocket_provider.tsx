@@ -1,9 +1,16 @@
-import React, { useState, createContext, useEffect, useContext } from "react";
+import React, {
+  useState,
+  createContext,
+  useEffect,
+  useContext,
+  useRef,
+} from "react";
 import { GamestateContext } from "./gamestate_provider";
 import { Message, Player } from "../utils/struct";
 import * as handlers from "../utils/handlers";
 import { redirect, useLocation, useNavigate } from "react-router-dom";
 import * as utils from "../utils/utils";
+import { CONNECT_API } from "../utils/api";
 type Conn = WebSocket | null;
 
 export const WebsocketContext = createContext<{
@@ -21,6 +28,7 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const [countDown, setCountDown] = useState<number>(0);
   const [conn, setConn] = useState<Conn>(null);
+  const connRef = useRef<Conn>(null);
   const {
     player,
     setRoomData,
@@ -34,22 +42,36 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
   const id = utils.GetID();
   // Fetch player and room data
   function fetchData() {
-    if (id === "none" || id == "") {
-      navigate("/");
-      return;
-    }
     handlers.GetPlayer(id, setPlayer);
     handlers.GetRoom(id, setRoomData);
   }
 
-  useEffect(() => {
-    if (player.id !== "" && conn == null) {
-      handlers.ConnectToGame(player.id, setConn);
-    }
-  }, [player]);
+  // let x = 1;
 
   useEffect(() => {
-    if (conn !== null && State !== null) {
+    // To ensure that there is only 1 connection
+    if (
+      location.pathname !== "/" &&
+      (!connRef.current || connRef.current.readyState === WebSocket.CLOSED)
+    ) {
+      handlers.ConnectToGame(id, setConn, connRef);
+    }
+
+    return () => {
+      if (connRef.current && connRef.current.readyState === WebSocket.OPEN) {
+        connRef.current.close();
+      }
+    };
+
+    // return () => {
+    //   if (conn?.readyState === 1) {
+    //     conn.close();
+    //   }
+    // };
+  }, [location]);
+
+  useEffect(() => {
+    if (conn !== null) {
       conn.onmessage = (message) => {
         const m: Message = JSON.parse(message.data);
         console.log(m);
@@ -115,7 +137,13 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
         navigate("/");
       };
     }
-  }, [conn, State]);
+    return () => {
+      if (conn !== null) {
+        console.log("CLOSING CONN");
+        conn.close();
+      }
+    };
+  }, [conn]);
 
   return (
     <WebsocketContext.Provider

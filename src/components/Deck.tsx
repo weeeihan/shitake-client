@@ -125,9 +125,9 @@ const Deck = () => {
           <div className="grid gap-4 ">
             {data != null &&
               data.map((row: number[], rowNumber: number) => (
-                <div key={rowNumber} className="flex my-[1rem]">
+                <div key={rowNumber} className="flex flex-row my-[1rem]">
                   {row.map((card: number, cardNumber: number) => (
-                    <div key={cardNumber} className="relative">
+                    <div key={cardNumber}>
                       <img src={images.hLog} alt="Horizontal Log" width={80} />
                       <img
                         className="absolute z-10"
