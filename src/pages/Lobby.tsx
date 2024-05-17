@@ -31,10 +31,9 @@ const Lobby = () => {
   const handleLeaveRoom = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (conn !== null) {
-      conn.send(utils.actions(State.LEAVE));
       localStorage.clear();
       navigate("/");
-      roomData;
+      conn.send(utils.actions(State.LEAVE));
     }
   };
 

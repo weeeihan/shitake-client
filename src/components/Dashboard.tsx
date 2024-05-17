@@ -1,7 +1,5 @@
 import React, { useContext } from "react";
-import * as images from "../assets/images/images";
-import ProgressBar from "@ramonak/react-progress-bar";
-import { PlayerDisplay } from "../utils/struct";
+
 import { GamestateContext } from "../modules/gamestate_provider";
 
 const Dashboard = () => {

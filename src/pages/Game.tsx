@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Deck from "../components/Deck";
 import Hand from "../components/Hand";
 import Dashboard from "../components/Dashboard";
@@ -10,6 +10,9 @@ import { actions } from "../utils/utils";
 // Store
 
 const Game = () => {
+  useEffect(() => {
+    // console.log("AT GAME");
+  }, []);
   const { bottomDisp, setBottomDisp, roomData, State } =
     useContext(GamestateContext);
   const { countDown, conn } = useContext(WebsocketContext);
@@ -19,6 +22,10 @@ const Game = () => {
     if (conn !== null) {
       conn.send(actions(State.PING));
     }
+  };
+
+  const clear = () => {
+    localStorage.clear();
   };
 
   const handleShowHand = () => {
@@ -44,6 +51,7 @@ const Game = () => {
         {bottomDisp === "Playing" && <Playing />}
         {countDown !== 0 && <div>{countDown}</div>}
         <button onClick={debug}>Debug</button>
+        <button onClick={clear}>Clear</button>
       </div>
     </>
   );

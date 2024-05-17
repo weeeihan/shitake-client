@@ -27,14 +27,14 @@ export const GamestateContext = createContext<{
   isAlready: false,
   setIsAlready: () => {},
   navigate: () => {},
-  bottomDisp: "Hand",
+  bottomDisp: "Dasboard",
   setBottomDisp: () => {},
 });
 
 const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [bottomDisp, setBottomDisp] = useState<string>("Hand");
+  const [bottomDisp, setBottomDisp] = useState<string>("Dashboard");
   const [gamestate, setGamestate] = useState<any>(null);
   const [isAlready, setIsAlready] = useState<boolean>(false);
 
@@ -63,10 +63,12 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   function redirect(des: string) {
-    return location.pathname !== des && navigate(des);
+    if (location.pathname === des) return;
+    navigate(des);
   }
 
   useEffect(() => {
+    // console.log("GAMESTATE-RENDER");
     if (gamestate === null) {
       handlers.GetGamestate(setGamestate);
     }
@@ -75,6 +77,7 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (id == "none") {
       redirect("/");
+      setBottomDisp("Dashboard");
       return () => {};
     }
 
@@ -116,7 +119,7 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   //   if (id !== "none") {
   //     getData(id);
   //   }
-  // }, [location]);
+  // }, [location]);)
 
   if (gamestate === null) {
     return <div>Loading gamestate...</div>;

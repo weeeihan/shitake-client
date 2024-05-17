@@ -29,15 +29,8 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [countDown, setCountDown] = useState<number>(0);
   const [conn, setConn] = useState<Conn>(null);
   const connRef = useRef<Conn>(null);
-  const {
-    player,
-    setRoomData,
-    setPlayer,
-    State,
-    setIsAlready,
-    bottomDisp,
-    setBottomDisp,
-  } = useContext(GamestateContext);
+  const { setRoomData, setPlayer, State, setIsAlready, setBottomDisp } =
+    useContext(GamestateContext);
 
   const id = utils.GetID();
   // Fetch player and room data
@@ -45,23 +38,18 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
     handlers.GetPlayer(id, setPlayer);
     handlers.GetRoom(id, setRoomData);
   }
-
   // let x = 1;
 
   useEffect(() => {
     // To ensure that there is only 1 connection
     if (
       location.pathname !== "/" &&
+      conn === null &&
       (!connRef.current || connRef.current.readyState === WebSocket.CLOSED)
     ) {
+      // console.log("DID I TRY?");
       handlers.ConnectToGame(id, setConn, connRef);
     }
-
-    return () => {
-      if (connRef.current && connRef.current.readyState === WebSocket.OPEN) {
-        connRef.current.close();
-      }
-    };
 
     // return () => {
     //   if (conn?.readyState === 1) {
@@ -97,9 +85,15 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
         }
 
         // Start game!
-        if (m.state == State.CHOOSE_CARD) {
+        if (m.state == State.START) {
+          // fetchData();
           navigate("/game");
           setIsAlready(false);
+          // setBottomDisp("Playing");
+        }
+
+        if (m.state == State.CHOOSE_CARD) {
+          // navigate("/game");
           fetchData();
         }
 
@@ -131,18 +125,7 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
           navigate("/gameend");
         }
       };
-      conn.onclose = (event) => {
-        console.log("Connection closed due to ", event.reason);
-        setConn(null);
-        navigate("/");
-      };
     }
-    return () => {
-      if (conn !== null) {
-        console.log("CLOSING CONN");
-        conn.close();
-      }
-    };
   }, [conn]);
 
   return (
