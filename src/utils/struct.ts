@@ -11,7 +11,7 @@ export type Room = {
 
 export type PlayerDisplay = {
   name: string
-  score: number
+  hp: number
   ready: boolean
 }
 
@@ -41,9 +41,10 @@ export type Message = {
 export type Player = {
   id: string
   name: string
-  score: number
+  hp: number
   hand: number[]
   ready: boolean 
+  play: number
 } 
 
 export type Played = {

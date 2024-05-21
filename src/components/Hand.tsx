@@ -27,13 +27,25 @@ import {
 import { WebsocketContext } from "../modules/websocket_provider";
 
 const Selection = ({ selected }: { selected: number }) => {
+  const { Mushrooms } = useContext(GamestateContext);
   const { setNodeRef } = useDroppable({
     id: "selection",
   });
+  if (selected == -1) {
+    return (
+      <div ref={setNodeRef} className="w-[25rem] h-[10rem] border">
+        <div className="align-left">Toss a spore!</div>
+      </div>
+    );
+  }
   return (
-    <div ref={setNodeRef} className="w-[25rem] h-[10rem] border">
-      Selection
-      <div className="text-8xl">{selected}</div>
+    <div
+      ref={setNodeRef}
+      className="w-[25rem] h-[10rem] border overflow-y-scroll "
+    >
+      <div className="text-4xl">{selected}</div>
+      <div>{Mushrooms[selected].name}</div>
+      <div>{Mushrooms[selected].desc}</div>
     </div>
   );
 };
@@ -82,10 +94,9 @@ const Numball = ({ num }: { num: number }) => {
 
 const Hand = () => {
   const [activeId, setActiveId] = useState(-1);
-  const [selected, setSelected] = useState<number>(-1);
   const { conn } = useContext(WebsocketContext);
-  const { player, State } = useContext(GamestateContext);
-  const [hand, setHand] = useState<number[]>(player.hand);
+  const { State, hand, setHand, selected, setSelected } =
+    useContext(GamestateContext);
 
   const playCard = (card: number) => {
     console.log("Played card " + card);

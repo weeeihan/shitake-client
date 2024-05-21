@@ -99,3 +99,27 @@ export function useCountdown(seconds: number, onEnd: () => any) {
   return remaining;
 }
 
+export function getY(weight: number) {
+  const top = -80
+
+  if (weight < 10) {
+    return top + 2
+  }
+  
+  return top + (Math.floor(weight/10)*2)
+}
+
+export function getX(weight: number) {
+  if (weight < 10) {
+    return 0
+  }
+  return Math.floor(weight%10)*3
+}
+
+export function getTotalDamge(row: number[], Mushroom: any) {
+  var total = 0
+  for (const card of row) {
+    total += Mushroom[card].damage
+  }
+  return total
+}

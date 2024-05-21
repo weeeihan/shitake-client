@@ -14,9 +14,9 @@ import { GamestateContext } from "../modules/gamestate_provider";
 import { WebsocketContext } from "../modules/websocket_provider";
 
 const Landing = () => {
-  const { bottomDisp } = useContext(GamestateContext);
+  const { Mushrooms } = useContext(GamestateContext);
   const debug = () => {
-    console.log(utils.GetID());
+    console.log(Mushrooms);
   };
   return (
     <>

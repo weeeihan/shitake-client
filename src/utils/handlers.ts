@@ -1,6 +1,6 @@
 import axios from "axios"; 
 import {  NavigateFunction } from "react-router-dom";
-import { CHECK_PLAYER_API, CONNECT_API, CREATE_ROOM_API, GET_PLAYER_API, GET_ROOM_API, GET_STATES_API, JOIN_ROOM_API, LEAVE_ROOM_API } from "./api";
+import { CHECK_PLAYER_API, CONNECT_API, CREATE_ROOM_API, GET_MUSHROOM_API, GET_PLAYER_API, GET_ROOM_API, GET_STATES_API, JOIN_ROOM_API, LEAVE_ROOM_API } from "./api";
 import { resOk } from "./utils";
 import React, { useContext } from "react";
 import { Room, Player } from "./struct";
@@ -10,6 +10,13 @@ export async function GetGamestate(setGamestate: React.Dispatch<React.SetStateAc
   if (resOk(res)) {
     setGamestate(res.data);
     // console.log(res.data)
+  }
+}
+
+export async function GetMushrooms(setMushrooms: React.Dispatch<React.SetStateAction<any>>) {
+  const res = await axios.get(GET_MUSHROOM_API);
+  if (resOk(res)) {
+    setMushrooms(res.data);
   }
 }
 

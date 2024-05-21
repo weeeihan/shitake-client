@@ -1,7 +1,4 @@
-import axios from "axios";
 import React, { useState, createContext, useEffect } from "react";
-import { GET_STATES_API } from "../utils/api";
-import { resOk } from "../utils/utils";
 import { GetID } from "../utils/utils";
 import { Player, Room } from "../utils/struct";
 import * as handlers from "../utils/handlers";
@@ -13,37 +10,52 @@ export const GamestateContext = createContext<{
   roomData: Room;
   setRoomData: React.Dispatch<React.SetStateAction<Room>>;
   State: any;
+  Mushrooms: any;
   isAlready: boolean;
   setIsAlready: React.Dispatch<React.SetStateAction<boolean>>;
   navigate: NavigateFunction;
   bottomDisp: string;
   setBottomDisp: React.Dispatch<React.SetStateAction<string>>;
+  selected: number;
+  setSelected: React.Dispatch<React.SetStateAction<number>>;
+  hand: number[];
+  setHand: React.Dispatch<React.SetStateAction<number[]>>;
 }>({
   player: {} as Player,
   setPlayer: () => {},
   roomData: {} as Room,
   setRoomData: () => {},
   State: null,
+  Mushrooms: null,
   isAlready: false,
   setIsAlready: () => {},
   navigate: () => {},
   bottomDisp: "Dasboard",
   setBottomDisp: () => {},
+  selected: -1,
+  setSelected: () => {},
+  hand: [],
+  setHand: () => {},
 });
 
 const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [selected, setSelected] = useState<number>(-1);
+  const [hand, setHand] = useState<number[]>([]);
+
   const [bottomDisp, setBottomDisp] = useState<string>("Dashboard");
   const [gamestate, setGamestate] = useState<any>(null);
+  const [mushrooms, setMushrooms] = useState<any>(null);
   const [isAlready, setIsAlready] = useState<boolean>(false);
 
   const [player, setPlayer] = useState<Player>({
     id: "",
     name: "",
-    score: 0,
+    hp: 0,
     hand: [],
     ready: false,
+    play: 0,
   });
 
   const [roomData, setRoomData] = useState<Room>({
@@ -69,9 +81,8 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     // console.log("GAMESTATE-RENDER");
-    if (gamestate === null) {
-      handlers.GetGamestate(setGamestate);
-    }
+    handlers.GetGamestate(setGamestate);
+    handlers.GetMushrooms(setMushrooms);
   }, []);
 
   useEffect(() => {
@@ -114,6 +125,16 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [roomData]);
 
+  useEffect(() => {
+    if (player.id !== "") {
+      setHand(player.hand);
+      if (player.play !== -1) {
+        setSelected(player.play);
+        setHand((hand) => hand.filter((num) => num !== player.play));
+      }
+    }
+  }, [player]);
+
   // useEffect(() => {
   //   const id = GetID();
   //   if (id !== "none") {
@@ -121,8 +142,8 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   //   }
   // }, [location]);)
 
-  if (gamestate === null) {
-    return <div>Loading gamestate...</div>;
+  if (gamestate === null || mushrooms === null) {
+    return <div>Loading gamestates...</div>;
   }
 
   if (location.pathname !== "/" && (player.id === "" || roomData.id === "")) {
@@ -132,6 +153,7 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <GamestateContext.Provider
       value={{
+        Mushrooms: mushrooms,
         State: gamestate,
         player: player,
         setPlayer: setPlayer,
@@ -140,8 +162,12 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
         isAlready: isAlready,
         setIsAlready: setIsAlready,
         navigate: navigate,
-        bottomDisp,
-        setBottomDisp,
+        bottomDisp: bottomDisp,
+        setBottomDisp: setBottomDisp,
+        selected: selected,
+        setSelected: setSelected,
+        hand: hand,
+        setHand: setHand,
       }}
     >
       {children}
