@@ -3,13 +3,17 @@ import * as images from "../assets/images/images";
 import { WebsocketContext } from "../modules/websocket_provider";
 import { GamestateContext } from "../modules/gamestate_provider";
 import { actions, getTotalDamge, getX, getY } from "../utils/utils";
+import { GameStates } from "../utils/struct";
 const Deck = () => {
   const { conn } = useContext(WebsocketContext);
 
-  const { player, roomData, State, Mushrooms } = useContext(GamestateContext);
-
-  // const data = roomData.deck;
-  const data = [[1, 2, 3], [4, 5, 6, 7, 8], [8, 9], [10]];
+  const {
+    gameData: { player, roomData },
+    gameConstants: { State, Mushrooms },
+    setGameStates,
+  } = useContext(GamestateContext);
+  const data = roomData.deck;
+  // const data = [[1, 2, 3], [4, 5, 6, 7, 8], [8, 9], [10]];
 
   const [hasChosen, setHasChosen] = useState(false);
   const [choice, setChoice] = useState(0);
@@ -42,13 +46,27 @@ const Deck = () => {
 
   const checkLog = (row: number) => {
     setIsChecking(row);
+    setGameStates((prevState: GameStates) => ({
+      ...prevState,
+      bottomDisp: "Blank",
+      handToggle: false,
+    }));
+  };
+
+  const checkLogOff = () => {
+    setIsChecking(-1);
+    setGameStates((prevState: GameStates) => ({
+      ...prevState,
+      bottomDisp: "Dashboard",
+      handToggle: true,
+    }));
   };
 
   if (isChecking !== -1 && !isChooser) {
     let row = data[isChecking];
     return (
       <>
-        <div onClick={() => setIsChecking(-1)}>
+        <div onClick={checkLogOff}>
           <div className="-mt-[3rem] mb-[2rem] text-[.8rem]">
             {"(Press anywhere to go back)"}
           </div>

@@ -1,139 +1,162 @@
 import React, { useState, createContext, useEffect } from "react";
 import { GetID } from "../utils/utils";
-import { Player, Room } from "../utils/struct";
+import {
+  GameData,
+  GameConstants,
+  GameStates,
+  Player,
+  Room,
+} from "../utils/struct";
 import * as handlers from "../utils/handlers";
 import { useNavigate, useLocation, NavigateFunction } from "react-router-dom";
 
 export const GamestateContext = createContext<{
-  player: Player;
-  setPlayer: React.Dispatch<React.SetStateAction<Player>>;
-  roomData: Room;
-  setRoomData: React.Dispatch<React.SetStateAction<Room>>;
-  State: any;
-  Mushrooms: any;
-  isAlready: boolean;
-  setIsAlready: React.Dispatch<React.SetStateAction<boolean>>;
   navigate: NavigateFunction;
-  bottomDisp: string;
-  setBottomDisp: React.Dispatch<React.SetStateAction<string>>;
-  selected: number;
-  setSelected: React.Dispatch<React.SetStateAction<number>>;
-  hand: number[];
-  setHand: React.Dispatch<React.SetStateAction<number[]>>;
+  gameConstants: GameConstants;
+  gameStates: GameStates;
+  gameData: GameData;
+  setGameData: React.Dispatch<React.SetStateAction<GameData>>;
+  setGameStates: React.Dispatch<React.SetStateAction<GameStates>>;
 }>({
-  player: {} as Player,
-  setPlayer: () => {},
-  roomData: {} as Room,
-  setRoomData: () => {},
-  State: null,
-  Mushrooms: null,
-  isAlready: false,
-  setIsAlready: () => {},
   navigate: () => {},
-  bottomDisp: "Dasboard",
-  setBottomDisp: () => {},
-  selected: -1,
-  setSelected: () => {},
-  hand: [],
-  setHand: () => {},
+  gameConstants: { State: null, Mushrooms: null },
+  gameStates: {
+    isAlready: false,
+    handToggle: true,
+    showPlaying: false,
+    bottomDisp: "Dashboard",
+    currentDeck: [],
+    hand: [],
+    selected: -1,
+  },
+  setGameStates: () => {},
+  gameData: {
+    player: {} as Player,
+    roomData: {} as Room,
+  },
+  setGameData: () => {},
 });
 
 const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selected, setSelected] = useState<number>(-1);
-  const [hand, setHand] = useState<number[]>([]);
+  // const [selected, setSelected] = useState<number>(-1);
+  // const [hand, setHand] = useState<number[]>([]);
 
-  const [bottomDisp, setBottomDisp] = useState<string>("Dashboard");
-  const [gamestate, setGamestate] = useState<any>(null);
-  const [mushrooms, setMushrooms] = useState<any>(null);
-  const [isAlready, setIsAlready] = useState<boolean>(false);
-
-  const [player, setPlayer] = useState<Player>({
-    id: "",
-    name: "",
-    hp: 0,
-    hand: [],
-    ready: false,
-    play: 0,
+  const [gameConstants, setGameConstants] = useState<GameConstants>({
+    State: null,
+    Mushrooms: null,
   });
 
-  const [roomData, setRoomData] = useState<Room>({
-    id: "",
-    state: "",
-    players: [],
-    deck: [],
-    chooser: "",
-    played: null,
+  const [gameStates, setGameStates] = useState<GameStates>({
+    isAlready: false,
+    handToggle: true,
+    showPlaying: false,
+    bottomDisp: "Dashboard",
+    currentDeck: [],
+    hand: [],
+    selected: -1,
+  });
+
+  const [gameData, setGameData] = useState<GameData>({
+    player: {
+      id: "",
+      name: "",
+      hp: 0,
+      hand: [],
+      ready: false,
+      play: 0,
+    },
+    roomData: {
+      id: "",
+      state: "",
+      players: [],
+      deck: [],
+      chooser: "",
+      played: null,
+    },
   });
 
   const id = GetID();
 
   function getData(id: string) {
-    handlers.GetPlayer(id, setPlayer);
-    handlers.GetRoom(id, setRoomData);
+    handlers.GetPlayer(id, setGameData);
+    handlers.GetRoom(id, setGameData);
   }
 
   function redirect(des: string) {
+    if (location.pathname === "/test") return;
     if (location.pathname === des) return;
     navigate(des);
   }
 
   useEffect(() => {
-    // console.log("GAMESTATE-RENDER");
-    handlers.GetGamestate(setGamestate);
-    handlers.GetMushrooms(setMushrooms);
+    handlers.GetMushrooms(setGameConstants);
+    handlers.GetStates(setGameConstants);
   }, []);
 
   useEffect(() => {
+    let State = gameConstants.State;
     if (id == "none") {
       redirect("/");
-      setBottomDisp("Dashboard");
+      setGameStates((prevState: GameStates) => ({
+        ...prevState,
+        bottomDisp: "Dashboard",
+      }));
       return () => {};
     }
 
-    if (gamestate !== null) {
+    if (State !== null) {
       getData(id);
     }
-  }, [gamestate, location]);
+  }, [gameConstants, location]);
 
   // REDIRECT!
   useEffect(() => {
+    let roomData = gameData.roomData;
     if (roomData.id !== "") {
+      let State = gameConstants.State;
       if (roomData.id == "ERROR") {
-        navigate("/");
+        redirect("/");
         return () => {};
       }
 
       switch (roomData.state) {
-        case gamestate.INIT:
+        case State.INIT:
           redirect("/lobby");
           break;
 
-        case gamestate.CHOOSE_CARD:
+        case State.CHOOSE_CARD:
           redirect("/game");
           break;
 
-        case gamestate.CHOOOSE_ROW:
+        case State.CHOOOSE_ROW:
           redirect("/game");
           break;
 
-        case gamestate.ROUND_END:
+        case State.ROUND_END:
           redirect("/roundend");
           break;
       }
     }
-  }, [roomData]);
+  }, [gameData.roomData]);
 
   useEffect(() => {
+    let player = gameData.player;
     if (player.id !== "") {
-      setHand(player.hand);
+      setGameStates((prevState: GameStates) => ({
+        ...prevState,
+        hand: player.hand,
+      }));
       if (player.play !== -1) {
-        setSelected(player.play);
-        setHand((hand) => hand.filter((num) => num !== player.play));
+        setGameStates((prevState: GameStates) => ({
+          ...prevState,
+          selected: player.play,
+          hand: player.hand.filter((num) => num !== player.play),
+        }));
       }
     }
-  }, [player]);
+  }, [gameData.player]);
 
   // useEffect(() => {
   //   const id = GetID();
@@ -142,32 +165,26 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   //   }
   // }, [location]);)
 
-  if (gamestate === null || mushrooms === null) {
-    return <div>Loading gamestates...</div>;
+  if (gameConstants.State === null || gameConstants.State === null) {
+    if (location.pathname !== "/test") return <div>Loading gamestates...</div>;
   }
 
-  if (location.pathname !== "/" && (player.id === "" || roomData.id === "")) {
-    return <div>Loading data...</div>;
+  if (
+    location.pathname !== "/" &&
+    (gameData.player.id === "" || gameData.roomData.id === "")
+  ) {
+    if (location.pathname !== "/test") return <div>Loading data...</div>;
   }
 
   return (
     <GamestateContext.Provider
       value={{
-        Mushrooms: mushrooms,
-        State: gamestate,
-        player: player,
-        setPlayer: setPlayer,
-        roomData: roomData,
-        setRoomData: setRoomData,
-        isAlready: isAlready,
-        setIsAlready: setIsAlready,
         navigate: navigate,
-        bottomDisp: bottomDisp,
-        setBottomDisp: setBottomDisp,
-        selected: selected,
-        setSelected: setSelected,
-        hand: hand,
-        setHand: setHand,
+        gameConstants: gameConstants,
+        gameStates: gameStates,
+        setGameStates: setGameStates,
+        gameData: gameData,
+        setGameData: setGameData,
       }}
     >
       {children}

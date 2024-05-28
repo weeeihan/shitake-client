@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import * as images from "../assets/images/images";
-import useStore from "../utils/store";
 import { Played } from "../utils/struct";
 
 import { GamestateContext } from "../modules/gamestate_provider";

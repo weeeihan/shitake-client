@@ -51,3 +51,24 @@ export type Played = {
   name: string
   card: number
 }
+
+
+export type GameConstants = {
+  State: any;
+  Mushrooms: any;
+};
+
+export type GameStates = {
+  isAlready: boolean;
+  handToggle: boolean;
+  showPlaying: boolean;
+  bottomDisp: string;
+  currentDeck: number[][];
+  hand: number[];
+  selected: number;
+};
+
+export type GameData = {
+  player: Player;
+  roomData: Room;
+};

@@ -1,6 +1,6 @@
 import { PlayerDisplay } from "./struct";
 const isDebug = true;
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function SortPlayers (players: PlayerDisplay[]) {
   players.sort((a: any, b: any) => {
@@ -10,18 +10,18 @@ export function SortPlayers (players: PlayerDisplay[]) {
 }
 
 
-export function GetWinner (players: PlayerDisplay[]) {
-  const bestScore = players[0].score;
-  var winner = players.filter((p) => p.score == bestScore)
-  if (winner.length == 1){
-    return winner[0].name
-  }
-  var winners : string = ""
-  for (const w of winner) {
-    winners += w.name + " and "
-  }
-  return winners.slice(0, -4)
-}
+// export function GetWinner (players: PlayerDisplay[]) {
+//   const bestScore = players[0].score;
+//   var winner = players.filter((p) => p.score == bestScore)
+//   if (winner.length == 1){
+//     return winner[0].name
+//   }
+//   var winners : string = ""
+//   for (const w of winner) {
+//     winners += w.name + " and "
+//   }
+//   return winners.slice(0, -4)
+// }
 
 export function hasWhiteSpace(s: string) {
   return /\s/g.test(s);
@@ -122,4 +122,25 @@ export function getTotalDamge(row: number[], Mushroom: any) {
     total += Mushroom[card].damage
   }
   return total
+}
+
+ 
+export function useInterval(callback: any, delay: any) {
+  const savedCallback = useRef<any>();
+ 
+  // Remember the latest callback.
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+ 
+  // Set up the interval.
+  useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    }
+    if (delay !== null) {
+      let id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }
+  }, [delay]);
 }

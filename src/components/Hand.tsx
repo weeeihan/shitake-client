@@ -27,7 +27,9 @@ import {
 import { WebsocketContext } from "../modules/websocket_provider";
 
 const Selection = ({ selected }: { selected: number }) => {
-  const { Mushrooms } = useContext(GamestateContext);
+  const {
+    gameConstants: { Mushrooms },
+  } = useContext(GamestateContext);
   const { setNodeRef } = useDroppable({
     id: "selection",
   });
@@ -50,20 +52,14 @@ const Selection = ({ selected }: { selected: number }) => {
   );
 };
 
-const NumRow = ({
-  numballs,
-  activeId,
-}: {
-  numballs: number[];
-  activeId: number;
-}) => {
+const NumRow = ({ numballs }: { numballs: number[] }) => {
   return (
     <div className="flex flex-row w-screen  h-[5rem] mt-10 overflow-x-scroll scrollbar">
       <SortableContext
         items={numballs}
         strategy={horizontalListSortingStrategy}
       >
-        {numballs.map((num: number, index: number) => (
+        {numballs.map((num: number) => (
           <Numball key={num} num={num} />
         ))}
       </SortableContext>
@@ -95,8 +91,11 @@ const Numball = ({ num }: { num: number }) => {
 const Hand = () => {
   const [activeId, setActiveId] = useState(-1);
   const { conn } = useContext(WebsocketContext);
-  const { State, hand, setHand, selected, setSelected } =
-    useContext(GamestateContext);
+  const {
+    gameConstants: { State },
+    gameStates: { hand, selected },
+    setGameStates,
+  } = useContext(GamestateContext);
 
   const playCard = (card: number) => {
     console.log("Played card " + card);
@@ -121,26 +120,34 @@ const Hand = () => {
     if (over.id === "selection") {
       if (selected !== -1) {
         const selPos = hand.indexOf(active.id);
-        setHand((hand) => [
-          ...hand.slice(0, selPos),
-          selected,
-          ...hand.slice(selPos),
-        ]);
+        setGameStates((prevState) => ({
+          ...prevState,
+          hand: [
+            ...prevState.hand.slice(0, selPos),
+            selected,
+            ...prevState.hand.slice(selPos),
+          ],
+        }));
       }
 
-      setHand((hand) => hand.filter((num) => num !== active.id));
-      setSelected(active.id);
+      setGameStates((prevState) => ({
+        ...prevState,
+        selected: active.id,
+        hand: prevState.hand.filter((num) => num !== active.id),
+      }));
 
       playCard(active.id);
       return;
     }
 
-    setHand((hand) => {
-      console.log("Not");
-      const originalPos = hand.indexOf(active.id);
-      const newPos = hand.indexOf(over.id);
-      return arrayMove(hand, originalPos, newPos);
-    });
+    setGameStates((prevState) => ({
+      ...prevState,
+      hand: arrayMove(
+        prevState.hand,
+        prevState.hand.indexOf(active.id),
+        prevState.hand.indexOf(over.id)
+      ),
+    }));
 
     setActiveId(-1);
   };
@@ -169,7 +176,7 @@ const Hand = () => {
         onDragOver={handleDragOver}
       >
         <Selection selected={selected} />
-        <NumRow numballs={hand} activeId={activeId} />
+        <NumRow numballs={hand} />
         <DragOverlay>
           {activeId !== -1 ? <Numball num={activeId} /> : null}
         </DragOverlay>

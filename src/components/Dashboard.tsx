@@ -3,7 +3,9 @@ import React, { useContext } from "react";
 import { GamestateContext } from "../modules/gamestate_provider";
 
 const Dashboard = () => {
-  const { roomData } = useContext(GamestateContext);
+  const {
+    gameData: { roomData },
+  } = useContext(GamestateContext);
 
   return (
     <>

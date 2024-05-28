@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import Deck from "../components/Deck";
 import Dashboard from "../components/Dashboard";
-import Scoreboard from "../components/Scoreboard";
+// import Scoreboard from "../components/Scoreboard";
 import Winner from "../components/Winner";
 import { GamestateContext } from "../modules/gamestate_provider";
 import * as utils from "../utils/utils";
@@ -30,7 +30,7 @@ const Gameend = () => {
     <div>
       <Deck />
       <Winner winner={winner} />
-      <Scoreboard players={players} />
+      {/* <Scoreboard players={players} /> */}
       <div>
         {playAgain ? (
           " Waiting for other players"

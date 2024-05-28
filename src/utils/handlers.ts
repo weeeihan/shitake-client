@@ -3,28 +3,40 @@ import {  NavigateFunction } from "react-router-dom";
 import { CHECK_PLAYER_API, CONNECT_API, CREATE_ROOM_API, GET_MUSHROOM_API, GET_PLAYER_API, GET_ROOM_API, GET_STATES_API, JOIN_ROOM_API, LEAVE_ROOM_API } from "./api";
 import { resOk } from "./utils";
 import React, { useContext } from "react";
-import { Room, Player } from "./struct";
+import { Room, Player, GameData } from "./struct";
 
-export async function GetGamestate(setGamestate: React.Dispatch<React.SetStateAction<any>>) {
+export async function GetStates(setGameConstants: React.Dispatch<React.SetStateAction<any>>) {
   const res = await axios.get(GET_STATES_API);
   if (resOk(res)) {
-    setGamestate(res.data);
-    // console.log(res.data)
+    setGameConstants((prevState: any) => ({
+      ...prevState,
+      State: res.data,
+      // Mushrooms: prevState.Mushrooms
+    }));
   }
 }
 
-export async function GetMushrooms(setMushrooms: React.Dispatch<React.SetStateAction<any>>) {
+export async function GetMushrooms(setGameConstants: React.Dispatch<React.SetStateAction<any>>) {
   const res = await axios.get(GET_MUSHROOM_API);
   if (resOk(res)) {
-    setMushrooms(res.data);
+    setGameConstants((prevState: any) => ({
+      ...prevState,
+      // State: prevState.State,
+      Mushrooms: res.data
+    }));
   }
 }
 
-export async function GetPlayer(playerID: string, setPlayer: React.Dispatch<React.SetStateAction<Player>>) {  
+
+
+export async function GetPlayer(playerID: string, setGameData: React.Dispatch<React.SetStateAction<GameData>>) {  
   try {
     const res = await axios.get(GET_PLAYER_API(playerID))
     if (resOk(res)) {
-      setPlayer(res.data)
+      setGameData((prevState: GameData) => ({
+        ...prevState,
+        player: res.data
+      }))
       // if (loc == "/") {
       //   navigate("/lobby")
       // }
@@ -36,12 +48,15 @@ export async function GetPlayer(playerID: string, setPlayer: React.Dispatch<Reac
     localStorage.clear()
   }
 }
-export async function GetRoom(playerID: string,setRoom:React.Dispatch<React.SetStateAction<Room>>) {
+export async function GetRoom(playerID: string, setGameData: React.Dispatch<React.SetStateAction<GameData>>) {
   try {
     const roomID = playerID.slice(-4);
     const res = await axios.get(GET_ROOM_API(roomID));
     if (resOk(res)) {
-      setRoom(res.data)
+      setGameData((prevState: GameData) => ({
+        ...prevState,
+        roomData: res.data
+      }))
       // if (loc == "/") {
         // if (res.data.state == "INIT") {
         //   navigate("/lobby")
@@ -51,16 +66,22 @@ export async function GetRoom(playerID: string,setRoom:React.Dispatch<React.SetS
       // }
     }
   } catch (error) {
-    setRoom({id: "ERROR", state: "", players: [], deck: [], chooser: "", played: null})
+    setGameData((prevState: GameData) => ({
+      ...prevState,
+      roomData: {id: "ERROR", state: "", players: [], deck: [], chooser: "", played: null}
+    }))
     localStorage.clear()
   }
   
 }
-export async function JoinRoom(name: string, roomID: string, setPlayer: React.Dispatch<React.SetStateAction<Player>>, navigate: NavigateFunction) {
+export async function JoinRoom(name: string, roomID: string, setGameData: React.Dispatch<React.SetStateAction<GameData>>, navigate: NavigateFunction) {
   try {
     const res = await axios.get(JOIN_ROOM_API(name, roomID))
     if (resOk(res)) {
-      setPlayer(res.data)
+      setGameData((prevState: GameData) => ({
+        ...prevState,
+        player: res.data
+      }))
       localStorage.setItem("id",res.data.id)
       navigate("/lobby")
     }
@@ -68,12 +89,15 @@ export async function JoinRoom(name: string, roomID: string, setPlayer: React.Di
     alert(error.response.data.Message)
   }
 }
-export async function CreateRoom(name: string,setPlayer: React.Dispatch<React.SetStateAction<Player>>, navigate: NavigateFunction) {
+export async function CreateRoom(name: string,setGameData: React.Dispatch<React.SetStateAction<GameData>>, navigate: NavigateFunction) {
 
   try {
     const res = await axios.get(CREATE_ROOM_API(name))
     if (resOk(res)) {
-      setPlayer(res.data)
+      setGameData((prevState: GameData) => ({
+        ...prevState,
+        player: res.data
+      }))
       localStorage.setItem("id",res.data.id)
       navigate("/lobby")
     }
