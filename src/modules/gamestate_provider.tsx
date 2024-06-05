@@ -6,6 +6,7 @@ import {
   GameStates,
   Player,
   Room,
+  DamageReport,
 } from "../utils/struct";
 import * as handlers from "../utils/handlers";
 import { useNavigate, useLocation, NavigateFunction } from "react-router-dom";
@@ -28,6 +29,8 @@ export const GamestateContext = createContext<{
     currentDeck: [],
     hand: [],
     selected: -1,
+    played: [],
+    prevPlayed: {},
   },
   setGameStates: () => {},
   gameData: {
@@ -56,6 +59,8 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     currentDeck: [],
     hand: [],
     selected: -1,
+    played: [],
+    prevPlayed: {},
   });
 
   const [gameData, setGameData] = useState<GameData>({
@@ -66,6 +71,7 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
       hand: [],
       ready: false,
       play: 0,
+      damageReport: {} as DamageReport,
     },
     roomData: {
       id: "",
@@ -74,6 +80,7 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
       deck: [],
       chooser: "",
       played: null,
+      moves: [],
     },
   });
 
@@ -127,6 +134,10 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
           break;
 
         case State.CHOOSE_CARD:
+          setGameStates((prev: GameStates) => ({
+            ...prev,
+            currentDeck: roomData.deck,
+          }));
           redirect("/game");
           break;
 
@@ -136,6 +147,10 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
 
         case State.ROUND_END:
           redirect("/roundend");
+          break;
+
+        case State.PROCESS:
+          console.log("Processing");
           break;
       }
     }

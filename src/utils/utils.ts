@@ -99,21 +99,15 @@ export function useCountdown(seconds: number, onEnd: () => any) {
   return remaining;
 }
 
-export function getY(weight: number) {
-  const top = -80
+const randomHundred = [51, 9, 98, 8, 84, 46, 28, 22, 7, 86, 80, 67, 74, 49, 82, 55, 16, 11, 87, 26, 71, 39, 85, 53, 63, 25, 62, 50, 1, 38, 99, 34, 35, 24, 33, 76, 27, 43, 20, 90, 91, 79, 58, 19, 15, 10, 45, 65, 56, 41, 30, 47, 17, 42, 44, 75, 2, 73, 60, 14, 31, 89, 37, 40, 70, 96, 95, 36, 54, 48, 97, 13, 3, 52, 68, 83, 57, 81, 23, 32, 21, 64, 18, 4, 92, 29, 72, 0, 59, 66, 77, 94, 12, 5, 78, 69, 88, 93, 61, 6]
 
-  if (weight < 10) {
-    return top + 2
-  }
-  
-  return top + (Math.floor(weight/10)*2)
+export function getY(weight: number) {
+  // console.log((randomHundred[weight]/2.5 ))
+  return (randomHundred[weight]/2.5 ) - 30 
 }
 
 export function getX(weight: number) {
-  if (weight < 10) {
-    return 0
-  }
-  return Math.floor(weight%10)*3
+  return (randomHundred[weight]/3.5 - 5) 
 }
 
 export function getTotalDamge(row: number[], Mushroom: any) {
@@ -143,4 +137,51 @@ export function useInterval(callback: any, delay: any) {
       return () => clearInterval(id);
     }
   }, [delay]);
+}
+
+
+export function play(played: any, deck: number[][], choseRow?: number) : number[][]{
+  console.log("RERUN")
+  let sortable = []
+  let start = 0
+  for (var player in played) {
+    sortable.push([player, played[player]])
+  }
+  sortable.sort(function(a,b) {
+    return a[1] - b[1]
+  })
+  
+  if (choseRow !== undefined) {
+    sortable[0].push(choseRow, 1)
+    start++
+  }
+
+  let isFound = false
+
+  for (var i = start; i < sortable.length; i++) {
+    let spore = sortable[i][1]
+    let optimal = 0;
+    let least = 10000;
+    for (let j = 0; j < deck.length; j++) {
+      let row = deck[j];
+  
+      if (row[row.length - 1] < spore && spore - row[row.length - 1] < least) {
+        least = spore - row[row.length - 1];
+        optimal = j;
+        isFound = true
+      }
+    }
+    if (deck[optimal].length === 5) {
+      deck[optimal] = [spore];
+      sortable[i].push(...[optimal, 5])
+      continue
+    }
+
+    sortable[i].push(...[optimal, deck[optimal].length])
+    deck[optimal].push(spore);
+    
+  }
+
+  return sortable 
+  // let temp = [...data];
 }

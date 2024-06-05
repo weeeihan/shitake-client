@@ -14,7 +14,7 @@ const Game = () => {
   const nodeRef = useRef(null);
   const {
     setGameStates,
-    gameStates: { bottomDisp, handToggle, showPlaying },
+    gameStates: { bottomDisp, handToggle, showPlaying, prevPlayed },
     gameConstants: { State },
     gameData: { roomData },
   } = useContext(GamestateContext);
@@ -24,10 +24,7 @@ const Game = () => {
   const [startpos, setStartpos] = useState<number[]>([]);
 
   const debug = () => {
-    // console.log
-    // if (conn !== null) {
-    //   conn.send(actions(State.PING));
-    // }
+    console.log(roomData.played[roomData.chooser]);
   };
 
   const handleTouchStart = (event: any) => {
@@ -67,19 +64,12 @@ const Game = () => {
   };
 
   if (showPlaying) {
+    if (roomData.moves.length === 0) {
+      return <div>LOADING</div>;
+    }
     return (
       <div>
-        <div>Show playing!</div>
-        <button
-          onClick={() =>
-            setGameStates((prevState: GameStates) => ({
-              ...prevState,
-              showPlaying: false,
-            }))
-          }
-        >
-          Skip
-        </button>
+        <Playing />
       </div>
     );
   }
@@ -87,7 +77,7 @@ const Game = () => {
   // DISABLE USER TO CHECK HAND IF NUMBER OF HAND = 0
   return (
     <>
-      <div className="flex flex-col justify-center mt-24">
+      <div className="flex flex-col justify-center">
         <Deck />
       </div>
       <div className="flex flex-col items-center">
@@ -109,6 +99,7 @@ const Game = () => {
         {bottomDisp === "Dashboard" && <Dashboard />}
         {/* {bottomDisp === "Playing" && <Playing />} */}
         {countDown !== 0 && <div>{countDown}</div>}
+        {bottomDisp === "ChooseRow" && <div>Chossing row!</div>}
         <button onClick={debug}>Debug</button>
         <button onClick={clear}>Clear</button>
       </div>

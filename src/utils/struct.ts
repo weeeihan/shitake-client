@@ -5,7 +5,7 @@ export type Room = {
   deck: number[][]
   chooser: string
   played: any 
-
+  moves: string[][]
 }
 
 
@@ -45,7 +45,15 @@ export type Player = {
   hand: number[]
   ready: boolean 
   play: number
+  damageReport: DamageReport
 } 
+
+export type DamageReport = {
+  mushrooms: number[]
+  damage: number
+  roundMushrooms: number[]
+  roundDamage: number
+}
 
 export type Played = {
   name: string
@@ -66,6 +74,8 @@ export type GameStates = {
   currentDeck: number[][];
   hand: number[];
   selected: number;
+  played: number[][];
+  prevPlayed: any;
 };
 
 export type GameData = {

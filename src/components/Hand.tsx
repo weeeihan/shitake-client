@@ -35,8 +35,11 @@ const Selection = ({ selected }: { selected: number }) => {
   });
   if (selected == -1) {
     return (
-      <div ref={setNodeRef} className="w-[25rem] h-[10rem] border">
-        <div className="align-left">Toss a spore!</div>
+      <div
+        ref={setNodeRef}
+        className="w-[25rem] h-[10rem] border flex flex-col justify-center"
+      >
+        <div className="align-left ">Toss a spore!</div>
       </div>
     );
   }

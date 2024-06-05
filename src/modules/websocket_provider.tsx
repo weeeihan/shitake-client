@@ -6,7 +6,7 @@ import React, {
   useRef,
 } from "react";
 import { GamestateContext } from "./gamestate_provider";
-import { Message } from "../utils/struct";
+import { GameStates, Message } from "../utils/struct";
 import * as handlers from "../utils/handlers";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as utils from "../utils/utils";
@@ -29,6 +29,7 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [conn, setConn] = useState<Conn>(null);
   const connRef = useRef<Conn>(null);
   const {
+    gameData: { roomData },
     setGameData,
     setGameStates,
     gameConstants: { State },
@@ -50,7 +51,6 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
       (!connRef.current || connRef.current.readyState === WebSocket.CLOSED) &&
       location.pathname !== "/test"
     ) {
-      // console.log("DID I TRY?");
       handlers.ConnectToGame(id, setConn, connRef);
     }
 
@@ -106,6 +106,11 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
         if (m.state == State.CHOOSE_CARD) {
           // navigate("/game");
           fetchData();
+          // setGameStates((prevState: GameStates) => ({
+          //   ...prevState,
+          //   handToggle: true,
+          //   bottomDisp: "Dashboard",
+          // }));
         }
 
         // GAME PHASE
@@ -113,17 +118,31 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
           setCountDown(parseInt(m.remark));
         }
 
+        if (m.state == State.CALCULATING) {
+          // setGameStates((prevState: GameStates) => ({
+          //   ...prevState,
+          //   currentDeck: roomData.deck,
+          // }));
+        }
+
         if (m.state == State.PROCESS) {
           fetchData();
+          console.log("SHOWING PLAY:");
           setGameStates((prev) => ({
             ...prev,
             showPlaying: true,
-            bottomDisp: "Dashboard",
+            selected: -1,
           }));
         }
 
         if (m.state == State.CHOOSE_ROW) {
           fetchData();
+          setGameStates((prev) => ({
+            ...prev,
+            handToggle: false,
+            bottomDisp: "Blank",
+          }));
+          // Hide hands
         }
 
         if (m.state == State.ROW_SELECTED) {
