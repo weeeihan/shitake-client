@@ -171,7 +171,7 @@ const Deck = () => {
             <div
               key={rowNumber}
               className="inline-flex -space-x items-center cursor-pointer"
-              onClick={(e) => handleRowClick(e, rowNumber)}
+              // onClick={(e) => handleRowClick(e, rowNumber)}
             >
               {row.map((card: number, cardNumber: number) => (
                 <div key={cardNumber} className="relative ">
@@ -181,6 +181,7 @@ const Deck = () => {
                       src={images.mush2}
                       alt="Mushroom"
                       style={{ marginTop: getY(card), marginLeft: getX(card) }}
+                      onClick={(e) => handleRowClick(e, rowNumber)}
                     />
                   </div>
                   <div className=" ">
@@ -188,6 +189,7 @@ const Deck = () => {
                       src={images.hLog}
                       alt="Horizontal Log"
                       className="w-[18vw] h-[6vh] max-w-[100px] min-h-[50px]"
+                      onClick={(e) => handleRowClick(e, rowNumber)}
                     />
                   </div>
                 </div>

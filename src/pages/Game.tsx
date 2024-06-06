@@ -45,10 +45,6 @@ const Game = () => {
     }
   };
 
-  const clear = () => {
-    localStorage.clear();
-  };
-
   const handleShowHand = () => {
     if (bottomDisp == "Hand") {
       setGameStates((prevState: GameStates) => ({
@@ -100,8 +96,8 @@ const Game = () => {
         {/* {bottomDisp === "Playing" && <Playing />} */}
         {countDown !== 0 && <div>{countDown}</div>}
         {bottomDisp === "ChooseRow" && <div>Chossing row!</div>}
-        <button onClick={debug}>Debug</button>
-        <button onClick={clear}>Clear</button>
+        {/* <button onClick={debug}>Debug main game screen</button> */}
+        {/* <button onClick={clear}>Clear</button> */}
       </div>
     </>
   );

@@ -13,18 +13,33 @@ import {
   DragOverlay,
 } from "@dnd-kit/core";
 
+import Modal from "react-modal";
 import { GamestateContext } from "../modules/gamestate_provider";
 import { actions } from "../utils/utils";
+import Spore from "./Spore";
+import Mushroom from "./Mushroom";
 
 import { CSS } from "@dnd-kit/utilities";
 import {
   useSortable,
   SortableContext,
-  horizontalListSortingStrategy,
+  // horizontalListSortingStrategy,
   sortableKeyboardCoordinates,
   arrayMove,
+  rectSortingStrategy,
 } from "@dnd-kit/sortable";
 import { WebsocketContext } from "../modules/websocket_provider";
+
+const modalStyle = {
+  content: {
+    top: "50%",
+    left: "50%",
+    right: "10%",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+  },
+};
 
 const Selection = ({ selected }: { selected: number }) => {
   const {
@@ -55,43 +70,52 @@ const Selection = ({ selected }: { selected: number }) => {
   );
 };
 
-const NumRow = ({ numballs }: { numballs: number[] }) => {
+const NumRow = ({
+  numballs,
+  active,
+}: {
+  numballs: number[];
+  active: number;
+}) => {
   return (
-    <div className="flex flex-row w-screen  h-[5rem] mt-10 overflow-x-scroll scrollbar">
-      <SortableContext
-        items={numballs}
-        strategy={horizontalListSortingStrategy}
-      >
+    <div className="flex flex-wrap mt-4 w-screen gap-x-5 gap-y-5 items-center justify-center">
+      <SortableContext items={numballs} strategy={rectSortingStrategy}>
         {numballs.map((num: number) => (
-          <Numball key={num} num={num} />
+          <Numball key={num} num={num} active={active} />
         ))}
       </SortableContext>
     </div>
   );
 };
 
-const Numball = ({ num }: { num: number }) => {
+const Numball = ({ num, active }: { num: number; active: number }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: num });
+    useSortable({
+      id: num,
+    });
 
   const style = {
     transition,
     transform: CSS.Transform.toString(transform),
+    opacity: active === num ? 0 : 1,
   };
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className=" touch-none mx-5 w-11 h-11 shrink-0 grow-0 rounded-full bg-slate-300 "
+      className=" touch-none"
       {...listeners}
       {...attributes}
     >
-      {num}
+      <Spore n={num.toString()} />
     </div>
   );
 };
 
 const Hand = () => {
+  const [mush, setMush] = useState(-1);
+  // const showMush = mush == -1 ? false : true;
+  // const [showMush, setShowMush] = useState(false);
   const [activeId, setActiveId] = useState(-1);
   const { conn } = useContext(WebsocketContext);
   const {
@@ -101,7 +125,7 @@ const Hand = () => {
   } = useContext(GamestateContext);
 
   const playCard = (card: number) => {
-    console.log("Played card " + card);
+    // console.log("Played card " + card);
     if (conn != null && card != 0) {
       conn.send(actions(State.PLAY, card));
     }
@@ -115,10 +139,13 @@ const Hand = () => {
     })
   );
   const handleDragEnd = (event: any) => {
-    const { active, over } = event;
-    console.log("DRAG END");
+    // console.log(event);
+    const { active, over, delta } = event;
+    // console.log("DRAG END");
 
-    if (active.id === over.id) return;
+    if (delta.x == 0 && delta.y == 0) setMush(active.id);
+
+    if (active.id === over.id) return setActiveId(-1);
 
     if (over.id === "selection") {
       if (selected !== -1) {
@@ -155,33 +182,41 @@ const Hand = () => {
     setActiveId(-1);
   };
 
-  const handleDragOver = (event: any) => {
-    const { active, over } = event;
-    if (over != null) {
-      if (over.id === "selection") {
-        console.log("Selected " + active.id);
-      }
-    }
-  };
+  // const handleDragOver = (event: any) => {
+  //   const { active, over } = event;
+  //   if (over != null) {
+  //     if (over.id === "selection") {
+  //       // console.log("Selected " + active.id);
+  //     }
+  //   }
+  // };
 
   const handleDragStart = (event: any) => {
     setActiveId(event.active.id);
-    console.log("DRAG START");
+    // console.log("DRAG START");
   };
 
   return (
     <>
+      <Modal
+        isOpen={mush > 0}
+        appElement={document.getElementById("root") as HTMLElement}
+        style={modalStyle}
+      >
+        <Mushroom mush={mush} setMush={setMush} />
+      </Modal>
       <DndContext
         sensors={sensors}
         // collisionDetection={closestCenter}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
-        onDragOver={handleDragOver}
+        // onDragOver={handleDragOver}
       >
         <Selection selected={selected} />
-        <NumRow numballs={hand} />
+        <NumRow numballs={hand} active={activeId} />
         <DragOverlay>
-          {activeId !== -1 ? <Numball num={activeId} /> : null}
+          {/* bypass the opacity  */}
+          {activeId !== -1 ? <Numball num={activeId} active={-1} /> : null}
         </DragOverlay>
       </DndContext>
     </>
