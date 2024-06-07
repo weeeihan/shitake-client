@@ -153,7 +153,7 @@ const Lobby = () => {
             <span
               className="font-patrick tracking-wide absolute"
               style={{
-                marginLeft: index % 2 == 0 ? 100 : -100 - 8 * p.name.length,
+                marginLeft: index % 2 == 0 ? 120 : -120 - 8 * p.name.length,
               }}
             >
               {p.name}

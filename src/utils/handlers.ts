@@ -68,7 +68,7 @@ export async function GetRoom(playerID: string, setGameData: React.Dispatch<Reac
   } catch (error) {
     setGameData((prevState: GameData) => ({
       ...prevState,
-      roomData: {id: "ERROR", state: "", players: [], deck: [], chooser: "", played: null}
+      roomData: {id: "ERROR", state: "", players: [], deck: [], chooser: "", played: null, moves: []}
     }))
     localStorage.clear()
   }

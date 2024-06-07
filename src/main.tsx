@@ -11,7 +11,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <BrowserRouter>
       <GamestateProvider>
         <WebSocketProvider>
-          <div className="text-2xl font-reenie text-center mt-5">
+          <div className="text-2xl font-reenie text-center mt-10">
             Shitake by Han
           </div>
           <App />

@@ -16,7 +16,7 @@ const Game = () => {
     setGameStates,
     gameStates: { bottomDisp, handToggle, showPlaying, prevPlayed },
     gameConstants: { State },
-    gameData: { roomData },
+    gameData: { roomData, player },
   } = useContext(GamestateContext);
   const { countDown } = useContext(WebsocketContext);
   const showHide = bottomDisp == "Hand" ? "Hide Hand" : "Show Hand";
@@ -24,7 +24,7 @@ const Game = () => {
   const [startpos, setStartpos] = useState<number[]>([]);
 
   const debug = () => {
-    console.log(roomData.played[roomData.chooser]);
+    console.log(player);
   };
 
   const handleTouchStart = (event: any) => {
@@ -96,7 +96,7 @@ const Game = () => {
         {/* {bottomDisp === "Playing" && <Playing />} */}
         {countDown !== 0 && <div>{countDown}</div>}
         {bottomDisp === "ChooseRow" && <div>Chossing row!</div>}
-        {/* <button onClick={debug}>Debug main game screen</button> */}
+        <button onClick={debug}>Debug main game screen</button>
         {/* <button onClick={clear}>Clear</button> */}
       </div>
     </>
