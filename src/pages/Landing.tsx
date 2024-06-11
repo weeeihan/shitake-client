@@ -12,11 +12,14 @@ import * as handlers from "../utils/handlers";
 import { GamestateContext } from "../modules/gamestate_provider";
 
 const Landing = () => {
-  const { gameConstants } = useContext(GamestateContext);
+  const { refetchPlayer, constants } = useContext(GamestateContext);
   const debug = () => {
-    console.log(gameConstants);
+    // console.log(utils.GetID());
+    // localStorage.setItem("id", "1234");
+    console.log(constants);
+    // refetchPlayer();
   };
-  const { navigate, setGameData } = useContext(GamestateContext);
+  const { navigate } = useContext(GamestateContext);
   const [name, setName] = useState("");
   const [roomID, setRoomID] = useState("");
   const joinCreate: string = roomID === "" ? "Create Room" : "Join Room";
@@ -38,7 +41,7 @@ const Landing = () => {
       return;
     }
 
-    handlers.JoinRoom(name, roomID, setGameData, navigate);
+    handlers.JoinRoom(name, roomID, navigate);
   };
 
   const handleCreateRoom = (e: React.SyntheticEvent) => {
@@ -53,7 +56,7 @@ const Landing = () => {
       return;
     }
 
-    handlers.CreateRoom(name, setGameData, navigate);
+    handlers.CreateRoom(name, navigate);
   };
 
   const clearLocal = (e: React.SyntheticEvent) => {
@@ -86,6 +89,12 @@ const Landing = () => {
         }}
       >
         {joinCreate}
+      </button>
+      <button
+        className="font-klee bg-black text-white mt-10 rounded-lg py-2 px-2 drop-shadow-md"
+        onClick={debug}
+      >
+        debug
       </button>
       <button
         className="font-klee bg-black text-white mt-10 rounded-lg py-2 px-2 drop-shadow-md"

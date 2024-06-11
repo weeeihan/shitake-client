@@ -45,12 +45,13 @@ export type Player = {
   hand: number[]
   ready: boolean 
   play: number
+  end: number 
   damageReport: DamageReport
 } 
 
 export type DamageReport = {
   mushrooms: number[]
-  damage: number
+  damageTaken: number
   roundMushrooms: number[]
   roundDamage: number
 }
@@ -76,9 +77,10 @@ export type GameStates = {
   selected: number;
   played: number[][];
   prevPlayed: any;
+  showHideLoc: number[];
 };
 
 export type GameData = {
   player: Player;
-  roomData: Room;
+  room: Room;
 };

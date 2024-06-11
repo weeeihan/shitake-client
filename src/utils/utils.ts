@@ -1,4 +1,4 @@
-import { PlayerDisplay } from "./struct";
+import { Player, PlayerDisplay } from "./struct";
 const isDebug = true;
 import { useEffect, useRef, useState } from "react";
 
@@ -184,4 +184,22 @@ export function play(played: any, deck: number[][], choseRow?: number) : number[
 
   return sortable 
   // let temp = [...data];
+}
+
+export function getResults(players: PlayerDisplay[])  {
+  let survivors = []
+  let fallen = []
+  for (let i =0; i< players.length; i++) {
+    if (players[i].hp <= 0) {
+      fallen.push(players[i])
+      continue
+    }
+    survivors.push(players[i])
+  } 
+
+  survivors.sort((a:PlayerDisplay, b:PlayerDisplay) => b.hp - a.hp)
+  fallen.sort((a:PlayerDisplay, b:PlayerDisplay) => b.hp - a.hp)
+
+
+  return [survivors, fallen] 
 }

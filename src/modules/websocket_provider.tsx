@@ -6,7 +6,7 @@ import React, {
   useRef,
 } from "react";
 import { GamestateContext } from "./gamestate_provider";
-import { GameStates, Message } from "../utils/struct";
+import { Message } from "../utils/struct";
 import * as handlers from "../utils/handlers";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as utils from "../utils/utils";
@@ -29,20 +29,16 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [conn, setConn] = useState<Conn>(null);
   const connRef = useRef<Conn>(null);
   const {
-    gameData: { roomData },
-    setGameData,
+    gameData: { room },
     setGameStates,
     gameConstants: { State },
+    refetchData,
   } = useContext(GamestateContext);
 
+  // console.log(State);
   const id = utils.GetID();
-  // Fetch player and room data
-  function fetchData() {
-    handlers.GetPlayer(id, setGameData);
-    handlers.GetRoom(id, setGameData);
-  }
-  // let x = 1;
 
+  // connect to websocket
   useEffect(() => {
     // To ensure that there is only 1 connection
     if (
@@ -69,7 +65,7 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
 
         // Someone joined
         if (m.state == State.REGISTERED || m.state == State.PLAYER_LEFT) {
-          fetchData();
+          refetchData();
         }
 
         // Someone ready
@@ -78,7 +74,7 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
           m.state == State.UNREADY ||
           m.state == State.READY
         ) {
-          fetchData();
+          refetchData();
           if (m.state == State.ALREADY) {
             setGameStates((prev) => ({
               ...prev,
@@ -95,17 +91,19 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
 
         // Start game!
         if (m.state == State.START) {
-          // fetchData();
-          navigate("/game");
+          refetchData();
+          console.log("YO");
           setGameStates((prev) => ({
             ...prev,
             isAlready: false,
+            showPlaying: false,
           }));
+          navigate("/game");
         }
 
         if (m.state == State.CHOOSE_CARD) {
           // navigate("/game");
-          fetchData();
+          refetchData();
           // setGameStates((prevState: GameStates) => ({
           //   ...prevState,
           //   handToggle: true,
@@ -125,8 +123,12 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
           // }));
         }
 
-        if (m.state == State.PROCESS) {
-          fetchData();
+        if (
+          m.state == State.PROCESS ||
+          m.state == State.ROUND_END ||
+          m.state == State.GAME_END
+        ) {
+          refetchData();
           console.log("SHOWING PLAY:");
           setGameStates((prev) => ({
             ...prev,
@@ -136,7 +138,7 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
         }
 
         if (m.state == State.CHOOSE_ROW) {
-          fetchData();
+          refetchData();
           setGameStates((prev) => ({
             ...prev,
             handToggle: false,
@@ -146,21 +148,25 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
         }
 
         if (m.state == State.ROW_SELECTED) {
-          fetchData();
+          refetchData();
           setGameStates((prev) => ({
             ...prev,
             showPlaying: true,
           }));
         }
 
-        // ROUND END
-        if (m.state == State.ROUND_END) {
-          navigate("/roundend");
+        if (m.state == State.LOBBY) {
+          navigate("/lobby");
         }
 
-        if (m.state == State.GAME_END) {
-          navigate("/gameend");
-        }
+        // ROUND END
+        // if (m.state == State.ROUND_END) {
+        //   navigate("/roundend");
+        // }
+
+        // if (m.state == State.GAME_END) {
+        //   navigate("/gameend");
+        // }
       };
     }
   }, [conn]);

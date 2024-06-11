@@ -5,13 +5,18 @@ import { useInterval, getX, getY, actions, play } from "../utils/utils";
 
 import Spore from "../components/Spore";
 import { motion } from "framer-motion";
+import { WebsocketContext } from "../modules/websocket_provider";
 
 const Playing = () => {
   const {
+    navigate,
     setGameStates,
+    gameConstants: { State },
     gameData: { roomData },
     gameStates: { currentDeck, handToggle },
   } = useContext(GamestateContext);
+
+  const { conn } = useContext(WebsocketContext);
 
   // const copyDeck = [...roomData.deck];
   const moves = roomData.moves;
@@ -81,6 +86,20 @@ const Playing = () => {
       bottomDisp: "Dashboard",
       showPlaying: false,
     }));
+
+    if (roomData.state === State.ROUND_END) {
+      if (conn !== null) {
+        conn.send(actions(State.ROUND_END));
+        navigate("/roundend");
+      }
+    }
+
+    if (roomData.state === State.GAME_END) {
+      if (conn !== null) {
+        conn.send(actions(State.GAME_END));
+        navigate("/gameend");
+      }
+    }
   };
 
   const Farming = () => {

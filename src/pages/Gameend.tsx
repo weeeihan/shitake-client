@@ -1,49 +1,78 @@
-import React, { useContext, useState } from "react";
-import Deck from "../components/Deck";
-import Dashboard from "../components/Dashboard";
-// import Scoreboard from "../components/Scoreboard";
-import Winner from "../components/Winner";
+import { useContext, useState } from "react";
 import { GamestateContext } from "../modules/gamestate_provider";
-import * as utils from "../utils/utils";
+import { DamageReport, Player, PlayerDisplay } from "../utils/struct";
+import Mushcard from "../components/Mushcard";
 import { WebsocketContext } from "../modules/websocket_provider";
+import { actions, getResults } from "../utils/utils";
 
 const Gameend = () => {
-  const { roomData, State } = useContext(GamestateContext);
+  const {
+    gameConstants: { Mushrooms, State },
+    gameData: { roomData },
+  } = useContext(GamestateContext);
+
+  const [survivors, fallen] = getResults(roomData.players);
   const { conn } = useContext(WebsocketContext);
-  const [playAgain, setPlayAgain] = useState(false);
+  const [confirm, setConfirm] = useState(false);
+  // const {
+  //   gameData: { roomData, player },
+  // } = useContext(GamestateContext);
 
-  if (roomData.id == "" || State == null || conn == null)
-    return <div>Loading</div>;
-
-  const players = utils.SortPlayers(roomData.players);
-  const winner = utils.GetWinner(players);
-  const handlePlayAgain = () => {
-    setPlayAgain(true);
+  const handleReady = (e: React.SyntheticEvent) => {
+    e.preventDefault();
     if (conn !== null) {
-      conn.send(utils.actions(State.READY));
+      conn.send(actions(State.READY));
     }
   };
+
+  const handleBack = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    if (conn !== null) {
+      conn.send(actions(State.LEAVE));
+    }
+  };
+
   const debug = () => {
     console.log(roomData);
   };
+
+  if (confirm) {
+    return (
+      <div>
+        <div>Go back to lobby?</div>
+        <div>
+          <button onClick={handleBack}>Yes</button>
+        </div>
+        <div>
+          <button onClick={() => setConfirm(false)}>No</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <Deck />
-      <Winner winner={winner} />
-      {/* <Scoreboard players={players} /> */}
+      <div>Survivors</div>
       <div>
-        {playAgain ? (
-          " Waiting for other players"
-        ) : (
-          <button onClick={handlePlayAgain}> Play again </button>
-        )}
+        {survivors.map((p, i) => (
+          <div key={i}>{p.name}</div>
+        ))}
+      </div>
+      <hr />
+      <div>In memory of</div>
+      <div>
+        {fallen.map((p, i) => (
+          <div key={i}>{p.name}</div>
+        ))}
       </div>
       <div>
-        <button>Back to lobby</button>
+        <button onClick={handleReady}>Play again!</button>
       </div>
       <div>
-        <button onClick={debug}>debug</button>
+        <button onClick={() => setConfirm(true)}>Back to lobby </button>
       </div>
+      <div>Show stats?</div>
+      <button onClick={debug}>Debug game end</button>
     </div>
   );
 };

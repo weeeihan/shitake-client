@@ -14,7 +14,7 @@ import { PlayerDisplay } from "../utils/struct";
 const Lobby = () => {
   const navigate = useNavigate();
   const {
-    gameData: { player, roomData },
+    gameData: { player, room },
     gameStates: { isAlready },
     gameConstants: { State },
   } = useContext(GamestateContext);
@@ -29,9 +29,9 @@ const Lobby = () => {
   const handleLeaveRoom = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (conn !== null) {
+      conn.send(utils.actions(State.LEAVE));
       localStorage.clear();
       navigate("/");
-      conn.send(utils.actions(State.LEAVE));
     }
   };
 
@@ -47,16 +47,12 @@ const Lobby = () => {
   };
 
   const debug = () => {
-    // localStorage.clear();
-    console.log(conn);
-    // if (conn !== null) {
-    //   conn.send(utils.actions(State.PING));
-    // }
+    console.log(room);
   };
 
   const [over, setOver] = useState(false);
   const [onLeave, setOnLeave] = useState(false);
-  const players = utils.SortPlayers(roomData.players);
+  const players = utils.SortPlayers(room.players);
 
   const handleLeave = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -105,7 +101,7 @@ const Lobby = () => {
   return (
     <>
       <div className="text-7xl pl-7 py-10 text-center font-patrick tracking-superWide">
-        {roomData.id}
+        {room.id}
       </div>
       {isAlready ? (
         <div className=" text-center font-patrick tracking-wide ">
@@ -184,6 +180,9 @@ const Lobby = () => {
             className="relative -mt-[4.75rem] drop-shadow-lg cursor-pointer "
             onClick={handleLeave}
           />
+        </div>
+        <div>
+          <button onClick={debug}>Debug</button>
         </div>
       </div>
     </>

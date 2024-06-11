@@ -4,12 +4,12 @@ import { GamestateContext } from "../modules/gamestate_provider";
 
 const Dashboard = () => {
   const {
-    gameData: { roomData },
+    gameData: { room },
   } = useContext(GamestateContext);
 
   return (
     <>
-      {roomData.players.map((player, index) => (
+      {room.players.map((player, index) => (
         <div key={index}>
           <div>
             {player.name} {player.hp}/100 {player.ready ? "Ready" : "Not Ready"}

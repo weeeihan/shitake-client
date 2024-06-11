@@ -1,4 +1,4 @@
-import React, { useState, createContext, useEffect } from "react";
+import React, { useState, createContext, useEffect, useRef } from "react";
 import { GetID } from "../utils/utils";
 import {
   GameData,
@@ -10,17 +10,20 @@ import {
 } from "../utils/struct";
 import * as handlers from "../utils/handlers";
 import { useNavigate, useLocation, NavigateFunction } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 
 export const GamestateContext = createContext<{
   navigate: NavigateFunction;
   gameConstants: GameConstants;
   gameStates: GameStates;
   gameData: GameData;
-  setGameData: React.Dispatch<React.SetStateAction<GameData>>;
   setGameStates: React.Dispatch<React.SetStateAction<GameStates>>;
+  refetchData: () => void;
+  constants: any;
 }>({
   navigate: () => {},
-  gameConstants: { State: null, Mushrooms: null },
+  gameConstants: {} as GameConstants,
   gameStates: {
     isAlready: false,
     handToggle: true,
@@ -31,25 +34,31 @@ export const GamestateContext = createContext<{
     selected: -1,
     played: [],
     prevPlayed: {},
+    showHideLoc: [],
   },
   setGameStates: () => {},
-  gameData: {
-    player: {} as Player,
-    roomData: {} as Room,
-  },
-  setGameData: () => {},
+  gameData: {} as GameData,
+  refetchData: () => {},
+  constants: {},
 });
 
 const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  // const [selected, setSelected] = useState<number>(-1);
-  // const [hand, setHand] = useState<number[]>([]);
 
-  const [gameConstants, setGameConstants] = useState<GameConstants>({
-    State: null,
-    Mushrooms: null,
-  });
+  function redirect(des: string) {
+    if (location.pathname === "/test") return;
+    if (location.pathname === des) return;
+    navigate(des);
+  }
+
+  const id = GetID();
+
+  const {
+    data: constants,
+    isLoading: constLoading,
+    isFetched: constFetched,
+  } = handlers.FetchConstants();
 
   const [gameStates, setGameStates] = useState<GameStates>({
     isAlready: false,
@@ -61,145 +70,156 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     selected: -1,
     played: [],
     prevPlayed: {},
+    showHideLoc: [165, 400],
   });
 
-  const [gameData, setGameData] = useState<GameData>({
-    player: {
-      id: "",
-      name: "",
-      hp: 0,
-      hand: [],
-      ready: false,
-      play: 0,
-      damageReport: {} as DamageReport,
-    },
-    roomData: {
-      id: "",
-      state: "",
-      players: [],
-      deck: [],
-      chooser: "",
-      played: null,
-      moves: [],
-    },
+  if (id === "none") {
+    redirect("/");
+  }
+
+  const {
+    data,
+    error: dataErr,
+    isLoading: dataLoading,
+    refetch: refetchData,
+    isFetched: dataFetched,
+  } = useQuery({
+    queryKey: ["data", id],
+    queryFn: () => handlers.FetchData(id),
+    enabled: id !== "none",
+    retry: 1,
   });
 
-  const id = GetID();
+  // function getData(id: string) {
+  //   handlers.GetPlayer(id, setGameData);
+  //   handlers.GetRoom(id, setGameData);
+  // }
 
-  function getData(id: string) {
-    handlers.GetPlayer(id, setGameData);
-    handlers.GetRoom(id, setGameData);
-  }
-
-  function redirect(des: string) {
-    if (location.pathname === "/test") return;
-    if (location.pathname === des) return;
-    navigate(des);
-  }
+  // // gameConstants
 
   useEffect(() => {
-    handlers.GetMushrooms(setGameConstants);
-    handlers.GetStates(setGameConstants);
-  }, []);
+    refetchData();
 
-  useEffect(() => {
-    let State = gameConstants.State;
-    if (id == "none") {
-      redirect("/");
-      setGameStates((prevState: GameStates) => ({
-        ...prevState,
-        bottomDisp: "Dashboard",
-      }));
-      return () => {};
-    }
+    if (id !== "none" && data !== undefined && constants !== undefined) {
+      let [room, player, State] = [data.room, data.player, constants.states];
 
-    if (State !== null) {
-      getData(id);
-    }
-  }, [gameConstants, location]);
-
-  // REDIRECT!
-  useEffect(() => {
-    let roomData = gameData.roomData;
-    if (roomData.id !== "") {
-      let State = gameConstants.State;
-      if (roomData.id == "ERROR") {
-        redirect("/");
-        return () => {};
-      }
-
-      switch (roomData.state) {
-        case State.INIT:
-          redirect("/lobby");
-          break;
-
-        case State.CHOOSE_CARD:
-          setGameStates((prev: GameStates) => ({
-            ...prev,
-            currentDeck: roomData.deck,
-          }));
-          redirect("/game");
-          break;
-
-        case State.CHOOOSE_ROW:
-          redirect("/game");
-          break;
-
-        case State.ROUND_END:
-          redirect("/roundend");
-          break;
-
-        case State.PROCESS:
-          console.log("Processing");
-          break;
-      }
-    }
-  }, [gameData.roomData]);
-
-  useEffect(() => {
-    let player = gameData.player;
-    if (player.id !== "") {
+      // Populate hand
       setGameStates((prevState: GameStates) => ({
         ...prevState,
         hand: player.hand,
       }));
-      if (player.play !== -1) {
-        setGameStates((prevState: GameStates) => ({
-          ...prevState,
-          selected: player.play,
-          hand: player.hand.filter((num) => num !== player.play),
-        }));
+
+      // Handler redirections
+      if (room.state === State.INIT) {
+        redirect("/lobby");
+      }
+
+      if (room.state === State.CHOOSE_CARD) {
+        redirect("/game");
       }
     }
-  }, [gameData.player]);
+  }, [location, dataFetched]);
+
+  // // REDIRECT!
+  // useEffect(() => {
+  //   let roomData = gameData.roomData;
+  //   if (roomData.id !== "") {
+  //     if (roomData.id == "ERROR") {
+  //       redirect("/");
+  //       return () => {};
+  //     }
+
+  //     switch (roomData.state) {
+  //       case State.INIT:
+  //         redirect("/lobby");
+  //         break;
+
+  //       case State.CHOOSE_CARD:
+  //         setGameStates((prev: GameStates) => ({
+  //           ...prev,
+  //           currentDeck: roomData.deck,
+  //         }));
+  //         redirect("/game");
+  //         break;
+
+  //       case State.CHOOOSE_ROW:
+  //         redirect("/game");
+  //         break;
+
+  //       case State.PROCESS:
+  //         console.log("Processing");
+  //         break;
+  //     }
+  //   }
+  // }, [gameData.roomData]);
 
   // useEffect(() => {
-  //   const id = GetID();
-  //   if (id !== "none") {
-  //     getData(id);
+  //   let player = gameData.player;
+  //   if (player.id !== "") {
+  //     setGameStates((prevState: GameStates) => ({
+  //       ...prevState,
+  //       hand: player.hand,
+  //     }));
+  //     if (player.play !== -1) {
+  //       setGameStates((prevState: GameStates) => ({
+  //         ...prevState,
+  //         selected: player.play,
+  //         hand: player.hand.filter((num) => num !== player.play),
+  //       }));
+  //     }
+  //     if (player.end == 1) {
+  //       redirect("/roundend");
+  //     }
+  //     if (player.end == 2) {
+  //       redirect("/gameend");
+  //     }
   //   }
-  // }, [location]);)
+  // }, [gameData.player]);
 
-  if (gameConstants.State === null || gameConstants.State === null) {
-    if (location.pathname !== "/test") return <div>Loading gamestates...</div>;
+  if (constLoading) {
+    return <div>Loading States and mushrooms...</div>;
   }
 
-  if (
-    location.pathname !== "/" &&
-    (gameData.player.id === "" || gameData.roomData.id === "")
-  ) {
-    if (location.pathname !== "/test") return <div>Loading data...</div>;
+  if (dataLoading) {
+    return <div>Loading game data...</div>;
   }
+
+  if (dataErr !== null) {
+    console.log(dataErr);
+    if (dataErr instanceof AxiosError) {
+      if (dataErr.response?.data.Message === "Room does not exist") {
+        console.log("REDIRECT TO LANDING + Clear local");
+        localStorage.clear();
+        redirect("/");
+        return;
+      }
+    }
+  }
+
+  // if (
+  //   location.pathname !== "/" &&
+  //   (gameData.player.id === "" || gameData.roomData.id === "")
+  // ) {
+  //   if (location.pathname !== "/test") return <div>Loading data...</div>;
+  // }
+  // console.log(data);
 
   return (
     <GamestateContext.Provider
       value={{
         navigate: navigate,
-        gameConstants: gameConstants,
+        gameConstants: {
+          State: constants.states,
+          Mushrooms: constants.mushrooms,
+        },
         gameStates: gameStates,
         setGameStates: setGameStates,
-        gameData: gameData,
-        setGameData: setGameData,
+        gameData: {
+          player: data?.player,
+          room: data?.room,
+        },
+        refetchData: refetchData,
+        constants: constants,
       }}
     >
       {children}

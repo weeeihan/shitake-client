@@ -10,27 +10,26 @@ const Deck = () => {
   const { conn } = useContext(WebsocketContext);
 
   const {
-    gameData: { player, roomData },
+    gameData: { player, room },
     gameConstants: { State, Mushrooms },
     setGameStates,
   } = useContext(GamestateContext);
-  const data = roomData.deck;
+  const data = room.deck;
   // const data = [[1, 2, 3], [4, 5, 6, 7, 8], [8, 9], [10]];
 
   const [hasChosen, setHasChosen] = useState(false);
   const [choice, setChoice] = useState(0);
   const [isChecking, setIsChecking] = useState(-1);
 
-  const isChooser = roomData.chooser === player.name;
-  const isChoosing = roomData.chooser !== "";
+  const isChooser = room.chooser === player.name;
+  const isChoosing = room.chooser !== "";
   // const isChooser = true;
 
-  if (player.id == "" || roomData.id == "") {
+  if (player.id == "" || room.id == "") {
     return <div>Loading</div>;
   }
 
-  const chosenCard =
-    roomData.played.length == 0 ? "-1" : roomData.played[player.name];
+  const chosenCard = room.played.length == 0 ? "-1" : room.played[player.name];
 
   const handleRowClick = (e: React.SyntheticEvent, row: number) => {
     e.preventDefault();
@@ -72,7 +71,7 @@ const Deck = () => {
     return (
       <>
         <div className=" h-screen" onClick={checkLogOff}>
-          <div className="text-[.8rem] my-10">
+          <div className="text-[.8rem] my-10 flex flex-col items-center">
             {"(Press anywhere to go back)"}
           </div>
           {row.map((card: number, index: number) => (
@@ -85,7 +84,7 @@ const Deck = () => {
                   "z-10 absolute drop-shadow-lg cursor-pointer ml-[2.3rem] "
                 }
               />
-              <span className="font-patrick tracking-wide absolute -ml-[5rem]">
+              <span className="font-patrick tracking-wide absolute ml-[6rem]">
                 {"["}
                 {card}
                 {"]"} {Mushrooms[card].name}, {"("}Damage:{" "}
@@ -102,7 +101,7 @@ const Deck = () => {
               />
             </div>
           ))}
-          <div className="font-patrick text-2xl mt-20 tracking-wide">
+          <div className="font-patrick text-2xl mt-20 tracking-wide flex justify-center">
             Total damage: {getTotalDamge(row, Mushrooms)}%
           </div>
         </div>
@@ -199,13 +198,13 @@ const Deck = () => {
           ))}
         {isChoosing && (
           <div className="flex flex-col justify-center items-center">
-            <Spore n={roomData.played[roomData.chooser].toString()} />
-            <div>{roomData.chooser}</div>
+            <Spore n={room.played[room.chooser].toString()} />
+            <div>{room.chooser}</div>
           </div>
         )}
         {isChooser && <div>Please choose a row to eat!</div>}
         {isChoosing && !isChooser && (
-          <div>Waiting for {roomData.chooser} to eat...</div>
+          <div>Waiting for {room.chooser} to eat...</div>
         )}
       </div>
     </div>

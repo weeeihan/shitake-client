@@ -6,6 +6,7 @@ export const WEBSOCKET_URL = "ws://127.0.0.1:8080"
 export const GET_STATES_API = `${API_URL}/getStates`
 
 export const GET_MUSHROOM_API = `${API_URL}/getMushrooms`
+export const GET_CONSTANTS_API = `${API_URL}/getConstants`
 
 export const CHECK_PLAYER_API = (id: string) => {
   return `${API_URL}/ws/checkPlayer/${id}`
@@ -40,3 +41,8 @@ export const CREATE_ROOM_API = (name: string) => {
 export const GET_PLAYER_API = (id: string) => {
   return (`${API_URL}/ws/getPlayer/${id}`)
 }
+
+export const GET_DATA_API = (id: string) => {
+  return (`${API_URL}/getData/${id}`)
+}
+
