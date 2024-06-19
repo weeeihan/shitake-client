@@ -7,11 +7,12 @@ import { actions, getResults } from "../utils/utils";
 
 const Gameend = () => {
   const {
+    refetchData,
     gameConstants: { Mushrooms, State },
-    gameData: { roomData },
+    gameData: { room },
   } = useContext(GamestateContext);
 
-  const [survivors, fallen] = getResults(roomData.players);
+  const [survivors, fallen] = getResults(room.players);
   const { conn } = useContext(WebsocketContext);
   const [confirm, setConfirm] = useState(false);
   // const {
@@ -29,16 +30,17 @@ const Gameend = () => {
     e.preventDefault();
     if (conn !== null) {
       conn.send(actions(State.LEAVE));
+      refetchData();
     }
   };
 
   const debug = () => {
-    console.log(roomData);
+    console.log(room);
   };
 
   if (confirm) {
     return (
-      <div>
+      <div className="py-[7rem]">
         <div>Go back to lobby?</div>
         <div>
           <button onClick={handleBack}>Yes</button>
@@ -51,13 +53,15 @@ const Gameend = () => {
   }
 
   return (
-    <div>
+    <div className="py-[7rem]">
       <div>Survivors</div>
       <div>
         {survivors.map((p, i) => (
           <div key={i}>{p.name}</div>
         ))}
+        {survivors.length == 0 && <div>No survivors... </div>}
       </div>
+
       <hr />
       <div>In memory of</div>
       <div>

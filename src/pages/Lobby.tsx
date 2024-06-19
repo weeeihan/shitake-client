@@ -29,9 +29,9 @@ const Lobby = () => {
   const handleLeaveRoom = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (conn !== null) {
-      conn.send(utils.actions(State.LEAVE));
       localStorage.clear();
       navigate("/");
+      conn.send(utils.actions(State.LEAVE));
     }
   };
 
@@ -46,13 +46,27 @@ const Lobby = () => {
     }
   };
 
-  const debug = () => {
-    console.log(room);
-  };
-
   const [over, setOver] = useState(false);
   const [onLeave, setOnLeave] = useState(false);
   const players = utils.SortPlayers(room.players);
+
+  // const players = [
+  //   {
+  //     name: "han",
+  //     hp: 100,
+  //     ready: false,
+  //   },
+  //   {
+  //     name: "Joe",
+  //     hp: 100,
+  //     ready: false,
+  //   },
+  //   {
+  //     name: "guy",
+  //     hp: 100,
+  //     ready: false,
+  //   },
+  // ];
 
   const handleLeave = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -68,8 +82,8 @@ const Lobby = () => {
   // If leaving
   if (onLeave)
     return (
-      <div className="text-center flex flex-col items-center">
-        <div className="font-patrick text-2xl my-20 tracking-wide">
+      <div className="text-center flex flex-col items-center justify-center h-screen">
+        <div className="font-patrick text-2xl my-10 tracking-wide">
           Leaving already? 😢
         </div>
         <div className="mb-10">
@@ -99,8 +113,8 @@ const Lobby = () => {
     );
 
   return (
-    <>
-      <div className="text-7xl pl-7 py-10 text-center font-patrick tracking-superWide">
+    <div className="flex flex-col py-20 h-screen">
+      <div className="text-7xl pl-7 py-10  text-center font-patrick tracking-superWide">
         {room.id}
       </div>
       {isAlready ? (
@@ -112,7 +126,7 @@ const Lobby = () => {
           Click your mushroom when you're ready!
         </div>
       )}
-      <div className="  flex flex-col relative  mt-[7rem] items-center h-screen">
+      <div className="  flex flex-col relative items-center  mt-[7rem] ">
         {isAlready && (
           <>
             <img
@@ -132,7 +146,7 @@ const Lobby = () => {
           </>
         )}
         {players.map((p: PlayerDisplay, index: number) => (
-          <div key={index} className="-my-3">
+          <div key={index} className="-my-8">
             <img
               src={p.ready ? images.readyMush : images.mush2}
               width={80}
@@ -149,7 +163,7 @@ const Lobby = () => {
             <span
               className="font-patrick tracking-wide absolute"
               style={{
-                marginLeft: index % 2 == 0 ? 120 : -120 - 8 * p.name.length,
+                marginLeft: index % 2 == 0 ? 120 : -60 - 8 * p.name.length,
               }}
             >
               {p.name}
@@ -181,11 +195,11 @@ const Lobby = () => {
             onClick={handleLeave}
           />
         </div>
-        <div>
+        {/* <div>
           <button onClick={debug}>Debug</button>
-        </div>
+        </div> */}
       </div>
-    </>
+    </div>
   );
 };
 

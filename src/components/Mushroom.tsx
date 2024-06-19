@@ -21,9 +21,9 @@ const Mushroom = ({
   if (mush == -1) {
     return;
   }
-
   return (
     <div className="flex flex-col justify-center items-center">
+      <img alt="mush" src={`/images/${Mushrooms[mush].name}.png`} width={150} />
       <div>
         {Mushrooms[mush].name} {"["}
         {mush}

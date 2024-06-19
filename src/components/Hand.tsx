@@ -39,6 +39,9 @@ const modalStyle = {
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
   },
+  overlay: {
+    zIndex: 1000,
+  },
 };
 
 const Selection = ({ selected }: { selected: number }) => {
@@ -114,7 +117,7 @@ const Numball = ({ num, active }: { num: number; active: number }) => {
 
 const Hand = () => {
   const [mush, setMush] = useState(-1);
-  // const showMush = mush == -1 ? false : true;
+  const showMush = mush == -1 ? false : true;
   // const [showMush, setShowMush] = useState(false);
   const [activeId, setActiveId] = useState(-1);
   const { conn } = useContext(WebsocketContext);
@@ -145,7 +148,15 @@ const Hand = () => {
 
     if (delta.x == 0 && delta.y == 0) setMush(active.id);
 
-    if (active.id === over.id) return setActiveId(-1);
+    if (active.id === over.id) {
+      console.log("active");
+      console.log(active.id);
+      console.log("over");
+      console.log(over.id);
+      setActiveId(-1);
+      console.log("Dog");
+      return;
+    }
 
     if (over.id === "selection") {
       if (selected !== -1) {
@@ -182,17 +193,18 @@ const Hand = () => {
     setActiveId(-1);
   };
 
-  // const handleDragOver = (event: any) => {
-  //   const { active, over } = event;
-  //   if (over != null) {
-  //     if (over.id === "selection") {
-  //       // console.log("Selected " + active.id);
-  //     }
-  //   }
-  // };
+  const handleDragOver = (event: any) => {
+    const { active, over } = event;
+    if (over != null) {
+      if (over.id === "selection") {
+        // console.log("Selected " + active.id);
+      }
+    }
+  };
 
   const handleDragStart = (event: any) => {
     setActiveId(event.active.id);
+    // console.log(activeId);
     // console.log("DRAG START");
   };
 
@@ -207,10 +219,10 @@ const Hand = () => {
       </Modal>
       <DndContext
         sensors={sensors}
-        // collisionDetection={closestCenter}
+        collisionDetection={closestCenter}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
-        // onDragOver={handleDragOver}
+        onDragOver={handleDragOver}
       >
         <Selection selected={selected} />
         <NumRow numballs={hand} active={activeId} />

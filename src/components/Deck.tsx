@@ -9,6 +9,9 @@ import Spore from "./Spore";
 const Deck = () => {
   const { conn } = useContext(WebsocketContext);
 
+  const mushImage = (name: string) => {
+    return `/images/${name}.png`;
+  };
   const {
     gameData: { player, room },
     gameConstants: { State, Mushrooms },
@@ -70,35 +73,27 @@ const Deck = () => {
     let row = data[isChecking];
     return (
       <>
-        <div className=" h-screen" onClick={checkLogOff}>
+        <div className="flex flex-col h-screen" onClick={checkLogOff}>
           <div className="text-[.8rem] my-10 flex flex-col items-center">
             {"(Press anywhere to go back)"}
           </div>
           {row.map((card: number, index: number) => (
-            <div key={index} className="">
+            <div key={index} className="flex flex-row items-center">
               <img
-                src={images.mush2}
-                width={50}
+                src={mushImage(Mushrooms[card].name)}
+                width={80}
                 alt="player mushrooms!"
-                className={
-                  "z-10 absolute drop-shadow-lg cursor-pointer ml-[2.3rem] "
-                }
+                className={" drop-shadow-lg cursor-pointer ml-[2.3rem] "}
               />
-              <span className="font-patrick tracking-wide absolute ml-[6rem]">
+              <div className="font-patrick tracking-wide">
                 {"["}
                 {card}
                 {"]"} {Mushrooms[card].name}, {"("}Damage:{" "}
                 {Mushrooms[card].damage}%{")"}
-              </span>
+              </div>
               {/* <span className="font-patrick tracking-wide absolute mt-[2rem] -ml-[5rem]">
               Special abilities (If any)
             </span> */}
-              <img
-                src={images.vLog}
-                alt="Vertical log"
-                width={50}
-                className="drop-shadow-lg "
-              />
             </div>
           ))}
           <div className="font-patrick text-2xl mt-20 tracking-wide flex justify-center">
@@ -116,14 +111,14 @@ const Deck = () => {
         {row.map((card: number, index: number) => (
           <div key={index} className="">
             <img
-              src={images.mush2}
+              src={mushImage(Mushrooms[card].name)}
               width={50}
               alt="player mushrooms!"
               className={
                 "z-10 absolute drop-shadow-lg cursor-pointer ml-[2.3rem] "
               }
             />
-            <span className="font-patrick tracking-wide absolute -ml-[5rem]">
+            <span className="font-patrick tracking-wide absolute ml-[6rem]">
               {"["}
               {card}
               {"]"} {Mushrooms[card].name}, {"("}Damage:{" "}
@@ -169,15 +164,15 @@ const Deck = () => {
           data.map((row: number[], rowNumber: number) => (
             <div
               key={rowNumber}
-              className="inline-flex -space-x items-center cursor-pointer"
+              className="inline-flex  items-center cursor-pointer"
               // onClick={(e) => handleRowClick(e, rowNumber)}
             >
               {row.map((card: number, cardNumber: number) => (
                 <div key={cardNumber} className="relative ">
-                  <div className="absolute">
+                  <div className="z-10 absolute">
                     <img
-                      className="w-[12vw] max-w-[50px]"
-                      src={images.mush2}
+                      className="w-[18vw] max-w-[80px] drop-shadow-lg"
+                      src={mushImage(Mushrooms[card].name)}
                       alt="Mushroom"
                       style={{ marginTop: getY(card), marginLeft: getX(card) }}
                       onClick={(e) => handleRowClick(e, rowNumber)}
@@ -193,7 +188,7 @@ const Deck = () => {
                   </div>
                 </div>
               ))}
-              <div className="ml-1 text-[1.2rem]">{row[row.length - 1]}</div>
+              <div className="ml-4 text-[1.5rem]">{row[row.length - 1]}</div>
             </div>
           ))}
         {isChoosing && (
@@ -209,83 +204,6 @@ const Deck = () => {
       </div>
     </div>
   );
-
-  // return (
-  //   <>
-  //     {isChooser ? (
-  //       <div>
-  //         <div className="-mt-[2rem] mb-[2rem]">Choose a row to eat!</div>
-  //         {hasChosen ? (
-  //           <>{confirm()}</>
-  //         ) : (
-  //           <div className="grid gap-4 ">
-  //             {data != null &&
-  //               data.map((row: number[], rowNumber: number) => (
-  //                 <div
-  //                   key={rowNumber}
-  //                   className="flex my-[1rem] cursor-pointer"
-  //                   onClick={(e) => handleChosen(e, rowNumber)}
-  //                 >
-  //                   {row.map((card: number, cardNumber: number) => (
-  //                     <div key={cardNumber} className="relative">
-  //                       <img
-  //                         src={images.hLog}
-  //                         alt="Horizontal Log"
-  //                         width={80}
-  //                       />
-  //                       <img
-  //                         className="absolute z-10"
-  //                         src={images.mush2}
-  //                         alt="Mushroom"
-  //                         width={50}
-  //                         style={{ marginTop: -70 }}
-  //                       />
-  //                     </div>
-  //                   ))}
-  //                   <div className="ml-1">{row[row.length - 1]}</div>
-  //                 </div>
-  //               ))}
-  //           </div>
-  //         )}
-  //       </div>
-  //     ) : (
-  //       <div>
-  //         <div>
-  //           {isChoosing && !isChooser && (
-  //             <>Waiting {roomData.chooser} to choose a row</>
-  //           )}
-  //         </div>
-  //         <div className="grid gap-4 ">
-  //           {data != null &&
-  //             data.map((row: number[], rowNumber: number) => (
-  //               <div
-  //                 key={rowNumber}
-  //                 className="flex flex-row my-[1rem]"
-  //                 onClick={() => checkLog(rowNumber)}
-  //               >
-  //                 {row.map((card: number, cardNumber: number) => (
-  //                   <div key={cardNumber}>
-  //                     <img src={images.hLog} alt="Horizontal Log" width={80} />
-  //                     <img
-  //                       className="absolute z-10"
-  //                       src={images.mush2}
-  //                       alt="Mushroom"
-  //                       width={50}
-  //                       style={{
-  //                         marginTop: getY(card),
-  //                         marginLeft: getX(card),
-  //                       }}
-  //                     />
-  //                   </div>
-  //                 ))}
-  //                 <div className="ml-1">{row[row.length - 1]}</div>
-  //               </div>
-  //             ))}
-  //         </div>
-  //       </div>
-  //     )}
-  //   </>
-  // );
 };
 
 export default Deck;

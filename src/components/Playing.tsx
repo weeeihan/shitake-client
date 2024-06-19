@@ -12,14 +12,14 @@ const Playing = () => {
     navigate,
     setGameStates,
     gameConstants: { State },
-    gameData: { roomData },
+    gameData: { room },
     gameStates: { currentDeck, handToggle },
   } = useContext(GamestateContext);
 
   const { conn } = useContext(WebsocketContext);
 
   // const copyDeck = [...roomData.deck];
-  const moves = roomData.moves;
+  const moves = room.moves;
   const [deck, setDeck] = useState<number[][]>(currentDeck);
 
   const [index, setIndex] = useState<number>(0);
@@ -87,18 +87,20 @@ const Playing = () => {
       showPlaying: false,
     }));
 
-    if (roomData.state === State.ROUND_END) {
-      if (conn !== null) {
+    if (conn !== null && conn !== undefined) {
+      if (room.state === State.ROUND_END) {
         conn.send(actions(State.ROUND_END));
         navigate("/roundend");
+        return;
       }
-    }
 
-    if (roomData.state === State.GAME_END) {
-      if (conn !== null) {
+      if (room.state === State.GAME_END) {
         conn.send(actions(State.GAME_END));
         navigate("/gameend");
+        return;
       }
+
+      conn.send(actions(State.NEXT_PLAY));
     }
   };
 

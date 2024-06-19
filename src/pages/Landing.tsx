@@ -12,14 +12,15 @@ import * as handlers from "../utils/handlers";
 import { GamestateContext } from "../modules/gamestate_provider";
 
 const Landing = () => {
-  const { refetchPlayer, constants } = useContext(GamestateContext);
+  const {
+    gameConstants: { State },
+    fetchData,
+  } = useContext(GamestateContext);
   const debug = () => {
     // console.log(utils.GetID());
     // localStorage.setItem("id", "1234");
-    console.log(constants);
     // refetchPlayer();
   };
-  const { navigate } = useContext(GamestateContext);
   const [name, setName] = useState("");
   const [roomID, setRoomID] = useState("");
   const joinCreate: string = roomID === "" ? "Create Room" : "Join Room";
@@ -31,17 +32,17 @@ const Landing = () => {
       return;
     }
 
-    if (utils.hasWhiteSpace(name)) {
-      alert("NO WHITESPACE ALLOWED IN NAME");
-      return;
-    }
+    // if (utils.hasWhiteSpace(name)) {
+    //   alert("NO WHITESPACE ALLOWED IN NAME");
+    //   return;
+    // }
 
     if (roomID === "") {
       alert("PLEASE FILL IN THE ROOM CODE");
       return;
     }
 
-    handlers.JoinRoom(name, roomID, navigate);
+    handlers.JoinRoom(name, State, roomID, fetchData);
   };
 
   const handleCreateRoom = (e: React.SyntheticEvent) => {
@@ -56,7 +57,7 @@ const Landing = () => {
       return;
     }
 
-    handlers.CreateRoom(name, navigate);
+    handlers.CreateRoom(name, State, fetchData);
   };
 
   const clearLocal = (e: React.SyntheticEvent) => {
@@ -82,26 +83,39 @@ const Landing = () => {
         value={roomID}
         className="outline border mt-2 w-60 py-0.5 rounded-md text-center drop-shadow-lg text-gray-700 leading-tight"
       />
-      <button
-        className="font-klee bg-black text-white mt-10 rounded-lg py-2 px-2 drop-shadow-md"
-        onClick={(e) => {
-          joinCreate == "Join Room" ? handleJoinRoom(e) : handleCreateRoom(e);
-        }}
-      >
-        {joinCreate}
-      </button>
-      <button
+      {name === "" ? (
+        <div>
+          <button className="font-klee text-white mt-10 rounded-lg py-2 px-2 drop-shadow-md">
+            Empty
+          </button>
+        </div>
+      ) : (
+        <div>
+          <button
+            className="font-klee bg-black text-white mt-10 rounded-lg py-2 px-2 drop-shadow-md"
+            onClick={(e) => {
+              joinCreate == "Join Room"
+                ? handleJoinRoom(e)
+                : handleCreateRoom(e);
+            }}
+          >
+            {joinCreate}
+          </button>
+        </div>
+      )}
+      {/* <button
         className="font-klee bg-black text-white mt-10 rounded-lg py-2 px-2 drop-shadow-md"
         onClick={debug}
       >
         debug
       </button>
+
       <button
         className="font-klee bg-black text-white mt-10 rounded-lg py-2 px-2 drop-shadow-md"
-        onClick={clearLocal}
+        onClick={debug}
       >
-        clear local
-      </button>
+        debug
+      </button> */}
     </div>
   );
 };

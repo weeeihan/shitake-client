@@ -16,12 +16,18 @@ const Game = () => {
   const nodeRef = useRef(null);
   const {
     setGameStates,
-    gameStates: { bottomDisp, handToggle, showPlaying, showHideLoc },
+    gameStates: {
+      bottomDisp,
+      handToggle,
+      showPlaying,
+      showHideLoc,
+      currentDeck,
+    },
     gameConstants: { State },
     gameData: { room, player },
   } = useContext(GamestateContext);
   const { countDown } = useContext(WebsocketContext);
-  const showHide = bottomDisp == "Hand" ? "Hide Hand" : "Show Hand";
+  const showHide = bottomDisp == "Hand" ? "HIDE" : "SHOW";
   const [delta, setDelta] = useState([0, 0]);
 
   const [startpos, setStartpos] = useState<number[]>([]);
@@ -29,15 +35,16 @@ const Game = () => {
   useEffect(() => {
     setGameStates((prevState: GameStates) => ({
       ...prevState,
-      showHideLoc: [165 + delta[0], 400 + delta[1]],
+      showHideLoc: [165 + delta[0], 500 + delta[1]],
     }));
   }, [handToggle]);
 
   const debug = () => {
-    setGameStates((prevState: GameStates) => ({
-      ...prevState,
-      handToggle: !prevState.handToggle,
-    }));
+    console.log(currentDeck);
+    // setGameStates((prevState: GameStates) => ({
+    //   ...prevState,
+    //   handToggle: !prevState.handToggle,
+    // }));
   };
 
   // console.log(showHideLoc);
@@ -83,7 +90,7 @@ const Game = () => {
       return <div>LOADING</div>;
     }
     return (
-      <div>
+      <div className="py-20">
         <Playing />
       </div>
     );
@@ -109,10 +116,10 @@ const Game = () => {
           </Draggable>
         )}
       </div>
-      <div className="flex flex-col justify-center">
+      <div className="py-20">
         <Deck />
       </div>
-      <div className="flex flex-col items-center mt-20">
+      <div className="flex flex-col items-center ">
         {bottomDisp === "Blank" && <></>}
         {bottomDisp === "Hand" && <Hand />}
         {bottomDisp === "Dashboard" && <Dashboard />}

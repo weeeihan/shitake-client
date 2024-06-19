@@ -17,13 +17,13 @@ const queryClient = new QueryClient({
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
+    <div className="flex text-2xl font-reenie absolute mt-10 justify-center w-screen">
+      <div>Shitake by Han</div>
+    </div>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <GamestateProvider>
           <WebSocketProvider>
-            <div className="text-2xl font-reenie text-center mt-10">
-              Shitake by Han
-            </div>
             <App />
           </WebSocketProvider>
         </GamestateProvider>

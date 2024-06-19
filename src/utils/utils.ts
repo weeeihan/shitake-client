@@ -1,4 +1,4 @@
-import { Player, PlayerDisplay } from "./struct";
+import { Message, Player, PlayerDisplay } from "./struct";
 const isDebug = true;
 import { useEffect, useRef, useState } from "react";
 
@@ -103,7 +103,7 @@ const randomHundred = [51, 9, 98, 8, 84, 46, 28, 22, 7, 86, 80, 67, 74, 49, 82, 
 
 export function getY(weight: number) {
   // console.log((randomHundred[weight]/2.5 ))
-  return (randomHundred[weight]/2.5 ) - 30 
+  return (randomHundred[weight]/2.5 ) - 50 
 }
 
 export function getX(weight: number) {
@@ -203,3 +203,23 @@ export function getResults(players: PlayerDisplay[])  {
 
   return [survivors, fallen] 
 }
+
+export function needRefetch(m: Message, State: any, player: Player) : boolean {
+
+  // No need refetch if:
+
+  // 1. You joined the room or you left the room
+  if (m.state == State.REGISTERED || m.state == State.PLAYER_LEFT) {
+    if (m.remark === player.name) {
+      return false
+    }
+  }
+
+  // 2. During countdown
+  if (m.state == State.COUNT) {
+    return false
+  } 
+
+  // Else, refetch
+  return true
+} 
