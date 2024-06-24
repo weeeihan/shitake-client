@@ -16,13 +16,8 @@ const Game = () => {
   const nodeRef = useRef(null);
   const {
     setGameStates,
-    gameStates: {
-      bottomDisp,
-      handToggle,
-      showPlaying,
-      showHideLoc,
-      currentDeck,
-    },
+    gameStates,
+    gameStates: { bottomDisp, handToggle, showPlaying, showHideLoc, selected },
     gameConstants: { State },
     gameData: { room, player },
   } = useContext(GamestateContext);
@@ -40,7 +35,8 @@ const Game = () => {
   }, [handToggle]);
 
   const debug = () => {
-    console.log(currentDeck);
+    console.log(room);
+    // console.log(room);
     // setGameStates((prevState: GameStates) => ({
     //   ...prevState,
     //   handToggle: !prevState.handToggle,
@@ -58,7 +54,7 @@ const Game = () => {
     const endpos = [touch.clientX, touch.clientY];
     let d = [endpos[0] - startpos[0], endpos[1] - startpos[1]];
 
-    console.log(delta);
+    // console.log(delta);
     setDelta([delta[0] + d[0], delta[1] + d[1]]);
 
     const distance = Math.sqrt(
@@ -98,9 +94,14 @@ const Game = () => {
 
   // DISABLE USER TO CHECK HAND IF NUMBER OF HAND = 0
   return (
-    <>
+    <div>
+      {countDown !== 0 && (
+        <div className="absolute text-[20rem] ml-[10rem] mt-[10rem]">
+          {countDown}
+        </div>
+      )}
       <div
-        className="flex flex-col absolute"
+        className="flex flex-col absolute "
         style={{ marginLeft: showHideLoc[0], marginTop: showHideLoc[1] }}
       >
         {room.state === State.CHOOSE_CARD && handToggle && (
@@ -111,25 +112,24 @@ const Game = () => {
               onTouchEndCapture={handleTouchEnd}
               className=""
             >
-              <div>{showHide}</div>
+              <div className=" ">{showHide}</div>
             </a>
           </Draggable>
         )}
       </div>
       <div className="py-20">
-        <Deck />
+        <Deck data={room.deck} />
       </div>
       <div className="flex flex-col items-center ">
         {bottomDisp === "Blank" && <></>}
         {bottomDisp === "Hand" && <Hand />}
         {bottomDisp === "Dashboard" && <Dashboard />}
         {/* {bottomDisp === "Playing" && <Playing />} */}
-        {countDown !== 0 && <div>{countDown}</div>}
         {bottomDisp === "ChooseRow" && <div>Chossing row!</div>}
-        <button onClick={debug}>Debug main game screen</button>
+        {/* <button onClick={debug}>Debug main game screen</button> */}
         {/* <button onClick={clear}>Clear</button> */}
       </div>
-    </>
+    </div>
   );
 };
 

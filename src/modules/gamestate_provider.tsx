@@ -37,8 +37,9 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
   function redirect(des: string) {
-    if (location.pathname === "/test") return;
-    if (location.pathname === des) return;
+    const loc = window.location;
+    if (loc.pathname === "/test") return;
+    if (loc.pathname === des) return;
     navigate(des);
   }
 
@@ -74,12 +75,13 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   // Fetch API
   const fetchData = async (states: any, msg?: Message | undefined) => {
     id = GetID();
-    console.log("Fetching");
     if (id === "none") {
+      console.log("no id");
       redirect("/");
       setGameData({} as GameData);
       return;
     }
+    console.log("Fetching");
     try {
       // const res = await refetch();
       const res = await axios.get(GET_DATA_API(id));
@@ -132,17 +134,36 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (player.end == 1) {
       redirect("/roundend");
+      return;
     }
     if (player.end == 2) {
       redirect("/gameend");
+      return;
     }
 
     if (room.state === State.INIT) {
       redirect("/lobby");
+      // return;
+    }
+
+    if (room.state === State.PROCESS || room.state === State.ROUND_END) {
+      setGameStates((prev: GameStates) => ({
+        ...prev,
+        handToggle: false,
+        showPlaying: true,
+      }));
+    }
+
+    if (room.state === State.CHOOSE_ROW) {
+      setGameStates((prev: GameStates) => ({
+        ...prev,
+        currentDeck: room.deck,
+        bottomDisp: "blank",
+      }));
+      redirect("/game");
     }
 
     if (room.state === State.CHOOSE_CARD) {
-      console.log("Setting current deck...");
       setGameStates((prev: GameStates) => ({
         ...prev,
         currentDeck: room.deck,
@@ -196,10 +217,12 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
 
       // Handle row choosing
       if (m.state == State.CHOOSE_ROW) {
+        console.log("HERE");
         setGameStates((prev) => ({
           ...prev,
           handToggle: false,
           bottomDisp: "Blank",
+          // currentDeck: room.deck,
         }));
         // Hide hands
       }
@@ -231,7 +254,6 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
         navigate: navigate,
         gameConstants: {
           State: constants.states,
-          Mushrooms: constants.mushrooms,
         },
         gameStates: gameStates,
         setGameStates: setGameStates,

@@ -61,3 +61,27 @@
     align-items: center;
   }
 }
+
+.healthy {
+  appearance: none;
+  height: 20px;
+  width: 100%;
+  border-width: 1px;
+  border-color: black;
+    
+  /* Chrome and Safari */
+  &::-webkit-progress-bar {
+    background: white;
+  }
+
+  &::-webkit-progress-value {
+    background-color: #78f36b 
+  }
+
+  /* Firefox */
+  &::-moz-progress-bar {
+    background-color: rgba(rgb(146, 255, 138), green, blue, alpha)
+  }
+}
+
+

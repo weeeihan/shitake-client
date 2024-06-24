@@ -46,8 +46,10 @@ const modalStyle = {
 
 const Selection = ({ selected }: { selected: number }) => {
   const {
-    gameConstants: { Mushrooms },
+    gameData: { room },
   } = useContext(GamestateContext);
+
+  const Mushrooms = room.mushrooms;
   const { setNodeRef } = useDroppable({
     id: "selection",
   });
@@ -149,12 +151,7 @@ const Hand = () => {
     if (delta.x == 0 && delta.y == 0) setMush(active.id);
 
     if (active.id === over.id) {
-      console.log("active");
-      console.log(active.id);
-      console.log("over");
-      console.log(over.id);
       setActiveId(-1);
-      console.log("Dog");
       return;
     }
 

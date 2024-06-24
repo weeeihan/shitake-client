@@ -18,7 +18,7 @@ const queryClient = new QueryClient({
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <div className="flex text-2xl font-reenie absolute mt-10 justify-center w-screen">
-      <div>Shitake by Han</div>
+      <div>Shitake by Han and Kelly</div>
     </div>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>

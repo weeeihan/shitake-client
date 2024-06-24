@@ -1,8 +1,16 @@
 import { useContext, useEffect, useState } from "react";
 import * as images from "../assets/images/images";
 import { GamestateContext } from "../modules/gamestate_provider";
-import { useInterval, getX, getY, actions, play } from "../utils/utils";
+import {
+  useInterval,
+  getX,
+  getY,
+  actions,
+  play,
+  mushImage,
+} from "../utils/utils";
 
+import Deck from "../components/Deck";
 import Spore from "../components/Spore";
 import { motion } from "framer-motion";
 import { WebsocketContext } from "../modules/websocket_provider";
@@ -106,7 +114,7 @@ const Playing = () => {
 
   const Farming = () => {
     // console.log(index);
-    if (index < moves.length) {
+    if (index < moves.length && deck.length > 0) {
       return (
         <div className="flex flex-col items-center justify-center mt-20">
           <motion.div
@@ -164,6 +172,12 @@ const Playing = () => {
   };
 
   useInterval(() => {
+    // console.log(currentDeck);
+    if (deck.length === 0) {
+      console.log("NO DECK");
+      return;
+    }
+
     if (index < moves.length) {
       console.log("here?");
       showPlay(moves[index]);
@@ -172,49 +186,71 @@ const Playing = () => {
     }
   }, 1500);
 
+  // if (deck.length === 0) {
+  //   return (
+  //     <div className="flex flex-col items-center justify-center">
+  //       <Deck data={room.deck} />
+  //       <div>
+  //         <button onClick={nextPlay}>NEXT PLAY</button>
+  //       </div>
+  //     </div>
+  //   );
+  // }
+
   return (
     <div className="flex flex-col items-center justify-center">
-      {/* <div>This is test page</div> */}
-      <div className="flex  max-w-[430px] w-[100vw] flex-col mt-9 justify-left space-y-[5vh] ">
-        {deck != null &&
-          deck.map((row: number[], rowNumber: number) => (
-            <div
-              key={rowNumber}
-              className="inline-flex -space-x items-center cursor-pointer"
-            >
-              {row.map((card: number, cardNumber: number) => (
-                <div key={cardNumber} className="relative ">
-                  <div className="absolute">
-                    <img
-                      className="w-[12vw] max-w-[50px]"
-                      src={images.mush2}
-                      alt="Mushroom"
-                      style={{ marginTop: getY(card), marginLeft: getX(card) }}
-                    />
-                  </div>
-                  <div className=" ">
-                    <img
-                      src={images.hLog}
-                      alt="Horizontal Log"
-                      className="w-[18vw] h-[6vh] max-w-[100px] min-h-[50px]"
-                    />
-                  </div>
-                </div>
-              ))}
-              <div className="ml-1 text-[1.2rem]">{row[row.length - 1]}</div>
-            </div>
-          ))}
+      <div className="relative z-1">
+        {deck.length === 0 ? <Deck data={room.deck} /> : <Deck data={deck} />}
       </div>
-      <div>
+      <div className="relative z-10">
         <Farming />
       </div>
       <div>
         <button onClick={nextPlay}>NEXT PLAY</button>
       </div>
-      <div>
-        <button onClick={debug}>debug</button>
-      </div>
     </div>
+    // <div className="flex flex-col items-center justify-center">
+    //   {/* <div>This is test page</div> */}
+    //   <div className="flex  max-w-[430px] w-[100vw] flex-col mt-9 justify-left space-y-[5vh] ">
+    //     {deck != null &&
+    //       deck.map((row: number[], rowNumber: number) => (
+    //         <div
+    //           key={rowNumber}
+    //           className="inline-flex -space-x items-center cursor-pointer"
+    //         >
+    //           {row.map((card: number, cardNumber: number) => (
+    //             <div key={cardNumber} className="relative ">
+    //               <div className="z-10 absolute">
+    //                 <img
+    //                   className="w-[18vw] max-w-[80px] drop-shadow-lg"
+    //                   src={mushImage(Mushrooms[card].name)}
+    //                   alt="Mushroom"
+    //                   style={{ marginTop: getY(card), marginLeft: getX(card) }}
+    //                 />
+    //               </div>
+    //               <div className=" ">
+    //                 <img
+    //                   src={images.hLog}
+    //                   alt="Horizontal Log"
+    //                   className="w-[18vw] h-[6vh] max-w-[100px] min-h-[50px]"
+    //                 />
+    //               </div>
+    //             </div>
+    //           ))}
+    //           <div className="ml-1 text-[1.2rem]">{row[row.length - 1]}</div>
+    //         </div>
+    //       ))}
+    //   </div>
+    //   <div>
+    //     <Farming />
+    //   </div>
+    //   <div>
+    //     <button onClick={nextPlay}>NEXT PLAY</button>
+    //   </div>
+    //   <div>
+    //     <button onClick={debug}>debug</button>
+    //   </div>
+    // </div>
   );
 };
 

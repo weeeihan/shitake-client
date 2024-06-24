@@ -16,12 +16,16 @@ export async function JoinRoom(name: string, state: any, roomID: string, fetchDa
 
 export async function CreateRoom(name: string, state: any,fetchData: (state:any)=> void){
   try {
+    console.log("Creating room!")
     const res = await axios.get(CREATE_ROOM_API(name))
+    console.log(res)
     if (resOk(res)) {
+      console.log(res)
       localStorage.setItem("id",res.data.id)
       fetchData(state)
     }
   } catch (error:any) {
+    console.log(error)
     alert(error.response.data.Message)
 
   }

@@ -2,22 +2,22 @@ import React, { useContext, useEffect, useState } from "react";
 import * as images from "../assets/images/images";
 import { WebsocketContext } from "../modules/websocket_provider";
 import { GamestateContext } from "../modules/gamestate_provider";
-import { actions, getTotalDamge, getX, getY } from "../utils/utils";
+import { actions, getTotalDamge, getX, getY, mushImage } from "../utils/utils";
 import { GameStates } from "../utils/struct";
 import Spore from "./Spore";
 
-const Deck = () => {
+const Deck = ({ data }: { data: number[][] }) => {
   const { conn } = useContext(WebsocketContext);
 
-  const mushImage = (name: string) => {
-    return `/images/${name}.png`;
-  };
   const {
     gameData: { player, room },
-    gameConstants: { State, Mushrooms },
+    gameConstants: { State },
     setGameStates,
   } = useContext(GamestateContext);
-  const data = room.deck;
+  const Mushrooms = room.mushrooms;
+  // console.log(Mushrooms);
+  // const data = room.deck;
+  // console.log(room);
   // const data = [[1, 2, 3], [4, 5, 6, 7, 8], [8, 9], [10]];
 
   const [hasChosen, setHasChosen] = useState(false);
@@ -36,11 +36,19 @@ const Deck = () => {
 
   const handleRowClick = (e: React.SyntheticEvent, row: number) => {
     e.preventDefault();
+    // Clicks are disbaled
+    if (room.state !== State.CHOOSE_ROW && room.state !== State.CHOOSE_CARD) {
+      return;
+    }
+
+    // If the player is a chooser
     if (isChooser) {
       setChoice(row);
       setHasChosen(true);
       return;
     }
+
+    // If just checking row
     setIsChecking(row);
     setGameStates((prevState: GameStates) => ({
       ...prevState,
@@ -69,13 +77,23 @@ const Deck = () => {
 
   // Checking row
 
-  if (isChecking !== -1 && !isChooser) {
-    let row = data[isChecking];
+  if ((isChecking !== -1 && !isChooser) || hasChosen) {
+    let row: number[] = [];
+    if (isChecking !== -1 && !isChooser) {
+      row = data[isChecking];
+    }
+    if (hasChosen) {
+      row = data[choice];
+    }
     return (
       <>
         <div className="flex flex-col h-screen" onClick={checkLogOff}>
           <div className="text-[.8rem] my-10 flex flex-col items-center">
-            {"(Press anywhere to go back)"}
+            {hasChosen ? (
+              <div>{""}</div>
+            ) : (
+              <div>{"(Press anywhere to go back)"}</div>
+            )}
           </div>
           {row.map((card: number, index: number) => (
             <div key={index} className="flex flex-row items-center">
@@ -99,63 +117,61 @@ const Deck = () => {
           <div className="font-patrick text-2xl mt-20 tracking-wide flex justify-center">
             Total damage: {getTotalDamge(row, Mushrooms)}%
           </div>
+          {hasChosen && (
+            <div className="flex flex-row justify-center mt-10">
+              <span
+                className="cursor-pointer text-3xl font-patrick tracking-wide"
+                onClick={handleChoose}
+              >
+                EAT!
+              </span>
+              <span className="text-3xl font-patrick tracking-wide mx-10">
+                |
+              </span>
+              <span
+                className="cursor-pointer text-3xl font-patrick tracking-wide"
+                onClick={() => setHasChosen(false)}
+              >
+                Nope.{" "}
+              </span>
+            </div>
+          )}
         </div>
       </>
     );
   }
 
-  if (hasChosen) {
-    let row = data[choice];
-    return (
-      <div className="mt-[2rem]">
-        {row.map((card: number, index: number) => (
-          <div key={index} className="">
-            <img
-              src={mushImage(Mushrooms[card].name)}
-              width={50}
-              alt="player mushrooms!"
-              className={
-                "z-10 absolute drop-shadow-lg cursor-pointer ml-[2.3rem] "
-              }
-            />
-            <span className="font-patrick tracking-wide absolute ml-[6rem]">
-              {"["}
-              {card}
-              {"]"} {Mushrooms[card].name}, {"("}Damage:{" "}
-              {Mushrooms[card].damage}%{")"}
-            </span>
-            {/* <span className="font-patrick tracking-wide absolute mt-[2rem] -ml-[5rem]">
-              Special abilities (If any)
-            </span> */}
-            <img
-              src={images.vLog}
-              alt="Vertical log"
-              width={50}
-              className="drop-shadow-lg "
-            />
-          </div>
-        ))}
-        <div className="font-patrick text-2xl mt-[2rem] tracking-wide">
-          Total damage: {getTotalDamge(row, Mushrooms)}%, are you sure?
-        </div>
-        <div className="mb-10 mt-[2rem]">
-          <span
-            className="cursor-pointer text-3xl font-patrick tracking-wide"
-            onClick={handleChoose}
-          >
-            YES
-          </span>
-          <span className="text-3xl font-patrick tracking-wide mx-10">|</span>
-          <span
-            className="cursor-pointer text-3xl font-patrick tracking-wide"
-            onClick={() => setHasChosen(false)}
-          >
-            NO{" "}
-          </span>
-        </div>
-      </div>
-    );
-  }
+  // if (hasChosen) {
+  //   let row: number[] = data[choice];
+  //   return (
+  //     <div className="mt-[2rem]">
+  //       {row.map((card: number, index: number) => (
+  //         <div key={index} className="">
+  //           <img
+  //             src={mushImage(Mushrooms[card].name)}
+  //             width={50}
+  //             alt="player mushrooms!"
+  //             className={
+  //               "z-10 absolute drop-shadow-lg cursor-pointer ml-[2.3rem] "
+  //             }
+  //           />
+  //           <span className="font-patrick tracking-wide absolute ml-[6rem]">
+  //             {"["}
+  //             {card}
+  //             {"]"} {Mushrooms[card].name}, {"("}Damage:{" "}
+  //             {Mushrooms[card].damage}%{")"}
+  //           </span>
+  //           {/* <span className="font-patrick tracking-wide absolute mt-[2rem] -ml-[5rem]">
+  //             Special abilities (If any)
+  //           </span> */}
+  //         </div>
+  //       ))}
+  //       <div className="font-patrick text-2xl mt-[2rem] tracking-wide">
+  //         Total damage: {getTotalDamge(row, Mushrooms)}%, are you sure?
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -164,14 +180,14 @@ const Deck = () => {
           data.map((row: number[], rowNumber: number) => (
             <div
               key={rowNumber}
-              className="inline-flex  items-center cursor-pointer"
+              className="flex flex-row -space-x-[0.1rem] items-center cursor-pointer"
               // onClick={(e) => handleRowClick(e, rowNumber)}
             >
               {row.map((card: number, cardNumber: number) => (
                 <div key={cardNumber} className="relative ">
                   <div className="z-10 absolute">
                     <img
-                      className="w-[18vw] max-w-[80px] drop-shadow-lg"
+                      className="w-[15vw] max-w-[80px] drop-shadow-lg"
                       src={mushImage(Mushrooms[card].name)}
                       alt="Mushroom"
                       style={{ marginTop: getY(card), marginLeft: getX(card) }}
@@ -188,7 +204,10 @@ const Deck = () => {
                   </div>
                 </div>
               ))}
-              <div className="ml-4 text-[1.5rem]">{row[row.length - 1]}</div>
+              <div className="ml-4 text-[1.5rem]">
+                <span className="text-white text-[1rem]">{"m"}</span>
+                {row[row.length - 1]}
+              </div>
             </div>
           ))}
         {isChoosing && (

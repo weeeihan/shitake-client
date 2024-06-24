@@ -10,9 +10,9 @@ const Mushroom = ({
   setMush: React.Dispatch<React.SetStateAction<number>>;
 }) => {
   const {
-    gameConstants: { Mushrooms },
+    gameData: { room },
   } = useContext(GamestateContext);
-
+  const Mushrooms = room.mushrooms;
   const goBack = (e: React.SyntheticEvent) => {
     e.preventDefault();
     setMush(-1);

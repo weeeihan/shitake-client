@@ -1,14 +1,11 @@
 import { useContext, useState } from "react";
 import { GamestateContext } from "../modules/gamestate_provider";
-import { DamageReport, Player, PlayerDisplay } from "../utils/struct";
-import Mushcard from "../components/Mushcard";
 import { WebsocketContext } from "../modules/websocket_provider";
 import { actions, getResults } from "../utils/utils";
 
 const Gameend = () => {
   const {
-    refetchData,
-    gameConstants: { Mushrooms, State },
+    gameConstants: { State },
     gameData: { room },
   } = useContext(GamestateContext);
 
@@ -30,7 +27,6 @@ const Gameend = () => {
     e.preventDefault();
     if (conn !== null) {
       conn.send(actions(State.LEAVE));
-      refetchData();
     }
   };
 

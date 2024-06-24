@@ -3,8 +3,9 @@ import { GamestateContext } from "../modules/gamestate_provider";
 
 const Mushcard = ({ mush }: { mush: number }) => {
   const {
-    gameConstants: { Mushrooms },
+    gameData: { room },
   } = useContext(GamestateContext);
+  const Mushrooms = room.mushrooms;
   return (
     <div className="horz-div flex-col ">
       <div>{Mushrooms[mush].name}</div>

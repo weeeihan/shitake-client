@@ -40,7 +40,7 @@ export function GetID() {
 }
 
 export function resOk(res: any) {
-  return res.statusText == "OK"
+  return res.status == 200 
 } 
 
 export function checkLocalStorage(){
@@ -99,9 +99,11 @@ export function useCountdown(seconds: number, onEnd: () => any) {
   return remaining;
 }
 
-const randomHundred = [51, 9, 98, 8, 84, 46, 28, 22, 7, 86, 80, 67, 74, 49, 82, 55, 16, 11, 87, 26, 71, 39, 85, 53, 63, 25, 62, 50, 1, 38, 99, 34, 35, 24, 33, 76, 27, 43, 20, 90, 91, 79, 58, 19, 15, 10, 45, 65, 56, 41, 30, 47, 17, 42, 44, 75, 2, 73, 60, 14, 31, 89, 37, 40, 70, 96, 95, 36, 54, 48, 97, 13, 3, 52, 68, 83, 57, 81, 23, 32, 21, 64, 18, 4, 92, 29, 72, 0, 59, 66, 77, 94, 12, 5, 78, 69, 88, 93, 61, 6]
+// Randomize later
+const randomHundred = [51, 9, 98, 8, 84, 46, 28, 22, 7, 86, 80, 67, 74, 49, 82, 55, 16, 11, 87, 26, 71, 39, 85, 53, 63, 25, 62, 50, 1, 38, 99, 34, 35, 24, 33, 76, 27, 43, 20, 90, 91, 79, 58, 19, 15, 10, 45, 65, 56, 41, 30, 47, 17, 42, 44, 75, 2, 73, 60, 14, 31, 89, 37, 40, 70, 96, 95, 36, 54, 48, 97, 13, 3, 52, 68, 83, 57, 81, 23, 32, 21, 64, 18, 4, 92, 29, 72, 0, 59, 66, 77, 94, 12, 5, 78, 69, 88, 93, 61, 6, 52, 36]
 
 export function getY(weight: number) {
+  // console.log(weight)
   // console.log((randomHundred[weight]/2.5 ))
   return (randomHundred[weight]/2.5 ) - 50 
 }
@@ -137,6 +139,7 @@ export function useInterval(callback: any, delay: any) {
       return () => clearInterval(id);
     }
   }, [delay]);
+  
 }
 
 
@@ -223,3 +226,7 @@ export function needRefetch(m: Message, State: any, player: Player) : boolean {
   // Else, refetch
   return true
 } 
+
+export function mushImage(name: string) {
+  return `/images/${name}.png`;
+};

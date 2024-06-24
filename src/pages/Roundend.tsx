@@ -1,19 +1,21 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { GamestateContext } from "../modules/gamestate_provider";
-import { DamageReport, Player } from "../utils/struct";
 import Mushcard from "../components/Mushcard";
 import { WebsocketContext } from "../modules/websocket_provider";
 import { actions } from "../utils/utils";
+import Dashboard from "../components/Dashboard";
 
 const Roundend = () => {
   const {
-    gameConstants: { Mushrooms, State },
+    gameConstants: { State },
   } = useContext(GamestateContext);
 
   const { conn } = useContext(WebsocketContext);
   const {
-    gameData: { roomData, player },
+    gameData: { room, player },
   } = useContext(GamestateContext);
+
+  const [ready, setReady] = useState(false);
 
   // const player: Player = {
   //   id: "12345",
@@ -32,16 +34,17 @@ const Roundend = () => {
 
   const handleReady = (e: React.SyntheticEvent) => {
     e.preventDefault();
+    setReady(true);
     if (conn !== null) {
       conn.send(actions(State.READY));
     }
   };
   const debug = () => {
-    console.log(player);
+    console.log(room);
   };
 
   return (
-    <div className="w-screen h-screen">
+    <div className="w-screen h-screen py-[7rem]">
       <div>Damage Report Card</div>
       <hr />
       <div>
@@ -63,22 +66,20 @@ const Roundend = () => {
       <hr />
       <div>Mushroom consumed:</div>
       <div>
-        {player.damageReport.roundMushrooms.length +
+        {player.damageReport.roundMushrooms +
           " in this round / " +
-          player.damageReport.mushrooms.length +
+          player.damageReport.mushrooms +
           " in total"}
       </div>
-      <div className="horz-scroll">
-        {player.damageReport.mushrooms.map((mushroom, index) => (
-          <div className="horz-item" key={index}>
-            {<Mushcard mush={mushroom} />}
-          </div>
-        ))}
+
+      <div className=" flex justify-center">
+        <button onClick={handleReady}>
+          {ready ? "Waiting for others..." : "Ready for next round!"}
+        </button>
       </div>
-      <div>
-        <button onClick={handleReady}>Ready for next round</button>
+      <div className="mt-20">
+        <Dashboard />
       </div>
-      <div>Dashboard</div>
       <button onClick={debug}>Debug-test</button>
     </div>
   );

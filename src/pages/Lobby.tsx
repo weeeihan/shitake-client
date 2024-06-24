@@ -67,6 +67,9 @@ const Lobby = () => {
   //     ready: false,
   //   },
   // ];
+  const debug = () => {
+    console.log(player);
+  };
 
   const handleLeave = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -195,9 +198,9 @@ const Lobby = () => {
             onClick={handleLeave}
           />
         </div>
-        {/* <div>
+        <div>
           <button onClick={debug}>Debug</button>
-        </div> */}
+        </div>
       </div>
     </div>
   );

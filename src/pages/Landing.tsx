@@ -17,7 +17,7 @@ const Landing = () => {
     fetchData,
   } = useContext(GamestateContext);
   const debug = () => {
-    // console.log(utils.GetID());
+    console.log(utils.GetID());
     // localStorage.setItem("id", "1234");
     // refetchPlayer();
   };
@@ -37,9 +37,16 @@ const Landing = () => {
     //   return;
     // }
 
-    if (roomID === "") {
-      alert("PLEASE FILL IN THE ROOM CODE");
+    if (roomID.length !== 4) {
+      alert("ROOM ID MUST BE 4 NUMBERS");
       return;
+    }
+
+    for (let i = 0; i < roomID.length; i++) {
+      if (isNaN(parseInt(roomID[i]))) {
+        alert("ROOM ID MUST BE 4 NUMBERS");
+        return;
+      }
     }
 
     handlers.JoinRoom(name, State, roomID, fetchData);
@@ -67,10 +74,15 @@ const Landing = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen">
       <div>
-        <img className="drop-shadow-lg" alt="Mush1" src={images.mush1} />
+        <img
+          className="drop-shadow-lg"
+          alt="Mush1"
+          width={150}
+          src="https://cdn.jsdelivr.net/gh/weeeihan/shitake-images@master/Shiitake.png"
+        />
       </div>
       <div className="text-7xl font-rubik">SHITAKE</div>
-      <div className="text-2xl font-reenie">A number game by Han.</div>
+      <div className="text-2xl font-reenie">A number game.</div>
       <div className="pt-20">Name</div>
       <input
         onChange={(e) => setName(e.target.value)}
@@ -85,7 +97,7 @@ const Landing = () => {
       />
       {name === "" ? (
         <div>
-          <button className="font-klee text-white mt-10 rounded-lg py-2 px-2 drop-shadow-md">
+          <button className="font-klee text-white mt-10 rounded-lg py-2 px-2 ">
             Empty
           </button>
         </div>

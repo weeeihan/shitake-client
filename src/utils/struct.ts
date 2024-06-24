@@ -6,6 +6,7 @@ export type Room = {
   chooser: string
   played: any 
   moves: string[][]
+  mushrooms: any
 }
 
 
@@ -50,10 +51,11 @@ export type Player = {
 } 
 
 export type DamageReport = {
-  mushrooms: number[]
+  mushrooms: number
   damageTaken: number
-  roundMushrooms: number[]
+  roundMushrooms: number
   roundDamage: number
+  mushroomTypes: number[]
 }
 
 export type Played = {
@@ -64,7 +66,6 @@ export type Played = {
 
 export type GameConstants = {
   State: any;
-  Mushrooms: any;
 };
 
 export type GameStates = {
