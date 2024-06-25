@@ -7,6 +7,7 @@ import { WebsocketContext } from "../modules/websocket_provider";
 import { GamestateContext } from "../modules/gamestate_provider";
 import Draggable from "react-draggable";
 import { GameStates } from "../utils/struct";
+import { actions, img } from "../utils/utils";
 
 const Game = () => {
   let vw = document.documentElement.clientWidth;
@@ -15,18 +16,20 @@ const Game = () => {
   };
   const nodeRef = useRef(null);
   const {
+    navigate,
     setGameStates,
-    gameStates,
-    gameStates: { bottomDisp, handToggle, showPlaying, showHideLoc, selected },
+    gameStates: { bottomDisp, handToggle, showPlaying, showHideLoc, onLeave },
     gameConstants: { State },
     gameData: { room, player },
   } = useContext(GamestateContext);
   const { countDown } = useContext(WebsocketContext);
+  const { conn } = useContext(WebsocketContext);
   const showHide = bottomDisp == "Hand" ? "HIDE" : "SHOW";
   const [delta, setDelta] = useState([0, 0]);
 
   const [startpos, setStartpos] = useState<number[]>([]);
 
+  // For processing the showhide button
   useEffect(() => {
     setGameStates((prevState: GameStates) => ({
       ...prevState,
@@ -34,6 +37,14 @@ const Game = () => {
     }));
   }, [handToggle]);
 
+  const handleLeave = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    if (conn !== null) {
+      localStorage.clear();
+      conn.send(actions(State.LEAVE));
+      navigate("/");
+    }
+  };
   const debug = () => {
     console.log(room);
     // console.log(room);
@@ -88,6 +99,44 @@ const Game = () => {
     return (
       <div className="py-20">
         <Playing />
+      </div>
+    );
+  }
+
+  if (onLeave) {
+    return (
+      <div className="text-center flex flex-col items-center justify-center h-screen">
+        <div className="font-patrick text-2xl my-10 tracking-wide">
+          Leaving already? 😢
+        </div>
+        <div className="mb-10">
+          <span
+            className="cursor-pointer text-3xl font-patrick tracking-wide"
+            onClick={handleLeave}
+          >
+            YES
+          </span>
+          <span className="text-3xl font-patrick tracking-wide mx-10">|</span>
+          <span
+            className="cursor-pointer text-3xl font-patrick tracking-wide"
+            onClick={() =>
+              setGameStates((prevState: GameStates) => ({
+                ...prevState,
+                onLeave: false,
+              }))
+            }
+          >
+            NO{" "}
+          </span>
+        </div>
+
+        <img
+          src={img("door-open")}
+          alt="Door"
+          width={45}
+          className="  drop-shadow-lg  "
+          // onClick={handleLeave}
+        />
       </div>
     );
   }

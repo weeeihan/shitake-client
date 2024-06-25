@@ -66,15 +66,18 @@
   appearance: none;
   height: 20px;
   width: 100%;
-  border-width: 1px;
+  border-radius: 5px;
+  /* border-width: 1px; */
   border-color: black;
     
   /* Chrome and Safari */
   &::-webkit-progress-bar {
+    border-radius: 5px;
     background: white;
   }
 
   &::-webkit-progress-value {
+    border-radius: 5px;
     background-color: #78f36b 
   }
 
@@ -84,4 +87,10 @@
   }
 }
 
+
+.footer {
+  bottom: 5%;
+  position: fixed;
+  
+}
 

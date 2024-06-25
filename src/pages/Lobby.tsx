@@ -15,7 +15,8 @@ const Lobby = () => {
   const navigate = useNavigate();
   const {
     gameData: { player, room },
-    gameStates: { isAlready },
+    gameStates: { isAlready, onLeave },
+    setGameStates,
     gameConstants: { State },
   } = useContext(GamestateContext);
   const { conn } = useContext(WebsocketContext);
@@ -32,6 +33,10 @@ const Lobby = () => {
       localStorage.clear();
       navigate("/");
       conn.send(utils.actions(State.LEAVE));
+      setGameStates((prev: any) => ({
+        ...prev,
+        onLeave: false,
+      }));
     }
   };
 
@@ -46,8 +51,8 @@ const Lobby = () => {
     }
   };
 
-  const [over, setOver] = useState(false);
-  const [onLeave, setOnLeave] = useState(false);
+  // const [over, setOver] = useState(false);
+  // const [onLeave, setOnLeave] = useState(false);
   const players = utils.SortPlayers(room.players);
 
   // const players = [
@@ -71,17 +76,6 @@ const Lobby = () => {
     console.log(player);
   };
 
-  const handleLeave = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    setOnLeave(true);
-  };
-
-  const handleStay = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    setOnLeave(false);
-    setOver(false);
-  };
-
   // If leaving
   if (onLeave)
     return (
@@ -99,18 +93,22 @@ const Lobby = () => {
           <span className="text-3xl font-patrick tracking-wide mx-10">|</span>
           <span
             className="cursor-pointer text-3xl font-patrick tracking-wide"
-            onClick={handleStay}
+            onClick={() =>
+              setGameStates((prevState: any) => ({
+                ...prevState,
+                onLeave: false,
+              }))
+            }
           >
             NO{" "}
           </span>
         </div>
 
         <img
-          src={over || onLeave ? images.doorOpen : images.doorClose}
+          src={utils.img("door-open")}
           alt="Door"
           width={45}
           className="  drop-shadow-lg  "
-          onClick={handleLeave}
         />
       </div>
     );
@@ -135,7 +133,7 @@ const Lobby = () => {
             <img
               width={130}
               alt="All ready shroom"
-              src={images.startButton}
+              src={utils.img("startButton")}
               className="cursor-pointer z-10 absolute -mt-[6rem] mr-1"
               onClick={handleStartGame}
             />
@@ -151,7 +149,7 @@ const Lobby = () => {
         {players.map((p: PlayerDisplay, index: number) => (
           <div key={index} className="-my-8">
             <img
-              src={p.ready ? images.readyMush : images.mush2}
+              src={p.ready ? utils.img("readymush") : utils.img("mush2")}
               width={80}
               alt="player mushrooms!"
               className={
@@ -172,7 +170,7 @@ const Lobby = () => {
               {p.name}
             </span>
             <img
-              src={images.vLog}
+              src={utils.img("vlog")}
               alt="Vertical log"
               width={60}
               className="drop-shadow-lg "
@@ -180,22 +178,24 @@ const Lobby = () => {
           </div>
         ))}
         <img
-          src={images.vLog}
+          src={utils.img("vlog")}
           alt="Vertical log"
           width={60}
           className=" drop-shadow-lg "
         />
 
-        <div
-          onMouseOver={() => setOver(true)}
-          onMouseLeave={() => setOver(false)}
-        >
+        <div>
           <img
-            src={over || onLeave ? images.doorOpen : images.doorClose}
+            src={utils.img("door-close")}
             alt="Door"
             width={45}
             className="relative -mt-[4.75rem] drop-shadow-lg cursor-pointer "
-            onClick={handleLeave}
+            onClick={() =>
+              setGameStates((prevState: any) => ({
+                ...prevState,
+                onLeave: true,
+              }))
+            }
           />
         </div>
         <div>

@@ -78,7 +78,7 @@ const Landing = () => {
           className="drop-shadow-lg"
           alt="Mush1"
           width={150}
-          src="https://cdn.jsdelivr.net/gh/weeeihan/shitake-images@master/Shiitake.png"
+          src={utils.img("Shiitake")}
         />
       </div>
       <div className="text-7xl font-rubik">SHITAKE</div>

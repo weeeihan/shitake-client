@@ -27,6 +27,7 @@ export const GamestateContext = createContext<{
     played: [],
     prevPlayed: {},
     showHideLoc: [],
+    onLeave: false,
   },
   setGameStates: () => {},
   gameData: {} as GameData,
@@ -70,6 +71,7 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     played: [],
     prevPlayed: {},
     showHideLoc: [165, 400],
+    onLeave: false,
   });
 
   // Fetch API
@@ -174,6 +176,13 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     // Handle update based on websocket messages ========================
     // Ready messages
     if (m !== undefined) {
+      if (m.state == State.REGISTERED) {
+        setGameStates((prev) => ({
+          ...prev,
+          isAlready: false,
+        }));
+      }
+
       if (
         m.state == State.ALREADY ||
         m.state == State.UNREADY ||

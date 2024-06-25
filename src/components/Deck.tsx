@@ -2,7 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import * as images from "../assets/images/images";
 import { WebsocketContext } from "../modules/websocket_provider";
 import { GamestateContext } from "../modules/gamestate_provider";
-import { actions, getTotalDamge, getX, getY, mushImage } from "../utils/utils";
+import {
+  actions,
+  getTotalDamge,
+  getX,
+  getY,
+  img,
+  mushImage,
+} from "../utils/utils";
 import { GameStates } from "../utils/struct";
 import Spore from "./Spore";
 
@@ -98,7 +105,7 @@ const Deck = ({ data }: { data: number[][] }) => {
           {row.map((card: number, index: number) => (
             <div key={index} className="flex flex-row items-center">
               <img
-                src={mushImage(Mushrooms[card].name)}
+                src={img(Mushrooms[card].name)}
                 width={80}
                 alt="player mushrooms!"
                 className={" drop-shadow-lg cursor-pointer ml-[2.3rem] "}
@@ -188,7 +195,7 @@ const Deck = ({ data }: { data: number[][] }) => {
                   <div className="z-10 absolute">
                     <img
                       className="w-[15vw] max-w-[80px] drop-shadow-lg"
-                      src={mushImage(Mushrooms[card].name)}
+                      src={img(Mushrooms[card].name)}
                       alt="Mushroom"
                       style={{ marginTop: getY(card), marginLeft: getX(card) }}
                       onClick={(e) => handleRowClick(e, rowNumber)}
@@ -196,7 +203,7 @@ const Deck = ({ data }: { data: number[][] }) => {
                   </div>
                   <div className=" ">
                     <img
-                      src={images.hLog}
+                      src={img("hlog")}
                       alt="Horizontal Log"
                       className="w-[18vw] h-[6vh] max-w-[100px] min-h-[50px]"
                       onClick={(e) => handleRowClick(e, rowNumber)}

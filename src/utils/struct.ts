@@ -79,6 +79,7 @@ export type GameStates = {
   played: number[][];
   prevPlayed: any;
   showHideLoc: number[];
+  onLeave: boolean;
 };
 
 export type GameData = {

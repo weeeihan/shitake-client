@@ -230,3 +230,11 @@ export function needRefetch(m: Message, State: any, player: Player) : boolean {
 export function mushImage(name: string) {
   return `/images/${name}.png`;
 };
+
+export function img(name: string) {
+  return `https://cdn.jsdelivr.net/gh/weeeihan/shitake-images@master/${name}.png`
+}
+
+export function coloring(color: string) {
+  if (color == "brown") return "#ffdeba" 
+}

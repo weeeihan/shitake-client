@@ -15,7 +15,7 @@ import {
 
 import Modal from "react-modal";
 import { GamestateContext } from "../modules/gamestate_provider";
-import { actions } from "../utils/utils";
+import { actions, coloring, img } from "../utils/utils";
 import Spore from "./Spore";
 import Mushroom from "./Mushroom";
 
@@ -57,20 +57,33 @@ const Selection = ({ selected }: { selected: number }) => {
     return (
       <div
         ref={setNodeRef}
-        className="w-[25rem] h-[10rem] border flex flex-col justify-center"
+        className="w-11/12 h-[13rem] -mt-4 rounded-2xl flex flex-col justify-center items-center shadow-lg"
+        style={{
+          backgroundColor: coloring("brown"),
+        }}
       >
-        <div className="align-left ">Toss a spore!</div>
+        <div>Toss a spore!</div>
       </div>
     );
   }
   return (
     <div
       ref={setNodeRef}
-      className="w-[25rem] h-[10rem] border overflow-y-scroll "
+      className="relative w-11/12 -mt-4 h-[13rem] rounded-2xl shadow-lg overflow-y-scroll "
+      style={{
+        backgroundColor: coloring(Mushrooms[selected].color),
+      }}
     >
-      <div className="text-4xl">{selected}</div>
-      <div>{Mushrooms[selected].name}</div>
-      <div>{Mushrooms[selected].desc}</div>
+      <div className="absolute left-3 text-4xl">{selected}</div>
+      <div className="absolute right-3 text-4xl">{selected}</div>
+      <div className="flex flex-col items-center my-1 mx-2">
+        <img src={img(Mushrooms[selected].name)} width={80} />
+        {/* <div className="text-4xl">{selected}</div> */}
+        <div>
+          {Mushrooms[selected].name + " [" + Mushrooms[selected].damage + "]"}
+        </div>
+        <div>{Mushrooms[selected].desc}</div>
+      </div>
     </div>
   );
 };
