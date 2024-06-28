@@ -1,9 +1,16 @@
-import React, { useState, createContext } from "react";
-import { GetID } from "../utils/utils";
-import { GameData, GameConstants, GameStates, Message } from "../utils/struct";
+import React, { useState, createContext, Suspense } from "react";
+import { GetID, img } from "../utils/utils";
+import {
+  GameData,
+  GameConstants,
+  GameStates,
+  Message,
+  Room,
+} from "../utils/struct";
 import { useNavigate, useLocation, NavigateFunction } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
+import { useImage } from "react-image";
 import { GET_CONSTANTS_API, GET_DATA_API } from "../utils/api";
 
 export const GamestateContext = createContext<{
@@ -13,6 +20,8 @@ export const GamestateContext = createContext<{
   gameData: GameData;
   setGameStates: React.Dispatch<React.SetStateAction<GameStates>>;
   fetchData: any;
+  gameImages: any;
+  getMush: any;
 }>({
   navigate: () => {},
   gameConstants: {} as GameConstants,
@@ -32,11 +41,25 @@ export const GamestateContext = createContext<{
   setGameStates: () => {},
   gameData: {} as GameData,
   fetchData: () => {},
+  gameImages: {},
+  getMush: (num: number): any => {},
 });
 
 const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [gameImages, setGameImages] = useState<any>({});
+  const [gameData, setGameData] = useState<GameData>({} as GameData);
+  const [imageLoading, setImageLoading] = useState(true);
+
+  const getMush = (num: number) => {
+    const room = gameData.room;
+    if (room.mushrooms[num] === undefined) {
+      return room.mushrooms[0];
+    }
+    return room.mushrooms[num];
+  };
+
   function redirect(des: string) {
     const loc = window.location;
     if (loc.pathname === "/test") return;
@@ -44,9 +67,66 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     navigate(des);
   }
 
-  const [gameData, setGameData] = useState<GameData>({} as GameData);
-
   let id = GetID();
+
+  // Fetching image
+  // const {
+  //   data: images,
+  //   isLoading: imageLoading,
+  //   refetch: fetchImages,
+  // } = useQuery({
+  //   enabled: false,
+  //   queryKey: ["images"],
+  //   queryFn: async () => {
+
+  // const Shiitake = await fetch(img("Shiitake"));
+  // const blob = await Shiitake.blob();
+  // const url = URL.createObjectURL(blob);
+  // const images = {
+  //       Shiitake: url,
+  //     };
+  //     return images;
+  //   },
+  // });
+
+  const fetchImages = async (room: Room) => {
+    console.log("Fetching Images");
+    const baseImage = [
+      "bagClose",
+      "mush2",
+      "readymush",
+      "vlog",
+      "hlog",
+      "startButton",
+      "door-close",
+      "door-open",
+    ];
+
+    let imgs: any = {};
+
+    for (const name of baseImage) {
+      const raw = await fetch(img(name));
+      const blob = await raw.blob();
+      const url = URL.createObjectURL(blob);
+      imgs[name] = url;
+    }
+
+    const Mushrooms = Object.keys(room.mushrooms);
+
+    for (const mush of Mushrooms) {
+      const name = room.mushrooms[mush].name;
+      const raw = await fetch(img(name));
+      const blob = await raw.blob();
+      const url = URL.createObjectURL(blob);
+      imgs[name] = url;
+    }
+
+    setGameImages((prev: any) => ({
+      ...imgs,
+    }));
+
+    setImageLoading(false);
+  };
 
   // useQuery to fetch constants.
   const { data: constants, isLoading: constLoading } = useQuery({
@@ -78,12 +158,11 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchData = async (states: any, msg?: Message | undefined) => {
     id = GetID();
     if (id === "none") {
-      console.log("no id");
       redirect("/");
       setGameData({} as GameData);
       return;
     }
-    console.log("Fetching");
+    console.log("Fetching Data");
     try {
       // const res = await refetch();
       const res = await axios.get(GET_DATA_API(id));
@@ -110,6 +189,10 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     let [room, player, State] = [res.data.room, res.data.player, states];
+
+    if (Object.keys(gameImages).length === 0) {
+      fetchImages(room);
+    }
 
     setGameData((prevState: GameData) => ({
       ...prevState,
@@ -257,6 +340,15 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     return <div>Loading players and stuff</div>;
   }
 
+  if (imageLoading && location.pathname !== "/") {
+    return <div>Loading images...</div>;
+  }
+
+  // if (imageLoading) {
+  //   return <div>Loading images...</div>;
+  // }
+  // console.log(images);
+
   return (
     <GamestateContext.Provider
       value={{
@@ -268,6 +360,8 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
         setGameStates: setGameStates,
         gameData: gameData,
         fetchData: fetchData,
+        gameImages: gameImages,
+        getMush: getMush,
       }}
     >
       {children}

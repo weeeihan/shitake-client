@@ -10,7 +10,6 @@ import { GameStates } from "../utils/struct";
 import { actions, img } from "../utils/utils";
 
 const Game = () => {
-  let vw = document.documentElement.clientWidth;
   const showHideStyle = {
     marginLeft: "207px",
   };
@@ -21,6 +20,7 @@ const Game = () => {
     gameStates: { bottomDisp, handToggle, showPlaying, showHideLoc, onLeave },
     gameConstants: { State },
     gameData: { room, player },
+    gameImages,
   } = useContext(GamestateContext);
   const { countDown } = useContext(WebsocketContext);
   const { conn } = useContext(WebsocketContext);
@@ -28,12 +28,20 @@ const Game = () => {
   const [delta, setDelta] = useState([0, 0]);
 
   const [startpos, setStartpos] = useState<number[]>([]);
+  let vw = Math.max(
+    document.documentElement.clientWidth || 0,
+    window.innerWidth || 0
+  );
+  let vh = Math.max(
+    document.documentElement.clientHeight || 0,
+    window.innerHeight || 0
+  );
 
   // For processing the showhide button
   useEffect(() => {
     setGameStates((prevState: GameStates) => ({
       ...prevState,
-      showHideLoc: [165 + delta[0], 500 + delta[1]],
+      showHideLoc: [vw - 80 + delta[0], vh - 450 + delta[1]],
     }));
   }, [handToggle]);
 
@@ -46,7 +54,8 @@ const Game = () => {
     }
   };
   const debug = () => {
-    console.log(room);
+    console.log(player);
+
     // console.log(room);
     // setGameStates((prevState: GameStates) => ({
     //   ...prevState,
@@ -143,15 +152,27 @@ const Game = () => {
 
   // DISABLE USER TO CHECK HAND IF NUMBER OF HAND = 0
   return (
-    <div>
+    <div className="relative flex flex-col h-screen">
       {countDown !== 0 && (
-        <div className="absolute text-[20rem] ml-[10rem] mt-[10rem]">
-          {countDown}
-        </div>
+        <>
+          <div className="absolute z-[100] text-[20rem] left-1/4 top-1/5 opacity-70">
+            {countDown}
+          </div>
+          <div className="absolute z-[100] left-5 text-[3rem] ">
+            {countDown}
+          </div>
+          <div className="absolute z-[100] right-5 text-[3rem]">
+            {countDown}
+          </div>
+        </>
       )}
+      {/*Show hide button*/}
       <div
-        className="flex flex-col absolute "
-        style={{ marginLeft: showHideLoc[0], marginTop: showHideLoc[1] }}
+        className="flex flex-col absolute z-[1000] "
+        style={{
+          marginLeft: showHideLoc[0],
+          marginTop: showHideLoc[1],
+        }}
       >
         {room.state === State.CHOOSE_CARD && handToggle && (
           <Draggable nodeRef={nodeRef}>
@@ -161,22 +182,22 @@ const Game = () => {
               onTouchEndCapture={handleTouchEnd}
               className=""
             >
-              <div className=" ">{showHide}</div>
+              <div className=" ">
+                <img src={gameImages.bagClose} alt="bag" width={60} />
+              </div>
             </a>
           </Draggable>
         )}
       </div>
-      <div className="py-20">
+      <div className="mt-20 mb-9">
         <Deck data={room.deck} />
       </div>
-      <div className="flex flex-col items-center ">
+      <div className="flex flex-col h-full items-center">
         {bottomDisp === "Blank" && <></>}
         {bottomDisp === "Hand" && <Hand />}
         {bottomDisp === "Dashboard" && <Dashboard />}
-        {/* {bottomDisp === "Playing" && <Playing />} */}
         {bottomDisp === "ChooseRow" && <div>Chossing row!</div>}
         {/* <button onClick={debug}>Debug main game screen</button> */}
-        {/* <button onClick={clear}>Clear</button> */}
       </div>
     </div>
   );

@@ -1,15 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
-import * as images from "../assets/images/images";
 import { WebsocketContext } from "../modules/websocket_provider";
 import { GamestateContext } from "../modules/gamestate_provider";
-import {
-  actions,
-  getTotalDamge,
-  getX,
-  getY,
-  img,
-  mushImage,
-} from "../utils/utils";
+import Img from "../components/Img";
+import { actions, getTotalDamge, getX, getY, img } from "../utils/utils";
 import { GameStates } from "../utils/struct";
 import Spore from "./Spore";
 
@@ -19,9 +12,10 @@ const Deck = ({ data }: { data: number[][] }) => {
   const {
     gameData: { player, room },
     gameConstants: { State },
+    getMush,
     setGameStates,
+    gameImages,
   } = useContext(GamestateContext);
-  const Mushrooms = room.mushrooms;
   // console.log(Mushrooms);
   // const data = room.deck;
   // console.log(room);
@@ -102,19 +96,19 @@ const Deck = ({ data }: { data: number[][] }) => {
               <div>{"(Press anywhere to go back)"}</div>
             )}
           </div>
-          {row.map((card: number, index: number) => (
+          {row.map((num: number, index: number) => (
             <div key={index} className="flex flex-row items-center">
               <img
-                src={img(Mushrooms[card].name)}
+                src={gameImages[getMush(num).name]}
                 width={80}
                 alt="player mushrooms!"
                 className={" drop-shadow-lg cursor-pointer ml-[2.3rem] "}
               />
               <div className="font-patrick tracking-wide">
                 {"["}
-                {card}
-                {"]"} {Mushrooms[card].name}, {"("}Damage:{" "}
-                {Mushrooms[card].damage}%{")"}
+                {num}
+                {"]"} {getMush(num).name}, {"("}Damage: {getMush(num).damage}%
+                {")"}
               </div>
               {/* <span className="font-patrick tracking-wide absolute mt-[2rem] -ml-[5rem]">
               Special abilities (If any)
@@ -122,7 +116,7 @@ const Deck = ({ data }: { data: number[][] }) => {
             </div>
           ))}
           <div className="font-patrick text-2xl mt-20 tracking-wide flex justify-center">
-            Total damage: {getTotalDamge(row, Mushrooms)}%
+            Total damage: {getTotalDamge(row, room.mushrooms)}%
           </div>
           {hasChosen && (
             <div className="flex flex-row justify-center mt-10">
@@ -190,23 +184,23 @@ const Deck = ({ data }: { data: number[][] }) => {
               className="flex flex-row -space-x-[0.1rem] items-center cursor-pointer"
               // onClick={(e) => handleRowClick(e, rowNumber)}
             >
-              {row.map((card: number, cardNumber: number) => (
+              {row.map((num: number, cardNumber: number) => (
                 <div key={cardNumber} className="relative ">
                   <div className="z-10 absolute">
                     <img
                       className="w-[15vw] max-w-[80px] drop-shadow-lg"
-                      src={img(Mushrooms[card].name)}
+                      src={gameImages[getMush(num).name]}
                       alt="Mushroom"
-                      style={{ marginTop: getY(card), marginLeft: getX(card) }}
+                      style={{ marginTop: getY(num), marginLeft: getX(num) }}
                       onClick={(e) => handleRowClick(e, rowNumber)}
                     />
                   </div>
                   <div className=" ">
                     <img
-                      src={img("hlog")}
+                      src={gameImages.hlog}
                       alt="Horizontal Log"
                       className="w-[18vw] h-[6vh] max-w-[100px] min-h-[50px]"
-                      onClick={(e) => handleRowClick(e, rowNumber)}
+                      onClick={(e: any) => handleRowClick(e, rowNumber)}
                     />
                   </div>
                 </div>

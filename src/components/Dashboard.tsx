@@ -8,6 +8,7 @@ const Dashboard = () => {
   const {
     gameData: { room },
     setGameStates,
+    gameImages,
   } = useContext(GamestateContext);
 
   function health(hp: number) {
@@ -22,7 +23,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="w-11/12 h-[13rem] -mt-4 flex flex-col  bg-slate-100 rounded-2xl shadow-xl">
+      <div className="w-11/12 h-1/2  flex flex-col  bg-slate-100 rounded-2xl shadow-xl">
         <div className="my-4 mx-4">
           {room.players.map((player, index) => (
             <div key={index} className="my-2">
@@ -45,7 +46,7 @@ const Dashboard = () => {
         </div>
       </div>
       <img
-        src={img("door-close")}
+        src={gameImages["door-close"]}
         alt="Door"
         width={45}
         className="footer"

@@ -47,9 +47,9 @@ const modalStyle = {
 const Selection = ({ selected }: { selected: number }) => {
   const {
     gameData: { room },
+    getMush,
   } = useContext(GamestateContext);
 
-  const Mushrooms = room.mushrooms;
   const { setNodeRef } = useDroppable({
     id: "selection",
   });
@@ -57,7 +57,7 @@ const Selection = ({ selected }: { selected: number }) => {
     return (
       <div
         ref={setNodeRef}
-        className="w-11/12 h-[13rem] -mt-4 rounded-2xl flex flex-col justify-center items-center shadow-lg"
+        className="w-11/12 h-3/4 rounded-2xl h-1/2 flex flex-col justify-center items-center shadow-lg"
         style={{
           backgroundColor: coloring("brown"),
         }}
@@ -69,20 +69,20 @@ const Selection = ({ selected }: { selected: number }) => {
   return (
     <div
       ref={setNodeRef}
-      className="relative w-11/12 -mt-4 h-[13rem] rounded-2xl shadow-lg overflow-y-scroll "
+      className="relative w-11/12 h-1/2 rounded-2xl shadow-lg overflow-y-scroll "
       style={{
-        backgroundColor: coloring(Mushrooms[selected].color),
+        backgroundColor: coloring(getMush(selected).color),
       }}
     >
       <div className="absolute left-3 text-4xl">{selected}</div>
       <div className="absolute right-3 text-4xl">{selected}</div>
       <div className="flex flex-col items-center my-1 mx-2">
-        <img src={img(Mushrooms[selected].name)} width={80} />
+        <img src={img(getMush(selected).name)} width={80} />
         {/* <div className="text-4xl">{selected}</div> */}
         <div>
-          {Mushrooms[selected].name + " [" + Mushrooms[selected].damage + "]"}
+          {getMush(selected).name + " [" + getMush(selected).damage + "]"}
         </div>
-        <div>{Mushrooms[selected].desc}</div>
+        <div>{getMush(selected).desc}</div>
       </div>
     </div>
   );

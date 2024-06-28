@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import * as images from "../assets/images/images";
 import { GamestateContext } from "../modules/gamestate_provider";
 import {
   useInterval,
@@ -14,8 +13,14 @@ import Deck from "../components/Deck";
 import Spore from "../components/Spore";
 import { motion } from "framer-motion";
 import { WebsocketContext } from "../modules/websocket_provider";
+import Played from "./Played";
+import { useDoubleTap } from "use-double-tap";
 
 const Playing = () => {
+  const doubleTap = useDoubleTap(() => {
+    nextPlay();
+    console.log("Double Tapped");
+  });
   const {
     navigate,
     setGameStates,
@@ -160,13 +165,7 @@ const Playing = () => {
 
     return (
       <div className="mt-20">
-        {moves.map((p, index) => (
-          <div key={index}>
-            {p[0]}: {p[1]}
-          </div>
-          // <div key={index}>
-          // </div>
-        ))}
+        <Played moves={moves} />
       </div>
     );
   };
@@ -198,16 +197,14 @@ const Playing = () => {
   // }
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div {...doubleTap} className="flex flex-col items-center justify-center">
       <div className="relative z-1">
         {deck.length === 0 ? <Deck data={room.deck} /> : <Deck data={deck} />}
       </div>
       <div className="relative z-10">
         <Farming />
       </div>
-      <div>
-        <button onClick={nextPlay}>NEXT PLAY</button>
-      </div>
+      <div className="footer">{"Double tap anywhere to continue"}</div>
     </div>
     // <div className="flex flex-col items-center justify-center">
     //   {/* <div>This is test page</div> */}

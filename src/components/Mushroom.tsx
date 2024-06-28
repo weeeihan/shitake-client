@@ -9,10 +9,7 @@ const Mushroom = ({
   mush: number;
   setMush: React.Dispatch<React.SetStateAction<number>>;
 }) => {
-  const {
-    gameData: { room },
-  } = useContext(GamestateContext);
-  const Mushrooms = room.mushrooms;
+  const { getMush } = useContext(GamestateContext);
   const goBack = (e: React.SyntheticEvent) => {
     e.preventDefault();
     setMush(-1);
@@ -23,14 +20,14 @@ const Mushroom = ({
   }
   return (
     <div className="flex flex-col justify-center items-center">
-      <img alt="mush" src={`/images/${Mushrooms[mush].name}.png`} width={150} />
+      <img alt="mush" src={`/images/${getMush(mush).name}.png`} width={150} />
       <div>
-        {Mushrooms[mush].name} {"["}
+        {getMush(mush).name} {"["}
         {mush}
         {"]"}
       </div>
-      <div>Damage : {Mushrooms[mush].damage}</div>
-      <div>{Mushrooms[mush].desc}</div>
+      <div>Damage : {getMush(mush).damage}</div>
+      <div>{getMush(mush).desc}</div>
       <div>
         <button onClick={goBack}>Back</button>
       </div>

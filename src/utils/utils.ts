@@ -114,8 +114,12 @@ export function getX(weight: number) {
 
 export function getTotalDamge(row: number[], Mushroom: any) {
   var total = 0
-  for (const card of row) {
-    total += Mushroom[card].damage
+  for (const num of row) {
+    if (Mushroom[num] === undefined) {
+      total += Mushroom[0].damage
+      continue
+    } 
+    total += Mushroom[num].damage
   }
   return total
 }
@@ -236,5 +240,6 @@ export function img(name: string) {
 }
 
 export function coloring(color: string) {
+  if (color == "white") return "#ffffff"
   if (color == "brown") return "#ffdeba" 
 }
