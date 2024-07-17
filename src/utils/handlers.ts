@@ -16,9 +16,9 @@ export async function JoinRoom(name: string, state: any, roomID: string, fetchDa
 
 export async function CreateRoom(name: string, state: any,fetchData: (state:any)=> void){
   try {
-    console.log("Creating room!")
+    // console.log("Creating room!")
     const res = await axios.get(CREATE_ROOM_API(name))
-    console.log(res)
+    // console.log(res)
     if (resOk(res)) {
       console.log(res)
       localStorage.setItem("id",res.data.id)
@@ -35,6 +35,7 @@ export async function ConnectToGame(id: string, setConn: (conn: WebSocket)=> voi
   const ws = new WebSocket(CONNECT_API(id))
   console.log("Connecting")
   if (ws.OPEN) {
+    console.log("connected")
     setConn(ws)
     return
   }

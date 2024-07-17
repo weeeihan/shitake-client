@@ -1,170 +1,70 @@
-import {
-  DndContext,
-  useSensor,
-  useSensors,
-  useDroppable,
-  useDraggable,
-  PointerSensor,
-  TouchSensor,
-  KeyboardSensor,
-  closestCorners,
-  closestCenter,
-  DragOverlay,
-} from "@dnd-kit/core";
-import Spore from "../components/Spore";
-
-import { CSS } from "@dnd-kit/utilities";
-
-import {
-  useSortable,
-  SortableContext,
-  // horizontalListSortingStrategy,
-  sortableKeyboardCoordinates,
-  arrayMove,
-  rectSortingStrategy,
-} from "@dnd-kit/sortable";
-import { useState } from "react";
-
-const NumRow = ({
-  numballs,
-  active,
-}: {
-  numballs: number[];
-  active: number;
-}) => {
-  return (
-    <div className="flex flex-wrap mt-4 w-screen gap-x-5 gap-y-5 items-center justify-center">
-      <SortableContext items={numballs} strategy={rectSortingStrategy}>
-        {numballs.map((num: number) => (
-          <Numball key={num} num={num} active={active} />
-        ))}
-      </SortableContext>
-    </div>
-  );
-};
-
-const Numball = ({ num, active }: { num: number; active: number }) => {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({
-      id: num,
-    });
-
-  const style = {
-    transition,
-    transform: CSS.Transform.toString(transform),
-    opacity: active === num ? 0 : 1,
-  };
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className=" touch-none"
-      {...listeners}
-      {...attributes}
-    >
-      <Spore n={num.toString()} />
-    </div>
-  );
-};
+import { useContext, useState } from "react";
+import { GamestateContext } from "../modules/gamestate_provider";
+// import { WebsocketContext } from "../modules/websocket_provider";
+import { actions, health } from "../utils/utils";
+import Dashboard from "../components/Dashboard";
+import { Player, PlayerDisplay, Room } from "../utils/struct";
+import { TypeAnimation } from "react-type-animation";
+import * as utils from "../utils/utils";
+import Deck from "../components/Deck";
+import Hand from "../components/Hand";
 
 const Test = () => {
-  const [mush, setMush] = useState(-1);
-  const hand = [1, 2, 3, 4, 5, 6];
-  // const showMush = mush == -1 ? false : true;
-  // const [showMush, setShowMush] = useState(false);
-  const [activeId, setActiveId] = useState(-1);
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(TouchSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+  const {
+    gameData: { room, player },
+  } = useContext(GamestateContext);
 
-  const handleDragEnd = (event: any) => {
-    // console.log(event);
-    const { active, over, delta } = event;
-    // console.log("DRAG END");
+  // const { conn } = useContext(WebsocketContext);
+  const [ready, setReady] = useState(false);
 
-    // if (delta.x == 0 && delta.y == 0) setMush(active.id);
-
-    if (active.id === over.id) {
-      console.log("active");
-      console.log(active.id);
-      console.log("over");
-      console.log(over.id);
-      setActiveId(-1);
-      console.log("Dog");
-      return;
-    }
-
-    // if (over.id === "selection") {
-    //   if (selected !== -1) {
-    //     const selPos = hand.indexOf(active.id);
-    //     setGameStates((prevState) => ({
-    //       ...prevState,
-    //       hand: [
-    //         ...prevState.hand.slice(0, selPos),
-    //         selected,
-    //         ...prevState.hand.slice(selPos),
-    //       ],
-    //     }));
-    //   }
-
-    //   setGameStates((prevState) => ({
-    //     ...prevState,
-    //     selected: active.id,
-    //     hand: prevState.hand.filter((num) => num !== active.id),
-    //   }));
-
-    //   playCard(active.id);
-    //   return;
+  const handleReady = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    setReady(true);
+    // if (conn !== null) {
+    // conn.send(actions(State.READY));
     // }
-
-    // setGameStates((prevState) => ({
-    //   ...prevState,
-    //   hand: arrayMove(
-    //     prevState.hand,
-    //     prevState.hand.indexOf(active.id),
-    //     prevState.hand.indexOf(over.id)
-    //   ),
-    // }));
-
-    // setActiveId(-1);
+  };
+  const debug = () => {
+    console.log(room);
   };
 
-  // const handleDragOver = (event: any) => {
-  //   const { active, over } = event;
-  //   if (over != null) {
-  //     if (over.id === "selection") {
-  //       // console.log("Selected " + active.id);
-  //     }
-  //   }
-  // };
-
-  const handleDragStart = (event: any) => {
-    setActiveId(event.active.id);
-    // console.log(activeId);
-    // console.log("DRAG START");
+  let bottomDisp = "Dashboard";
+  const [isAlready, setIsAlready] = useState(true);
+  const handleStartGame = () => {
+    console.log("Start game");
   };
+
+  const [survivors, fallen] = utils.getResults(room.players);
+
+  const players = utils.SortPlayers(room.players);
 
   return (
-    <div className="py-40">
-      Ok so this is working
-      {/* <button>debug</button> */}
-      <DndContext
-        sensors={sensors}
-        // collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-        // onDragOver={handleDragOver}
-      >
-        <NumRow numballs={hand} active={activeId} />
-        <DragOverlay>
-          {/* bypass the opacity  */}
-          {activeId !== -1 ? <Numball num={activeId} active={-1} /> : null}
-        </DragOverlay>
-      </DndContext>
+    <div className="py-[7rem] flex flex-col text-center items-center">
+      <div className="text-5xl font-rubik my-2">WINNERS</div>
+      <div>
+        {survivors.map((p, i) => (
+          <div className="my-2" key={i}>
+            {p.name}
+          </div>
+        ))}
+        {survivors.length == 0 && <div>No survivors... </div>}
+      </div>
+
+      <hr />
+      <div>In loving memory of</div>
+      <div>
+        {fallen.map((p, i) => (
+          <div className="my-2" key={i}>
+            {p.name}
+          </div>
+        ))}
+      </div>
+
+      <div>
+        <button>Back to lobby </button>
+      </div>
+      {/* <div>Show stats?</div> */}
+      {/* <button onClick={debug}>Debug game end</button> */}
     </div>
   );
 };

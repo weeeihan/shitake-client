@@ -54,7 +54,7 @@ const Game = () => {
     }
   };
   const debug = () => {
-    console.log(player);
+    console.log(gameImages);
 
     // console.log(room);
     // setGameStates((prevState: GameStates) => ({
@@ -155,13 +155,7 @@ const Game = () => {
     <div className="relative flex flex-col h-screen">
       {countDown !== 0 && (
         <>
-          <div className="absolute z-[100] text-[20rem] left-1/4 top-1/5 opacity-70">
-            {countDown}
-          </div>
-          <div className="absolute z-[100] left-5 text-[3rem] ">
-            {countDown}
-          </div>
-          <div className="absolute z-[100] right-5 text-[3rem]">
+          <div className="absolute z-[100] text-center text-[20rem] left-1/4 top-1/5 opacity-70">
             {countDown}
           </div>
         </>
@@ -195,8 +189,10 @@ const Game = () => {
       <div className="flex flex-col h-full items-center">
         {bottomDisp === "Blank" && <></>}
         {bottomDisp === "Hand" && <Hand />}
-        {bottomDisp === "Dashboard" && <Dashboard />}
-        {bottomDisp === "ChooseRow" && <div>Chossing row!</div>}
+        {room.state != State.CHOOSE_ROW && bottomDisp === "Dashboard" && (
+          <Dashboard />
+        )}
+        {/* {bottomDisp === "ChooseRow" && <div>Chossing row!</div>} */}
         {/* <button onClick={debug}>Debug main game screen</button> */}
       </div>
     </div>

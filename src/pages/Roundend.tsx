@@ -1,9 +1,9 @@
 import { useContext, useState } from "react";
 import { GamestateContext } from "../modules/gamestate_provider";
-import Mushcard from "../components/Mushcard";
 import { WebsocketContext } from "../modules/websocket_provider";
-import { actions } from "../utils/utils";
+import { actions, health } from "../utils/utils";
 import Dashboard from "../components/Dashboard";
+import { TypeAnimation } from "react-type-animation";
 
 const Roundend = () => {
   const {
@@ -44,43 +44,69 @@ const Roundend = () => {
   };
 
   return (
-    <div className="w-screen h-screen py-[7rem]">
-      <div>Damage Report Card</div>
-      <hr />
-      <div>
-        <div>
-          {player.name} {player.hp}/100 {player.ready ? "Ready" : "Not Ready"}
+    <div className="flex flex-col py-[8rem] items-center">
+      <div className="border border-black w-11/12 rounded-2xl shadow-xl">
+        <div className="m-5 space-y-2">
+          <div className="text-2xl text-center">Damage Report Card</div>
+          <hr />
+          <div>
+            <div>{"Name: " + player.name}</div>
+          </div>
+          <hr />
+          <div>
+            <div>{"HP: " + player.hp + " / 100"}</div>
+            <progress
+              max={100}
+              value={player.hp}
+              className={health(player.hp)}
+            />
+          </div>
+          <hr />
+          <div>
+            <div>Damage taken:</div>
+            <div>
+              {player.damageReport.roundDamage +
+                "% in this round / " +
+                player.damageReport.damageTaken +
+                "% in total"}
+            </div>
+          </div>
+          <hr />
+          <div>Mushroom consumed:</div>
+          <div>
+            {player.damageReport.roundMushrooms +
+              " in this round / " +
+              player.damageReport.mushrooms +
+              " in total"}
+          </div>
         </div>
-        <progress max={100} value={player.hp} />
       </div>
-      <hr />
-      <div>
-        <div>Damage taken:</div>
-        <div>
-          {player.damageReport.roundDamage +
-            "% in this round / " +
-            player.damageReport.damageTaken +
-            "% in total"}
+      {ready ? (
+        <div className="mt-10 py-2 px-2">
+          <TypeAnimation
+            sequence={[
+              "Waiting for other players...",
+              3000,
+              "Ask them to get ready!",
+              3000,
+              () => {},
+            ]}
+            repeat={Infinity}
+          />
         </div>
-      </div>
-      <hr />
-      <div>Mushroom consumed:</div>
-      <div>
-        {player.damageReport.roundMushrooms +
-          " in this round / " +
-          player.damageReport.mushrooms +
-          " in total"}
-      </div>
-
-      <div className=" flex justify-center">
-        <button onClick={handleReady}>
-          {ready ? "Waiting for others..." : "Ready for next round!"}
+      ) : (
+        <button
+          onClick={handleReady}
+          className="font-klee bg-black text-white mt-10 rounded-lg py-2 px-2 drop-shadow-md"
+        >
+          Ready for next round!
         </button>
-      </div>
-      <div className="mt-20">
+      )}
+
+      <div className="mt-[2rem]  items-center justify-center flex w-screen">
         <Dashboard />
       </div>
-      <button onClick={debug}>Debug-test</button>
+      {/* <button onClick={debug}>Debug-test</button> */}
     </div>
   );
 };

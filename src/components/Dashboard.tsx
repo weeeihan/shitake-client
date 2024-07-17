@@ -1,8 +1,7 @@
 import React, { useContext } from "react";
 
 import { GamestateContext } from "../modules/gamestate_provider";
-import { img } from "../utils/utils";
-import { WebsocketContext } from "../modules/websocket_provider";
+import { Room } from "../utils/struct";
 
 const Dashboard = () => {
   const {
@@ -23,8 +22,8 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="w-11/12 h-1/2  flex flex-col  bg-slate-100 rounded-2xl shadow-xl">
-        <div className="my-4 mx-4">
+      <div className="w-11/12 max-h-[25vh] border border-black flex flex-col rounded-2xl shadow-xl ">
+        <div className="my-4 mx-4 overflow-y-auto">
           {room.players.map((player, index) => (
             <div key={index} className="my-2">
               <div>
@@ -32,12 +31,13 @@ const Dashboard = () => {
                   "   (" +
                   player.hp +
                   "/100) " +
-                  (player.ready ? "🍄" : "")}
+                  (player.ready ? "🍄" : "") +
+                  (player.hp < 0 ? "💀" : "")}
               </div>
 
               <progress
                 max={100}
-                value={player.hp}
+                value={player.hp >= 0 ? player.hp : 0}
                 className={health(player.hp)}
                 // className="w-1/2 border-2 border-black color-black"
               />

@@ -26,7 +26,11 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
   const {
     gameData: { player },
     gameConstants: { State },
+    gameStates: { onLeave },
     fetchData,
+    navigate,
+    setGameStates,
+    gameImages,
   } = useContext(GamestateContext);
 
   const id = utils.GetID();
@@ -34,7 +38,9 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
 
   // For websocket connection
   useEffect(() => {
-    if (!initialized.current && id !== "none") {
+    if (!initialized.current && id !== "none" && conn === null) {
+      console.log(conn);
+      console.log("attempt to connect");
       handlers.ConnectToGame(id, setConn);
       initialized.current = true;
     }
@@ -67,6 +73,55 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
   if (id !== "none" && conn === null) {
     return <div>Connecting... </div>;
   }
+
+  const handleLeaveRoom = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    if (conn !== null) {
+      localStorage.clear();
+      navigate("/");
+      conn.send(utils.actions(State.LEAVE));
+      setGameStates((prev: any) => ({
+        ...prev,
+        onLeave: false,
+      }));
+    }
+  };
+
+  if (onLeave)
+    return (
+      <div className="text-center flex flex-col items-center justify-center h-screen">
+        <div className="font-patrick text-2xl my-10 tracking-wide">
+          Leaving already? 😢
+        </div>
+        <div className="mb-10">
+          <span
+            className="cursor-pointer text-3xl font-patrick tracking-wide"
+            onClick={handleLeaveRoom}
+          >
+            YES
+          </span>
+          <span className="text-3xl font-patrick tracking-wide mx-10">|</span>
+          <span
+            className="cursor-pointer text-3xl font-patrick tracking-wide"
+            onClick={() =>
+              setGameStates((prevState: any) => ({
+                ...prevState,
+                onLeave: false,
+              }))
+            }
+          >
+            NO{" "}
+          </span>
+        </div>
+
+        <img
+          src={gameImages["door-open"]}
+          alt="Door"
+          width={45}
+          className="  drop-shadow-lg  "
+        />
+      </div>
+    );
 
   return (
     <WebsocketContext.Provider

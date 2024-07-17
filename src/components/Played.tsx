@@ -3,7 +3,7 @@ import Spore from "./Spore";
 
 const Played = ({ moves }: { moves: string[][] }) => {
   return (
-    <div className="flex flex-wrap justify-center items-center ">
+    <div className="flex flex-wrap w-screen justify-center space-x-8 items-center ">
       {moves.map((p, index) => (
         <div
           key={index}

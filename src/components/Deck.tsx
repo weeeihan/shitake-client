@@ -217,9 +217,15 @@ const Deck = ({ data }: { data: number[][] }) => {
             <div>{room.chooser}</div>
           </div>
         )}
-        {isChooser && <div>Please choose a row to eat!</div>}
+        {isChooser && (
+          <div className="w-screen flex justify-center items-center">
+            Please choose a row to eat!
+          </div>
+        )}
         {isChoosing && !isChooser && (
-          <div>Waiting for {room.chooser} to eat...</div>
+          <div className="w-screen flex justify-center items-center">
+            Waiting for {room.chooser} to eat...
+          </div>
         )}
       </div>
     </div>

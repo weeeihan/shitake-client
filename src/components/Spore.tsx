@@ -11,7 +11,7 @@ const Spore = ({ n }: { n: string }) => {
       style={{
         backgroundColor: coloring(getMush(num).color),
       }}
-      className="z-100 w-14 h-14 flex rounded-full shadow-lg  justify-center items-center text-[1.5rem]"
+      className="z-100 border border-black w-14 h-14 flex rounded-full shadow-lg  justify-center items-center text-[1.5rem]"
     >
       {num}
     </div>

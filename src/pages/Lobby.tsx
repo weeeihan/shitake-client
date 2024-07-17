@@ -1,7 +1,6 @@
 // Functions
 import React, { useContext, useState } from "react";
 import * as utils from "../utils/utils";
-import * as images from "../assets/images/images";
 import { useNavigate } from "react-router-dom";
 
 // Contexts
@@ -26,19 +25,6 @@ const Lobby = () => {
   const handleStartGame = () => {
     if (conn !== null) {
       conn.send(utils.actions(State.START));
-    }
-  };
-
-  const handleLeaveRoom = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    if (conn !== null) {
-      localStorage.clear();
-      navigate("/");
-      conn.send(utils.actions(State.LEAVE));
-      setGameStates((prev: any) => ({
-        ...prev,
-        onLeave: false,
-      }));
     }
   };
 
@@ -78,43 +64,6 @@ const Lobby = () => {
   const debug = () => {
     console.log(gameImages);
   };
-
-  // If leaving
-  if (onLeave)
-    return (
-      <div className="text-center flex flex-col items-center justify-center h-screen">
-        <div className="font-patrick text-2xl my-10 tracking-wide">
-          Leaving already? 😢
-        </div>
-        <div className="mb-10">
-          <span
-            className="cursor-pointer text-3xl font-patrick tracking-wide"
-            onClick={handleLeaveRoom}
-          >
-            YES
-          </span>
-          <span className="text-3xl font-patrick tracking-wide mx-10">|</span>
-          <span
-            className="cursor-pointer text-3xl font-patrick tracking-wide"
-            onClick={() =>
-              setGameStates((prevState: any) => ({
-                ...prevState,
-                onLeave: false,
-              }))
-            }
-          >
-            NO{" "}
-          </span>
-        </div>
-
-        <img
-          src={gameImages["door-open"]}
-          alt="Door"
-          width={45}
-          className="  drop-shadow-lg  "
-        />
-      </div>
-    );
 
   return (
     <div>
@@ -208,9 +157,7 @@ const Lobby = () => {
               }
             />
           </div>
-          <div>
-            <button onClick={debug}>Debug</button>
-          </div>
+          <div>{/* <button onClick={debug}>Debug</button> */}</div>
         </div>
       </div>
     </div>

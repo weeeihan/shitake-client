@@ -243,3 +243,14 @@ export function coloring(color: string) {
   if (color == "white") return "#ffffff"
   if (color == "brown") return "#ffdeba" 
 }
+
+
+export function health(hp: number) {
+  if (hp > 70) {
+    return "healthy";
+  }
+  if (hp > 40) {
+    return "decent";
+  }
+  return "warning";
+}

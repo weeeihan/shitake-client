@@ -1,6 +1,5 @@
 // Dependencies
 import React, { useContext, useState } from "react";
-import * as images from "../assets/images/images";
 
 // Functions
 import * as utils from "../utils/utils";
@@ -10,13 +9,12 @@ import * as handlers from "../utils/handlers";
 
 // Context
 import { GamestateContext } from "../modules/gamestate_provider";
-import Loader from "../components/Loader";
 
 const Landing = () => {
   const {
     gameConstants: { State },
     fetchData,
-    gameImages,
+    setGameStates,
   } = useContext(GamestateContext);
   const debug = () => {
     console.log(utils.GetID());
@@ -26,6 +24,13 @@ const Landing = () => {
   const [name, setName] = useState("");
   const [roomID, setRoomID] = useState("");
   const joinCreate: string = roomID === "" ? "Create Room" : "Join Room";
+
+  const setLoading = () => {
+    setGameStates((prev) => ({
+      ...prev,
+      loading: true,
+    }));
+  };
 
   const handleJoinRoom = (e: React.SyntheticEvent) => {
     e.preventDefault();
@@ -51,6 +56,7 @@ const Landing = () => {
       }
     }
 
+    setLoading();
     handlers.JoinRoom(name, State, roomID, fetchData);
   };
 
@@ -65,6 +71,9 @@ const Landing = () => {
       alert("NO WHITESPACE ALLOWED IN NAME");
       return;
     }
+
+    setLoading();
+    // Set loading true
 
     handlers.CreateRoom(name, State, fetchData);
   };

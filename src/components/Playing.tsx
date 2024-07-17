@@ -164,7 +164,7 @@ const Playing = () => {
     }
 
     return (
-      <div className="mt-20">
+      <div className="mt-20 ">
         <Played moves={moves} />
       </div>
     );
@@ -197,14 +197,16 @@ const Playing = () => {
   // }
 
   return (
-    <div {...doubleTap} className="flex flex-col items-center justify-center">
-      <div className="relative z-1">
+    <div {...doubleTap} className="flex h-screen flex-col items-center ">
+      <div {...doubleTap} className="relative z-1">
         {deck.length === 0 ? <Deck data={room.deck} /> : <Deck data={deck} />}
       </div>
-      <div className="relative z-10">
+      <div {...doubleTap} className="relative z-10">
         <Farming />
       </div>
-      <div className="footer">{"Double tap anywhere to continue"}</div>
+      <div {...doubleTap} className=" footer">
+        {"Double tap anywhere to continue"}
+      </div>
     </div>
     // <div className="flex flex-col items-center justify-center">
     //   {/* <div>This is test page</div> */}

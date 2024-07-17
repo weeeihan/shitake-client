@@ -57,7 +57,7 @@ const Selection = ({ selected }: { selected: number }) => {
     return (
       <div
         ref={setNodeRef}
-        className="w-11/12 h-3/4 rounded-2xl h-1/2 flex flex-col justify-center items-center shadow-lg"
+        className="w-11/12 border border-black rounded-2xl h-1/2 flex flex-col justify-center items-center shadow-lg"
         style={{
           backgroundColor: coloring("brown"),
         }}
@@ -69,7 +69,7 @@ const Selection = ({ selected }: { selected: number }) => {
   return (
     <div
       ref={setNodeRef}
-      className="relative w-11/12 h-1/2 rounded-2xl shadow-lg overflow-y-scroll "
+      className="relative w-11/12 h-1/2 border border-black rounded-2xl shadow-lg overflow-y-scroll "
       style={{
         backgroundColor: coloring(getMush(selected).color),
       }}
@@ -138,7 +138,7 @@ const Hand = () => {
   const { conn } = useContext(WebsocketContext);
   const {
     gameConstants: { State },
-    gameStates: { hand, selected },
+    gameStates: { selected, hand },
     setGameStates,
   } = useContext(GamestateContext);
 

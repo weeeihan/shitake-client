@@ -1,4 +1,4 @@
-import React, { useState, createContext, Suspense } from "react";
+import React, { useState, createContext, Suspense, useEffect } from "react";
 import { GetID, img } from "../utils/utils";
 import {
   GameData,
@@ -6,11 +6,12 @@ import {
   GameStates,
   Message,
   Room,
+  Player,
 } from "../utils/struct";
 import { useNavigate, useLocation, NavigateFunction } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
-import { useImage } from "react-image";
+import Loader from "../components/Loader";
 import { GET_CONSTANTS_API, GET_DATA_API } from "../utils/api";
 
 export const GamestateContext = createContext<{
@@ -26,6 +27,7 @@ export const GamestateContext = createContext<{
   navigate: () => {},
   gameConstants: {} as GameConstants,
   gameStates: {
+    loading: false,
     isAlready: false,
     handToggle: true,
     showPlaying: false,
@@ -46,14 +48,103 @@ export const GamestateContext = createContext<{
 });
 
 const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
+  const testPlayer: Player = {
+    ...({} as Player),
+    id: "12345",
+    name: "player1",
+    hp: 73,
+    hand: [6, 8, 9, 10, 45],
+    ready: false,
+    play: -1,
+    damageReport: {
+      mushrooms: 90,
+      damageTaken: 27,
+      roundMushrooms: 3,
+      roundDamage: 5,
+      mushroomTypes: [1, 2, 3, 4],
+    },
+  };
+
+  const testRoom: Room = {
+    ...({} as Room),
+    mushrooms: {
+      0: {
+        name: "Shiitake",
+        damage: 1,
+        desc: "something special",
+        color: "brown",
+      },
+    },
+    played: "",
+    chooser: "",
+    id: "8888",
+    deck: [[1], [2], [3], [4]],
+    players: [
+      {
+        name: "player1",
+        hp: 0,
+        ready: false,
+      },
+      {
+        name: "player2",
+        hp: 67,
+        ready: true,
+      },
+      {
+        name: "player3",
+        hp: 89,
+        ready: false,
+      },
+      {
+        name: "player4",
+        hp: 30,
+        ready: false,
+      },
+      {
+        name: "player5",
+        hp: 67,
+        ready: true,
+      },
+      {
+        name: "leiloumou",
+        hp: 89,
+        ready: false,
+      },
+      {
+        name: "player7",
+        hp: 80,
+        ready: false,
+      },
+      {
+        name: "player8",
+        hp: 67,
+        ready: true,
+      },
+      {
+        name: "player9",
+        hp: 89,
+        ready: false,
+      },
+      {
+        name: "player10",
+        hp: 100,
+        ready: false,
+      },
+    ],
+  };
+
   const navigate = useNavigate();
   const location = useLocation();
   const [gameImages, setGameImages] = useState<any>({});
   const [gameData, setGameData] = useState<GameData>({} as GameData);
   const [imageLoading, setImageLoading] = useState(true);
 
+  // Check loc ensures that player is redirected before rendering the rest of the page.
+  const [checkLoc, setCheckLoc] = useState(false);
+
   const getMush = (num: number) => {
     const room = gameData.room;
+    // const room = testRoom;
     if (room.mushrooms[num] === undefined) {
       return room.mushrooms[0];
     }
@@ -62,34 +153,18 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
 
   function redirect(des: string) {
     const loc = window.location;
-    if (loc.pathname === "/test") return;
-    if (loc.pathname === des) return;
+    // if (loc.pathname === "/test") return;
+    if (loc.pathname === des) {
+      setCheckLoc(true);
+      return;
+    }
+    console.log("REDIRECTED");
     navigate(des);
+    setCheckLoc(true);
   }
 
   let id = GetID();
-
-  // Fetching image
-  // const {
-  //   data: images,
-  //   isLoading: imageLoading,
-  //   refetch: fetchImages,
-  // } = useQuery({
-  //   enabled: false,
-  //   queryKey: ["images"],
-  //   queryFn: async () => {
-
-  // const Shiitake = await fetch(img("Shiitake"));
-  // const blob = await Shiitake.blob();
-  // const url = URL.createObjectURL(blob);
-  // const images = {
-  //       Shiitake: url,
-  //     };
-  //     return images;
-  //   },
-  // });
-
-  const fetchImages = async (room: Room) => {
+  const fetchImages = async (room?: Room) => {
     console.log("Fetching Images");
     const baseImage = [
       "bagClose",
@@ -100,6 +175,7 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
       "startButton",
       "door-close",
       "door-open",
+      "Shiitake",
     ];
 
     let imgs: any = {};
@@ -109,6 +185,15 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
       const blob = await raw.blob();
       const url = URL.createObjectURL(blob);
       imgs[name] = url;
+    }
+
+    if (room === undefined) {
+      setGameImages(() => ({
+        ...imgs,
+      }));
+
+      setImageLoading(false);
+      return;
     }
 
     const Mushrooms = Object.keys(room.mushrooms);
@@ -121,7 +206,7 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
       imgs[name] = url;
     }
 
-    setGameImages((prev: any) => ({
+    setGameImages(() => ({
       ...imgs,
     }));
 
@@ -152,6 +237,7 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     prevPlayed: {},
     showHideLoc: [165, 400],
     onLeave: false,
+    loading: false,
   });
 
   // Fetch API
@@ -159,6 +245,7 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     id = GetID();
     if (id === "none") {
       redirect("/");
+      fetchImages();
       setGameData({} as GameData);
       return;
     }
@@ -168,18 +255,23 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
       const res = await axios.get(GET_DATA_API(id));
       handleData(states, res, msg);
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       if (err instanceof AxiosError) {
         if (err.response?.data.Message === "Room does not exist") {
-          localStorage.clear();
-          redirect("/");
+          console.log("room dont exist");
         }
+        localStorage.clear();
+        redirect("/");
       }
     }
   };
 
   // Handling data after fetched
   const handleData = (states: any, res: any, m?: Message | undefined) => {
+    setGameStates((prev: GameStates) => ({
+      ...prev,
+      loading: false,
+    }));
     // console.log("HANDLING");
     // console.log(m.current);
     // console.log(m);
@@ -309,7 +401,6 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
 
       // Handle row choosing
       if (m.state == State.CHOOSE_ROW) {
-        console.log("HERE");
         setGameStates((prev) => ({
           ...prev,
           handToggle: false,
@@ -330,24 +421,39 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  if (gameStates.loading) {
+    // console.log("General loading");
+    return <Loader />;
+  }
+
   // Constant loading
   if (constLoading) {
-    return <div>Loading States and mushrooms...</div>;
+    // console.log("Loading constants");
+    return <Loader />;
   }
 
   // Game data loading
-  if (gameData.player === undefined && location.pathname !== "/") {
-    return <div>Loading players and stuff</div>;
+  if (
+    gameData.player === undefined &&
+    location.pathname !== "/" &&
+    location.pathname !== "/test"
+  ) {
+    // console.log("Loading data");
+    return <Loader />;
   }
 
-  if (imageLoading && location.pathname !== "/") {
-    return <div>Loading images...</div>;
+  if (
+    imageLoading &&
+    location.pathname !== "/"
+    // location.pathname !== "/test"
+  ) {
+    // console.log("Loading images");
+    return <Loader />;
   }
 
-  // if (imageLoading) {
-  //   return <div>Loading images...</div>;
-  // }
-  // console.log(images);
+  if (!checkLoc) return <Loader />;
+
+  // return <Loader />;
 
   return (
     <GamestateContext.Provider

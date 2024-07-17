@@ -62,12 +62,41 @@
   }
 }
 
-.healthy {
+.decent {
+  appearance: none;
+  height: 20px;
+  width: 100%;
+  /* border-radius: 5px; */
+  border-width: 1px;
+  border-color: black;
+    
+  /* Chrome and Safari */
+  &::-webkit-progress-bar {
+    border-radius: 5px;
+    background: white;
+  }
+
+  &::-webkit-progress-value {
+    /* border-radius: 5px; */
+    border-width: 1px;
+    border-color: black;
+    background-color: #ffeb56 
+  }
+
+  /* Firefox */
+  &::-moz-progress-bar {
+    border-width: 1px;
+    border-color: black;
+    background-color: rgba(rgb(146, 255, 138), green, blue, alpha)
+  }
+}
+
+.warning {
   appearance: none;
   height: 20px;
   width: 100%;
   border-radius: 5px;
-  /* border-width: 1px; */
+  border-width: 1px;
   border-color: black;
     
   /* Chrome and Safari */
@@ -78,7 +107,7 @@
 
   &::-webkit-progress-value {
     border-radius: 5px;
-    background-color: #78f36b 
+    background-color: #fd5d30 
   }
 
   /* Firefox */
@@ -87,6 +116,34 @@
   }
 }
 
+.healthy {
+  appearance: none;
+  height: 20px;
+  width: 100%;
+  border-width: 1px;
+  border-color: black;
+  /* border-width: 1px; */
+  border-color: black;
+    
+  /* Chrome and Safari */
+  &::-webkit-progress-bar {
+    border-radius: 5px;
+    background: white;
+  }
+
+  &::-webkit-progress-value {
+    border-width: 1px;
+    border-color: black;
+    background-color: #78f36b 
+  }
+
+  /* Firefox */
+  &::-moz-progress-bar {
+    border-width: 1px;
+    border-color: black;
+    background-color: rgba(rgb(146, 255, 138), green, blue, alpha)
+  }
+}
 
 .footer {
   bottom: 5%;

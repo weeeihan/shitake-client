@@ -80,6 +80,7 @@ export type GameStates = {
   prevPlayed: any;
   showHideLoc: number[];
   onLeave: boolean;
+  loading: boolean;
 };
 
 export type GameData = {
