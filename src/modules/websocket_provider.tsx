@@ -20,7 +20,6 @@ export const WebsocketContext = createContext<{
 });
 
 const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
-  const location = useLocation();
   const [countDown, setCountDown] = useState<number>(0);
   const [conn, setConn] = useState<Conn>(null);
   const {
@@ -31,6 +30,7 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
     navigate,
     setGameStates,
     gameImages,
+    path,
   } = useContext(GamestateContext);
 
   const id = utils.GetID();
@@ -39,12 +39,11 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
   // For websocket connection
   useEffect(() => {
     if (!initialized.current && id !== "none" && conn === null) {
-      console.log(conn);
-      console.log("attempt to connect");
+      // console.log("attempt to connect");
       handlers.ConnectToGame(id, setConn);
       initialized.current = true;
     }
-  }, [location]);
+  }, [path]);
 
   // Listen websocket messages
   useEffect(() => {

@@ -5,8 +5,6 @@ import { GamestateContext } from "../modules/gamestate_provider";
 const Dashboard = () => {
   const {
     gameData: { room },
-    setGameStates,
-    gameImages,
   } = useContext(GamestateContext);
 
   function health(hp: number) {
@@ -21,7 +19,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="w-11/12 max-h-[25vh] border border-black flex flex-col rounded-2xl shadow-xl ">
+      <div className="w-11/12 max-h-[25vh] bg-white border border-black flex flex-col rounded-2xl shadow-xl ">
         <div className="my-4 mx-4 overflow-y-auto">
           {room.players.map((player, index) => (
             <div key={index} className="my-2">
@@ -43,18 +41,6 @@ const Dashboard = () => {
           ))}
         </div>
       </div>
-      <img
-        src={gameImages["door-close"]}
-        alt="Door"
-        width={45}
-        className="footer"
-        onClick={() =>
-          setGameStates((prevState: any) => ({
-            ...prevState,
-            onLeave: true,
-          }))
-        }
-      />
     </>
   );
 };

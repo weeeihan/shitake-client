@@ -186,7 +186,21 @@ const Game = () => {
         {bottomDisp === "Blank" && <></>}
         {bottomDisp === "Hand" && <Hand />}
         {room.state != State.CHOOSE_ROW && bottomDisp === "Dashboard" && (
-          <Dashboard />
+          <div className="w-full flex flex-col items-center justify-center">
+            <Dashboard />
+            <img
+              src={gameImages["door-close"]}
+              alt="Door"
+              width={45}
+              className="mt-8"
+              onClick={() =>
+                setGameStates((prevState: any) => ({
+                  ...prevState,
+                  onLeave: true,
+                }))
+              }
+            />
+          </div>
         )}
         {/* {bottomDisp === "ChooseRow" && <div>Chossing row!</div>} */}
         {/* <button onClick={debug}>Debug main game screen</button> */}

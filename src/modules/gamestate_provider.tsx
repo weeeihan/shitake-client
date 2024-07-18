@@ -7,14 +7,14 @@ import {
   Message,
   Room,
 } from "../utils/struct";
-import { useNavigate, useLocation, NavigateFunction } from "react-router-dom";
+// import { useNavigate, useLocation, NavigateFunction } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import Loader from "../components/Loader";
 import { GET_CONSTANTS_API, GET_DATA_API } from "../utils/api";
 
 export const GamestateContext = createContext<{
-  navigate: NavigateFunction;
+  navigate: (des: string) => void;
   gameConstants: GameConstants;
   gameStates: GameStates;
   gameData: GameData;
@@ -22,6 +22,7 @@ export const GamestateContext = createContext<{
   fetchData: any;
   gameImages: any;
   getMush: any;
+  path: string;
 }>({
   navigate: () => {},
   gameConstants: {} as GameConstants,
@@ -44,6 +45,7 @@ export const GamestateContext = createContext<{
   fetchData: () => {},
   gameImages: {},
   getMush: (): any => {},
+  path: "/",
 });
 
 const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
@@ -132,8 +134,13 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   //   ],
   // };
 
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [path, setPath] = useState("/");
+
+  // const navigate = useNavigate();
+  const navigate = (des: string) => {
+    setPath(des);
+  };
+  // const location = useLocation();
   const [gameImages, setGameImages] = useState<any>({});
   const [gameData, setGameData] = useState<GameData>({} as GameData);
   const [imageLoading, setImageLoading] = useState(true);
@@ -441,14 +448,14 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     return <Loader />;
   }
 
-  if (
-    imageLoading &&
-    location.pathname !== "/"
-    // location.pathname !== "/test"
-  ) {
-    // console.log("Loading images");
-    return <Loader />;
-  }
+  // if (
+  //   imageLoading &&
+  //   location.pathname !== "/"
+  //   // location.pathname !== "/test"
+  // ) {
+  //   // console.log("Loading images");
+  //   return <Loader />;
+  // }
 
   if (!checkLoc) return <Loader />;
 
@@ -467,6 +474,7 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
         fetchData: fetchData,
         gameImages: gameImages,
         getMush: getMush,
+        path: path,
       }}
     >
       {children}

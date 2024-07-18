@@ -8,6 +8,8 @@ import { TypeAnimation } from "react-type-animation";
 const Roundend = () => {
   const {
     gameConstants: { State },
+    gameImages,
+    setGameStates,
   } = useContext(GamestateContext);
 
   const { conn } = useContext(WebsocketContext);
@@ -106,6 +108,18 @@ const Roundend = () => {
       <div className="mt-[2rem]  items-center justify-center flex w-screen">
         <Dashboard />
       </div>
+      <img
+        src={gameImages["door-close"]}
+        alt="Door"
+        width={45}
+        className="mt-8"
+        onClick={() =>
+          setGameStates((prevState: any) => ({
+            ...prevState,
+            onLeave: true,
+          }))
+        }
+      />
       {/* <button onClick={debug}>Debug-test</button> */}
     </div>
   );
