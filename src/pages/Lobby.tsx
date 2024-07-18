@@ -1,7 +1,6 @@
 // Functions
 import React, { useContext } from "react";
 import * as utils from "../utils/utils";
-import { useNavigate } from "react-router-dom";
 
 // Contexts
 import { WebsocketContext } from "../modules/websocket_provider";

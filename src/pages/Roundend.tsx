@@ -12,7 +12,7 @@ const Roundend = () => {
 
   const { conn } = useContext(WebsocketContext);
   const {
-    gameData: { room, player },
+    gameData: { player },
   } = useContext(GamestateContext);
 
   const [ready, setReady] = useState(false);

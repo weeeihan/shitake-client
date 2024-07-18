@@ -21,7 +21,6 @@ const Game = () => {
   } = useContext(GamestateContext);
   const { countDown } = useContext(WebsocketContext);
   const { conn } = useContext(WebsocketContext);
-  const showHide = bottomDisp == "Hand" ? "HIDE" : "SHOW";
   const [delta, setDelta] = useState([0, 0]);
 
   const [startpos, setStartpos] = useState<number[]>([]);
