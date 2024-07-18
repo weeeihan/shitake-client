@@ -1,13 +1,6 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { GamestateContext } from "../modules/gamestate_provider";
-import {
-  useInterval,
-  getX,
-  getY,
-  actions,
-  play,
-  mushImage,
-} from "../utils/utils";
+import { useInterval, actions } from "../utils/utils";
 
 import Deck from "../components/Deck";
 import Spore from "../components/Spore";
@@ -26,14 +19,13 @@ const Playing = () => {
     setGameStates,
     gameConstants: { State },
     gameData: { room },
-    gameStates: { currentDeck, handToggle },
+    gameStates: { currentDeck },
   } = useContext(GamestateContext);
 
   const { conn } = useContext(WebsocketContext);
 
   // const copyDeck = [...roomData.deck];
   const moves = room.moves;
-  const [deck, setDeck] = useState<number[][]>(currentDeck);
 
   const [index, setIndex] = useState<number>(0);
 
@@ -49,7 +41,7 @@ const Playing = () => {
   function showPlay(p: string[]) {
     // p = [name, played number, desY, desX]
 
-    let temp = deck;
+    let temp = currentDeck;
     let row = Number(p[2]);
     let num = Number(p[1]);
     let desX = Number(p[3]);
@@ -67,10 +59,6 @@ const Playing = () => {
     if (temp[row].length) temp[row].push(num);
     return temp;
   }
-
-  const debug = () => {
-    console.log(handToggle);
-  };
 
   function getDesY(p: number) {
     let vh = document.documentElement.clientHeight;
@@ -119,7 +107,7 @@ const Playing = () => {
 
   const Farming = () => {
     // console.log(index);
-    if (index < moves.length && deck.length > 0) {
+    if (index < moves.length && currentDeck.length > 0) {
       return (
         <div className="flex flex-col items-center justify-center mt-20">
           <motion.div
@@ -145,16 +133,6 @@ const Playing = () => {
               },
             }}
             animate={["one", "two", "three", "four"]}
-            // exit={{ opacity: 0 }}
-            // initial={{ opacity: 0 }}
-            // animate={{ y: -50, opacity: 1 }}
-            // transition={{
-            //   type: "spring",
-            //   damping: 10,
-            //   stiffness: 100,
-            //   delay: 0.5,
-            //   duration: 5,
-            // }}
           >
             <Spore n={moves[index][1]} />
           </motion.div>
@@ -171,8 +149,7 @@ const Playing = () => {
   };
 
   useInterval(() => {
-    // console.log(currentDeck);
-    if (deck.length === 0) {
+    if (currentDeck.length === 0) {
       console.log("NO DECK");
       return;
     }
@@ -180,26 +157,18 @@ const Playing = () => {
     if (index < moves.length) {
       console.log("here?");
       showPlay(moves[index]);
-      // setData(showPlay(played[index]));
       setIndex(index + 1);
     }
   }, 1500);
 
-  // if (deck.length === 0) {
-  //   return (
-  //     <div className="flex flex-col items-center justify-center">
-  //       <Deck data={room.deck} />
-  //       <div>
-  //         <button onClick={nextPlay}>NEXT PLAY</button>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   return (
     <div {...doubleTap} className="flex h-screen flex-col items-center ">
       <div {...doubleTap} className="relative z-1">
-        {deck.length === 0 ? <Deck data={room.deck} /> : <Deck data={deck} />}
+        {currentDeck.length === 0 ? (
+          <Deck data={room.deck} />
+        ) : (
+          <Deck data={currentDeck} />
+        )}
       </div>
       <div {...doubleTap} className="relative z-10">
         <Farming />
@@ -208,48 +177,6 @@ const Playing = () => {
         {"Double tap anywhere to continue"}
       </div>
     </div>
-    // <div className="flex flex-col items-center justify-center">
-    //   {/* <div>This is test page</div> */}
-    //   <div className="flex  max-w-[430px] w-[100vw] flex-col mt-9 justify-left space-y-[5vh] ">
-    //     {deck != null &&
-    //       deck.map((row: number[], rowNumber: number) => (
-    //         <div
-    //           key={rowNumber}
-    //           className="inline-flex -space-x items-center cursor-pointer"
-    //         >
-    //           {row.map((card: number, cardNumber: number) => (
-    //             <div key={cardNumber} className="relative ">
-    //               <div className="z-10 absolute">
-    //                 <img
-    //                   className="w-[18vw] max-w-[80px] drop-shadow-lg"
-    //                   src={mushImage(Mushrooms[card].name)}
-    //                   alt="Mushroom"
-    //                   style={{ marginTop: getY(card), marginLeft: getX(card) }}
-    //                 />
-    //               </div>
-    //               <div className=" ">
-    //                 <img
-    //                   src={images.hLog}
-    //                   alt="Horizontal Log"
-    //                   className="w-[18vw] h-[6vh] max-w-[100px] min-h-[50px]"
-    //                 />
-    //               </div>
-    //             </div>
-    //           ))}
-    //           <div className="ml-1 text-[1.2rem]">{row[row.length - 1]}</div>
-    //         </div>
-    //       ))}
-    //   </div>
-    //   <div>
-    //     <Farming />
-    //   </div>
-    //   <div>
-    //     <button onClick={nextPlay}>NEXT PLAY</button>
-    //   </div>
-    //   <div>
-    //     <button onClick={debug}>debug</button>
-    //   </div>
-    // </div>
   );
 };
 

@@ -39,9 +39,9 @@ const Roundend = () => {
       conn.send(actions(State.READY));
     }
   };
-  const debug = () => {
-    console.log(room);
-  };
+  // const debug = () => {
+  //   console.log(room);
+  // };
 
   return (
     <div className="flex flex-col py-[8rem] items-center">

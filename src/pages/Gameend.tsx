@@ -8,7 +8,6 @@ const Gameend = () => {
     gameConstants: { State },
     gameData: { room },
     gameImages,
-    setGameStates,
   } = useContext(GamestateContext);
 
   const [survivors, fallen] = getResults(room.players);
@@ -32,9 +31,9 @@ const Gameend = () => {
     }
   };
 
-  const debug = () => {
-    console.log(room);
-  };
+  // const debug = () => {
+  //   console.log(room);
+  // };
 
   if (confirm) {
     return (

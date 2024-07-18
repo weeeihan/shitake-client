@@ -1,4 +1,4 @@
-import React, { useState, createContext, Suspense, useEffect } from "react";
+import React, { useState, createContext } from "react";
 import { GetID, img } from "../utils/utils";
 import {
   GameData,
@@ -44,94 +44,94 @@ export const GamestateContext = createContext<{
   gameData: {} as GameData,
   fetchData: () => {},
   gameImages: {},
-  getMush: (num: number): any => {},
+  getMush: (): any => {},
 });
 
 const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
-  const testPlayer: Player = {
-    ...({} as Player),
-    id: "12345",
-    name: "player1",
-    hp: 73,
-    hand: [6, 8, 9, 10, 45],
-    ready: false,
-    play: -1,
-    damageReport: {
-      mushrooms: 90,
-      damageTaken: 27,
-      roundMushrooms: 3,
-      roundDamage: 5,
-      mushroomTypes: [1, 2, 3, 4],
-    },
-  };
+  // const testPlayer: Player = {
+  //   ...({} as Player),
+  //   id: "12345",
+  //   name: "player1",
+  //   hp: 73,
+  //   hand: [6, 8, 9, 10, 45],
+  //   ready: false,
+  //   play: -1,
+  //   damageReport: {
+  //     mushrooms: 90,
+  //     damageTaken: 27,
+  //     roundMushrooms: 3,
+  //     roundDamage: 5,
+  //     mushroomTypes: [1, 2, 3, 4],
+  //   },
+  // };
 
-  const testRoom: Room = {
-    ...({} as Room),
-    mushrooms: {
-      0: {
-        name: "Shiitake",
-        damage: 1,
-        desc: "something special",
-        color: "brown",
-      },
-    },
-    played: "",
-    chooser: "",
-    id: "8888",
-    deck: [[1], [2], [3], [4]],
-    players: [
-      {
-        name: "player1",
-        hp: 0,
-        ready: false,
-      },
-      {
-        name: "player2",
-        hp: 67,
-        ready: true,
-      },
-      {
-        name: "player3",
-        hp: 89,
-        ready: false,
-      },
-      {
-        name: "player4",
-        hp: 30,
-        ready: false,
-      },
-      {
-        name: "player5",
-        hp: 67,
-        ready: true,
-      },
-      {
-        name: "leiloumou",
-        hp: 89,
-        ready: false,
-      },
-      {
-        name: "player7",
-        hp: 80,
-        ready: false,
-      },
-      {
-        name: "player8",
-        hp: 67,
-        ready: true,
-      },
-      {
-        name: "player9",
-        hp: 89,
-        ready: false,
-      },
-      {
-        name: "player10",
-        hp: 100,
-        ready: false,
-      },
-    ],
-  };
+  // const testRoom: Room = {
+  //   ...({} as Room),
+  //   mushrooms: {
+  //     0: {
+  //       name: "Shiitake",
+  //       damage: 1,
+  //       desc: "something special",
+  //       color: "brown",
+  //     },
+  //   },
+  //   played: "",
+  //   chooser: "",
+  //   id: "8888",
+  //   deck: [[1], [2], [3], [4]],
+  //   players: [
+  //     {
+  //       name: "player1",
+  //       hp: 0,
+  //       ready: false,
+  //     },
+  //     {
+  //       name: "player2",
+  //       hp: 67,
+  //       ready: true,
+  //     },
+  //     {
+  //       name: "player3",
+  //       hp: 89,
+  //       ready: false,
+  //     },
+  //     {
+  //       name: "player4",
+  //       hp: 30,
+  //       ready: false,
+  //     },
+  //     {
+  //       name: "player5",
+  //       hp: 67,
+  //       ready: true,
+  //     },
+  //     {
+  //       name: "leiloumou",
+  //       hp: 89,
+  //       ready: false,
+  //     },
+  //     {
+  //       name: "player7",
+  //       hp: 80,
+  //       ready: false,
+  //     },
+  //     {
+  //       name: "player8",
+  //       hp: 67,
+  //       ready: true,
+  //     },
+  //     {
+  //       name: "player9",
+  //       hp: 89,
+  //       ready: false,
+  //     },
+  //     {
+  //       name: "player10",
+  //       hp: 100,
+  //       ready: false,
+  //     },
+  //   ],
+  // };
 
   const navigate = useNavigate();
   const location = useLocation();

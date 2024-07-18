@@ -1,7 +1,6 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 
 import { GamestateContext } from "../modules/gamestate_provider";
-import { Room } from "../utils/struct";
 
 const Dashboard = () => {
   const {
@@ -39,7 +38,6 @@ const Dashboard = () => {
                 max={100}
                 value={player.hp >= 0 ? player.hp : 0}
                 className={health(player.hp)}
-                // className="w-1/2 border-2 border-black color-black"
               />
             </div>
           ))}

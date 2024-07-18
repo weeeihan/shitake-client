@@ -16,11 +16,11 @@ const Landing = () => {
     fetchData,
     setGameStates,
   } = useContext(GamestateContext);
-  const debug = () => {
-    console.log(utils.GetID());
-    // localStorage.setItem("id", "1234");
-    // refetchPlayer();
-  };
+  // const debug = () => {
+  //   console.log(utils.GetID());
+  //   // localStorage.setItem("id", "1234");
+  //   // refetchPlayer();
+  // };
   const [name, setName] = useState("");
   const [roomID, setRoomID] = useState("");
   const joinCreate: string = roomID === "" ? "Create Room" : "Join Room";
@@ -78,10 +78,10 @@ const Landing = () => {
     handlers.CreateRoom(name, State, fetchData);
   };
 
-  const clearLocal = (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    localStorage.clear();
-  };
+  // const clearLocal = (e: React.SyntheticEvent) => {
+  //   e.preventDefault();
+  //   localStorage.clear();
+  // };
 
   // console.log(gameImages.Shiitake);
 

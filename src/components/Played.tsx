@@ -1,4 +1,3 @@
-import React from "react";
 import Spore from "./Spore";
 
 const Played = ({ moves }: { moves: string[][] }) => {

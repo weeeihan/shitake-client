@@ -163,7 +163,6 @@ export function play(played: any, deck: number[][], choseRow?: number) : number[
     start++
   }
 
-  let isFound = false
 
   for (var i = start; i < sortable.length; i++) {
     let spore = sortable[i][1]
@@ -175,7 +174,6 @@ export function play(played: any, deck: number[][], choseRow?: number) : number[
       if (row[row.length - 1] < spore && spore - row[row.length - 1] < least) {
         least = spore - row[row.length - 1];
         optimal = j;
-        isFound = true
       }
     }
     if (deck[optimal].length === 5) {

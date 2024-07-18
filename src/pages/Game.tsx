@@ -10,16 +10,13 @@ import { GameStates } from "../utils/struct";
 import { actions, img } from "../utils/utils";
 
 const Game = () => {
-  const showHideStyle = {
-    marginLeft: "207px",
-  };
   const nodeRef = useRef(null);
   const {
     navigate,
     setGameStates,
     gameStates: { bottomDisp, handToggle, showPlaying, showHideLoc, onLeave },
     gameConstants: { State },
-    gameData: { room, player },
+    gameData: { room },
     gameImages,
   } = useContext(GamestateContext);
   const { countDown } = useContext(WebsocketContext);
@@ -53,15 +50,15 @@ const Game = () => {
       navigate("/");
     }
   };
-  const debug = () => {
-    console.log(gameImages);
+  // const debug = () => {
+  //   console.log(gameImages);
 
-    // console.log(room);
-    // setGameStates((prevState: GameStates) => ({
-    //   ...prevState,
-    //   handToggle: !prevState.handToggle,
-    // }));
-  };
+  //   // console.log(room);
+  //   // setGameStates((prevState: GameStates) => ({
+  //   //   ...prevState,
+  //   //   handToggle: !prevState.handToggle,
+  //   // }));
+  // };
 
   // console.log(showHideLoc);
   const handleTouchStart = (event: any) => {

@@ -1,14 +1,12 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import {
   DndContext,
   useSensor,
   useSensors,
   useDroppable,
-  useDraggable,
   PointerSensor,
   TouchSensor,
   KeyboardSensor,
-  closestCorners,
   closestCenter,
   DragOverlay,
 } from "@dnd-kit/core";
@@ -45,10 +43,7 @@ const modalStyle = {
 };
 
 const Selection = ({ selected }: { selected: number }) => {
-  const {
-    gameData: { room },
-    getMush,
-  } = useContext(GamestateContext);
+  const { getMush } = useContext(GamestateContext);
 
   const { setNodeRef } = useDroppable({
     id: "selection",
@@ -132,8 +127,6 @@ const Numball = ({ num, active }: { num: number; active: number }) => {
 
 const Hand = () => {
   const [mush, setMush] = useState(-1);
-  const showMush = mush == -1 ? false : true;
-  // const [showMush, setShowMush] = useState(false);
   const [activeId, setActiveId] = useState(-1);
   const { conn } = useContext(WebsocketContext);
   const {
@@ -204,7 +197,7 @@ const Hand = () => {
   };
 
   const handleDragOver = (event: any) => {
-    const { active, over } = event;
+    const { over } = event;
     if (over != null) {
       if (over.id === "selection") {
         // console.log("Selected " + active.id);

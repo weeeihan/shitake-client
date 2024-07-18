@@ -1,7 +1,3 @@
-import React, { useContext } from "react";
-import * as utils from "../utils/utils";
-import { GamestateContext } from "../modules/gamestate_provider";
-
 interface props {
   winner: string;
 }

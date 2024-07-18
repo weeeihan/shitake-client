@@ -1,8 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { WebsocketContext } from "../modules/websocket_provider";
 import { GamestateContext } from "../modules/gamestate_provider";
-import Img from "../components/Img";
-import { actions, getTotalDamge, getX, getY, img } from "../utils/utils";
+import { actions, getTotalDamge, getX, getY } from "../utils/utils";
 import { GameStates } from "../utils/struct";
 import Spore from "./Spore";
 
@@ -16,10 +15,6 @@ const Deck = ({ data }: { data: number[][] }) => {
     setGameStates,
     gameImages,
   } = useContext(GamestateContext);
-  // console.log(Mushrooms);
-  // const data = room.deck;
-  // console.log(room);
-  // const data = [[1, 2, 3], [4, 5, 6, 7, 8], [8, 9], [10]];
 
   const [hasChosen, setHasChosen] = useState(false);
   const [choice, setChoice] = useState(0);
@@ -27,7 +22,6 @@ const Deck = ({ data }: { data: number[][] }) => {
 
   const isChooser = room.chooser === player.name;
   const isChoosing = room.chooser !== "";
-  // const isChooser = true;
 
   if (player.id == "" || room.id == "") {
     return <div>Loading</div>;
@@ -141,38 +135,6 @@ const Deck = ({ data }: { data: number[][] }) => {
       </>
     );
   }
-
-  // if (hasChosen) {
-  //   let row: number[] = data[choice];
-  //   return (
-  //     <div className="mt-[2rem]">
-  //       {row.map((card: number, index: number) => (
-  //         <div key={index} className="">
-  //           <img
-  //             src={mushImage(Mushrooms[card].name)}
-  //             width={50}
-  //             alt="player mushrooms!"
-  //             className={
-  //               "z-10 absolute drop-shadow-lg cursor-pointer ml-[2.3rem] "
-  //             }
-  //           />
-  //           <span className="font-patrick tracking-wide absolute ml-[6rem]">
-  //             {"["}
-  //             {card}
-  //             {"]"} {Mushrooms[card].name}, {"("}Damage:{" "}
-  //             {Mushrooms[card].damage}%{")"}
-  //           </span>
-  //           {/* <span className="font-patrick tracking-wide absolute mt-[2rem] -ml-[5rem]">
-  //             Special abilities (If any)
-  //           </span> */}
-  //         </div>
-  //       ))}
-  //       <div className="font-patrick text-2xl mt-[2rem] tracking-wide">
-  //         Total damage: {getTotalDamge(row, Mushrooms)}%, are you sure?
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   return (
     <div className="flex flex-col items-center justify-center">

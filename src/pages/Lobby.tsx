@@ -1,5 +1,5 @@
 // Functions
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import * as utils from "../utils/utils";
 import { useNavigate } from "react-router-dom";
 
@@ -9,13 +9,11 @@ import { GamestateContext } from "../modules/gamestate_provider";
 
 // UI
 import { PlayerDisplay } from "../utils/struct";
-import Loader from "../components/Loader";
 
 const Lobby = () => {
-  const navigate = useNavigate();
   const {
     gameData: { player, room },
-    gameStates: { isAlready, onLeave },
+    gameStates: { isAlready },
     setGameStates,
     gameConstants: { State },
     gameImages,
@@ -61,9 +59,9 @@ const Lobby = () => {
   //     ready: false,
   //   },
   // ];
-  const debug = () => {
-    console.log(gameImages);
-  };
+  // const debug = () => {
+  //   console.log(gameImages);
+  // };
 
   return (
     <div>
