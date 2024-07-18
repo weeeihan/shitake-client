@@ -448,14 +448,14 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     return <Loader />;
   }
 
-  // if (
-  //   imageLoading &&
-  //   location.pathname !== "/"
-  //   // location.pathname !== "/test"
-  // ) {
-  //   // console.log("Loading images");
-  //   return <Loader />;
-  // }
+  if (
+    imageLoading &&
+    location.pathname !== "/"
+    // location.pathname !== "/test"
+  ) {
+    // console.log("Loading images");
+    return <Loader />;
+  }
 
   if (!checkLoc) return <Loader />;
 

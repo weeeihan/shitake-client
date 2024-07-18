@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import { GamestateContext } from "./gamestate_provider";
 import * as handlers from "../utils/handlers";
-import { useLocation } from "react-router-dom";
 import * as utils from "../utils/utils";
 type Conn = WebSocket | null;
 
