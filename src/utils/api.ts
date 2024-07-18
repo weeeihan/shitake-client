@@ -3,12 +3,12 @@
 // Testing with render
 
 
-export const API_URL = "http://localhost:8080"
-export const WEBSOCKET_URL = "ws://localhost:8080"
+// export const API_URL = "http://localhost:8080"
+// export const WEBSOCKET_URL = "ws://localhost:8080"
 // export const API_URL = "https://shitake-server.fly.dev"
 // export const WEBSOCKET_URL = "ws://shitake-server.fly.dev"
-// export const API_URL = "https://shitake-server.onrender.com"
-// export const WEBSOCKET_URL = "wss://shitake-server.onrender.com"
+export const API_URL = "https://shitake-server.onrender.com"
+export const WEBSOCKET_URL = "wss://shitake-server.onrender.com"
 
 
 export const GET_STATES_API = `${API_URL}/getStates`
