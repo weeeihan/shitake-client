@@ -158,9 +158,8 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   function redirect(des: string) {
-    const loc = window.location;
     // if (loc.pathname === "/test") return;
-    if (loc.pathname === des) {
+    if (path === des) {
       setCheckLoc(true);
       return;
     }

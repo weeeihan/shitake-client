@@ -36,41 +36,10 @@ const Lobby = () => {
     }
   };
 
-  // const [over, setOver] = useState(false);
-  // const [onLeave, setOnLeave] = useState(false);
   const players = utils.SortPlayers(room.players);
-  // console.log(imgCount);
-
-  // const players = [
-  //   {
-  //     name: "han",
-  //     hp: 100,
-  //     ready: false,
-  //   },
-  //   {
-  //     name: "Joe",
-  //     hp: 100,
-  //     ready: false,
-  //   },
-  //   {
-  //     name: "guy",
-  //     hp: 100,
-  //     ready: false,
-  //   },
-  // ];
-  // const debug = () => {
-  //   console.log(gameImages);
-  // };
 
   return (
     <div>
-      {/* {imgCount < 1 && (
-        <div className="absolute z-10 flex justify-center items-center h-screen w-screen bg-white">
-          <div>
-            <Loader size={150} />
-          </div>
-        </div>
-      )} */}
       <div className="flex flex-col py-20 h-screen">
         <div className="text-7xl pl-7 py-10  text-center font-patrick tracking-superWide">
           {room.id}
@@ -154,7 +123,6 @@ const Lobby = () => {
               }
             />
           </div>
-          <div>{/* <button onClick={debug}>Debug</button> */}</div>
         </div>
       </div>
     </div>
