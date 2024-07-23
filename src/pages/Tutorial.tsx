@@ -19,53 +19,11 @@ import {
 import Modal, { Styles } from "react-modal";
 import { useContext, useState } from "react";
 import { CSS } from "@dnd-kit/utilities";
-import { coloring, getX, getY, img, useInterval } from "../utils/utils";
+import { coloring, getTotalDamge, getX, getY, img, useInterval } from "../utils/utils";
 import { GamestateContext } from "../modules/gamestate_provider";
 import { motion } from "framer-motion";
 
-const Deck = ({ data }: { data: number[][] }) => {
-  const { gameImages } = useContext(GamestateContext);
-  return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="flex  max-w-[430px] w-[100vw] flex-col mt-9 justify-left space-y-[5vh] ">
-        {data != null &&
-          data.map((row: number[], rowNumber: number) => (
-            <div
-              key={rowNumber}
-              className="flex flex-row -space-x-[0.1rem] items-center cursor-pointer"
-              // onClick={(e) => handleRowClick(e, rowNumber)}
-            >
-              {row.map((num: number, cardNumber: number) => (
-                <div key={cardNumber} className="relative ">
-                  <div className="z-10 absolute">
-                    <img
-                      className="w-[15vw] max-w-[80px] drop-shadow-lg"
-                      src={img(getMush(num).name)}
-                      alt="Mushroom"
-                      style={{ marginTop: getY(num), marginLeft: getX(num) }}
-                      // onClick={(e) => handleRowClick(e, rowNumber)}
-                    />
-                  </div>
-                  <div className=" ">
-                    <img
-                      src={img("hlog")}
-                      alt="Horizontal Log"
-                      className="w-[18vw] h-[6vh] max-w-[100px] min-h-[50px]"
-                      // onClick={(e: any) => handleRowClick(e, rowNumber)}
-                    />
-                  </div>
-                </div>
-              ))}
-              <div className="ml-4 text-[1.5rem]">
-                <span className="text-white text-[1rem]">{"m"}</span>
-                {row[row.length - 1]}
-              </div>
-            </div>
-          ))}
-      </div>
-    </div>
-  );
-};
+
 
 const modalStyle: Styles = {
   content: {
@@ -88,46 +46,14 @@ const modalStyle: Styles = {
     zIndex: 1000,
   },
 };
-const modalStyleLaw: Styles = {
-  content: {
-    backgroundColor: "white",
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-    top: "50%",
-    left: "50%",
-    right: "10%",
-    bottom: "auto",
-    marginRight: "-50%",
-    transform: "translate(-50%, -50%)",
-    borderRadius: "20px",
-    border: "1px solid black",
-  },
-  overlay: {
-    zIndex: 1000,
-  },
-};
 
-const Played = ({ moves }: { moves: string[][] }) => {
-  return (
-    <div className="flex flex-wrap w-screen justify-evenly space-x-8 items-center ">
-      {moves.map((p, index) => (
-        <div
-          key={index}
-          className="flex flex-col space-y-1 justify-center items-center"
-        >
-          <div>{p[0]}</div>
-          <Spore n={p[1]} />
-        </div>
-        // <div key={index}>
-        // </div>
-      ))}
-    </div>
-  );
-};
-
-const getMush = (num: number) => {
   const mushrooms: any = {
+    0: {
+      name: "Shiitake",
+      damage: 1,
+      color: "brown",
+      desc: "Lentinula edodes is a species of edible mushroom native to East Asia, which is cultivated and consumed in many Asian countries. It is considered a medicinal mushroom in some forms of traditional medicine.",
+    },
     1: {
       name: "Shiitake",
       damage: 1,
@@ -159,6 +85,8 @@ const getMush = (num: number) => {
       desc: "Ganoderma lucidum is a species of bracket fungus, and the type species of the genus Ganoderma. It lives on deadwood, especially dead trees, and is generally considered to be a saprotroph, rather than a parasite.",
     },
   };
+
+const getMush = (num: number) => {
 
   if (mushrooms[num] == undefined) {
     return mushrooms[1];
@@ -212,7 +140,7 @@ const Spore = ({ n }: { n: string }) => {
       style={{
         backgroundColor: coloring(getMush(num).color),
       }}
-      className="z-100 border border-black w-14 h-14 flex rounded-full shadow-lg  justify-center items-center text-[1.5rem]"
+      className="z-100 mt-2 border border-black w-14 h-14 flex rounded-full shadow-lg  justify-center items-center text-[1.5rem]"
     >
       {num}
     </div>
@@ -261,38 +189,50 @@ const Numball = ({ num, active }: { num: number; active: number }) => {
   );
 };
 
-const Law = () => {
-  return (
-    <div>
-      <h1>Law of Mushroom Nature</h1>
-      <div>
-        i. A mushroom shall only grow on the right of the rightmost mushroom on
-        a log.
-      </div>
-      <div>
-        ii. A mushroom shall only grow next to a mushroom with a smaller weight.{" "}
-      </div>
-      <div>
-        iii. A mushroom shall only grow next to a mushroom with the most similar
-        weight.{" "}
-      </div>
-      <div>
-        If none of the above conditions are met, the mushroom shall only grow on
-        a new log.
-      </div>
-    </div>
-  );
-};
+
 
 const Tutorial = () => {
+
   const [mush, setMush] = useState(-1);
   const [activeId, setActiveId] = useState(-1);
   const [hand, setHand] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9]);
   const [selected, setSelected] = useState(-1);
   const [page, setPage] = useState(1);
-  const [law, setLaw] = useState(false);
-  const [deck, setDeck] = useState([[19], [23], [91], [3]]);
-
+  const [row, setRow] = useState(-1)
+  const deck = [[19], [23], [91], [3]]
+  const deckTwo = [[19, 20, 21, 22], [28, 29], [91, 95, 100], [3]]
+  const decksOne = [
+    [[19], [23], [91], [3]],
+    [[19, 20], [23], [91], [3]],
+    [[19, 20], [23, 24], [91], [3]],
+    [[19, 20, 21], [23, 24], [91], [3]],
+    [[19, 20, 21, 22], [23, 24], [91], [3]],
+    [[19, 20, 21, 22], [23, 24, 25], [91], [3]],
+    [[19, 20, 21, 22], [23, 24, 25], [91, 95], [3]],
+    [[19, 20, 21, 22], [23, 24, 25], [91, 95, 100], [3]],
+  ];
+  const decksTwo = [
+    [[19, 20, 21, 22], [23, 24, 25], [91, 95, 100], [3]],
+    [[19, 20, 21, 22], [23, 24, 25, 26], [91, 95, 100], [3]],
+    [[19, 20, 21, 22], [23, 24, 25, 26, 27], [91, 95, 100], [3]],
+    [[19, 20, 21, 22], [28], [91, 95, 100], [3]],
+    [[19, 20, 21, 22], [28, 29], [91, 95, 100], [3]],
+  ];
+  const movesOne = [
+    ["Player 1", "20", "0", "1"],
+    ["Player 2", "24", "1", "1"],
+    ["Player 3", "21", "0", "2"],
+    ["Player 4", "22", "0", "3"],
+    ["Player 5", "25", "1", "2"],
+    ["Player 6", "95", "2", "1"],
+    ["Player 7", "100", "2", "2"],
+  ]
+  const movesTwo = [
+    ["Player 1", "26", "1", "3"],
+    ["Player 2", "27", "1", "4"],
+    ["Player 3", "28", "1", "1"],
+    ["Player 3", "29", "1", "1"],
+  ]
   const Mushroom = () => {
     const goBack = (e: React.SyntheticEvent) => {
       e.preventDefault();
@@ -328,8 +268,50 @@ const Tutorial = () => {
       </>
     );
   };
+  
+  const Deck = ({ data }: { data: number[][] }) => {
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <div className="flex  max-w-[430px] w-[100vw] flex-col mt-9 justify-left space-y-[5vh] ">
+        {data != null &&
+          data.map((row: number[], rowNumber: number) => (
+            <div
+              key={rowNumber}
+              className="flex flex-row -space-x-[0.1rem] items-center cursor-pointer"
+              onClick={() => setRow(rowNumber)}
+            >
+              {row.map((num: number, cardNumber: number) => (
+                <div key={cardNumber} className="relative ">
+                  <div className="z-10 absolute">
+                    <img
+                      className="w-[15vw] max-w-[80px] drop-shadow-lg"
+                      src={img(getMush(num).name)}
+                      alt="Mushroom"
+                      style={{ marginTop: getY(num), marginLeft: getX(num) }}
+                    />
+                  </div>
+                  <div className=" ">
+                    <img
+                      src={img("hlog")}
+                      alt="Horizontal Log"
+                      className="w-[18vw] h-[6vh] max-w-[100px] min-h-[50px]"
+                      // onClick={(e: any) => handleRowClick(e, rowNumber)}
+                    />
+                  </div>
+                </div>
+              ))}
+              <div className="ml-4 text-[1.5rem]">
+                <span className="text-white text-[1rem]">{"m"}</span>
+                {row[row.length - 1]}
+              </div>
+            </div>
+          ))}
+      </div>
+    </div>
+  );
+};
 
-  const ChangingDeck = () => {
+  const ChangingDeck = ({decks, moves}: {decks: number[][][], moves: string[][]}) => {
     function getDesY(p: number) {
       let vh = document.documentElement.clientHeight;
       // now space between is 5vh, and the height of the log is 6vh so total 11vh
@@ -350,25 +332,7 @@ const Tutorial = () => {
       // return -150 + (p - 1) * 80;
     }
 
-    const decks = [
-      [[19], [23], [91], [3]],
-      [[19, 20], [23], [91], [3]],
-      [[19, 20], [23, 24], [91], [3]],
-      [[19, 20, 21], [23, 24], [91], [3]],
-      [[19, 20, 21, 22], [23, 24], [91], [3]],
-      [[19, 20, 21, 22], [23, 24, 25], [91], [3]],
-      [[19, 20, 21, 22], [23, 24, 25], [91, 95], [3]],
-      [[19, 20, 21, 22], [23, 24, 25], [91, 95, 100], [3]],
-    ];
-    const moves = [
-      ["Player 1", "20", "0", "1"],
-      ["Player 2", "24", "1", "1"],
-      ["Player 3", "21", "0", "2"],
-      ["Player 4", "22", "0", "3"],
-      ["Player 5", "25", "1", "2"],
-      ["Player 6", "95", "2", "1"],
-      ["Player 7", "100", "2", "2"],
-    ];
+;
     const [index, setIndex] = useState(0);
     useInterval(() => {
       if (index == decks.length - 1) {
@@ -411,10 +375,10 @@ const Tutorial = () => {
             <div>{moves[index][0]}</div>
           </>
         ) : (
-          <div>
+          <>
             <Spore n={"101"} />
-            <div>And so on...</div>
-          </div>
+            <div className="text-center">And so on...</div>
+          </>
         )}
       </>
     );
@@ -484,6 +448,57 @@ const Tutorial = () => {
 
     setActiveId(-1);
   };
+
+  if (row !== -1) {
+  console.log(row)
+    return (
+      <>
+        <div className="flex flex-col h-screen" onClick={()=>setRow(-1) }>
+          <div className="text-[.8rem] my-10 flex flex-col items-center">
+          </div>
+          {deckTwo[row].map((num: number, index: number) => (
+            <div key={index} className="flex flex-row items-center">
+              <img
+                src={img(getMush(num).name)}
+                width={80}
+                alt="player mushrooms!"
+                className={" drop-shadow-lg cursor-pointer ml-[2.3rem] "}
+              />
+              <div className="font-patrick tracking-wide">
+                {"["}
+                {num}
+                {"]"} {getMush(num).name}, {"("}Damage: {getMush(num).damage}%
+                {")"}
+              </div>
+              {/* <span className="font-patrick tracking-wide absolute mt-[2rem] -ml-[5rem]">
+              Special abilities (If any)
+            </span> */}
+            </div>
+          ))}
+          <div className="font-patrick text-2xl mt-20 tracking-wide flex justify-center">
+            Total damage: {getTotalDamge(deckTwo[row], mushrooms)}%
+          </div>
+            <div className="flex flex-row justify-center mt-10">
+              <span
+                className="cursor-pointer text-3xl font-patrick tracking-wide"
+                // onClick={handleChoose}
+              >
+                EAT!
+              </span>
+              <span className="text-3xl font-patrick tracking-wide mx-10">
+                |
+              </span>
+              <span
+                className="cursor-pointer text-3xl font-patrick tracking-wide"
+                // onClick={() => setHasChosen(false)}
+              >
+                Nope.{" "}
+              </span>
+            </div>
+        </div>
+      </>
+    )
+  }
 
   return page == 1 ? (
     <div className="flex flex-col text-center justify-center items-center h-screen">
@@ -584,15 +599,7 @@ const Tutorial = () => {
     </div>
   ) : page == 3 ? (
     <div className="flex flex-col text-center justify-center items-center h-screen">
-      <Modal
-        isOpen={law}
-        style={modalStyleLaw}
-        onRequestClose={() => setLaw(false)}
-        appElement={document.getElementById("root") as HTMLElement}
-      >
-        <Law />
-      </Modal>
-      <p className="w-[90vw] my-5">
+      <p className="w-[90vw] mt-[5rem]">
         Once the timer is up, the spores will fly to the{" "}
         <span className="italic">optimal spot</span> on the 4 logs to grow, one
         by one.
@@ -603,10 +610,8 @@ const Tutorial = () => {
         The number at the end of the log is the weight of the rightmost mushroom
       </p>
       <p className="w-[90vw] my-5">
-        The <span className="italic">optimal spot</span> is determined by the{" "}
-        <span className="text-blue-800 underline " onClick={() => setLaw(true)}>
-          Law of Mushroom Nature
-        </span>
+
+        The spore will only grow next to a <span className="font-bold">lighter</span> mushroom with the <span className="font-bold"> most similar weight </span>
       </p>
       <div className="flex flex-row space-x-4">
         <button
@@ -625,29 +630,17 @@ const Tutorial = () => {
     </div>
   ) : page == 4 ? (
     <div className="flex flex-col text-center justify-center items-center h-screen">
-      <Modal
-        isOpen={law}
-        style={modalStyleLaw}
-        onRequestClose={() => setLaw(false)}
-        appElement={document.getElementById("root") as HTMLElement}
-      >
-        <Law />
-      </Modal>
+
       <p className="w-[90vw] mt-[5rem]">
         The spore with the smallest number will grow first, since it is the
         lightest
       </p>
-      <ChangingDeck />
+      <ChangingDeck decks={decksOne} moves={movesOne} />
 
       <p className="w-[90vw] my-5">
         Followed by the spore with the next smallest number, one by one.
       </p>
-      <p className="w-[90vw] my-2">
-        The <span className="italic">optimal spot</span> is determined by the{" "}
-        <span className="text-blue-800 underline " onClick={() => setLaw(true)}>
-          Law of Mushroom Nature
-        </span>
-      </p>
+
       <div className="flex flex-row space-x-4">
         <button
           className="mt-10 border-2 border-black px-8 py-2 rounded-xl shadow-lg"
@@ -663,7 +656,63 @@ const Tutorial = () => {
         </button>
       </div>
     </div>
-  ) : (
+  ) : page == 5 ? (
+    <div className="flex flex-col text-center justify-center items-center h-screen">
+
+      <p className="w-[90vw] mt-[5rem]">
+       However, the log is only long enough for only 5 mushrooms. 
+      </p>
+      <ChangingDeck decks={decksTwo} moves={movesTwo} />
+
+      <p className="w-[90vw] my-5">
+        Player 3 (with spore 28) must eat the whole row of mushroom to grow a mushroom on that row
+      </p>
+
+      <div className="flex flex-row space-x-4">
+        <button
+          className="mt-10 border-2 border-black px-8 py-2 rounded-xl shadow-lg"
+          onClick={() => setPage(4)}
+        >
+          Back
+        </button>
+        <button
+          className="mt-10 border-2 border-black px-8 py-2 rounded-xl shadow-lg"
+          onClick={() => setPage(6)}
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  ): page == 6 ? (
+    <div className="flex flex-col text-center justify-center items-center h-screen">
+
+      <p className="w-[90vw] mt-[5rem]">
+        If your spore is lighter than the rightmost mushroom of every row...
+      </p>
+      <Deck data={deckTwo}/>
+
+      <Spore n={"1"}/>
+      <div>Your name</div>
+      <p className="w-[90vw] my-5">
+        You must choose a row to eat and grow your spore on that row. (Click a row and eat!)
+      </p>
+
+      <div className="flex flex-row space-x-4">
+        <button
+          className="mt-10 border-2 border-black px-8 py-2 rounded-xl shadow-lg"
+          onClick={() => setPage(5)}
+        >
+          Back
+        </button>
+        <button
+          className="mt-10 border-2 border-black px-8 py-2 rounded-xl shadow-lg"
+          onClick={() => setPage(7)}
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  ):(
     <div>Last Page</div>
   );
 };
