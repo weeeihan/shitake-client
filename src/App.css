@@ -118,8 +118,9 @@
 
 .healthy {
   appearance: none;
-  height: 20px;
+  height: 10px;
   width: 100%;
+  border-radius: 5px;
   border-width: 1px;
   border-color: black;
   /* border-width: 1px; */
@@ -133,6 +134,7 @@
 
   &::-webkit-progress-value {
     border-width: 1px;
+    border-radius: 5px;
     border-color: black;
     background-color: #78f36b 
   }

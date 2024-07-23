@@ -6,6 +6,7 @@ import {
   GameStates,
   Message,
   Room,
+  Player,
 } from "../utils/struct";
 // import { useNavigate, useLocation, NavigateFunction } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -23,6 +24,7 @@ export const GamestateContext = createContext<{
   gameImages: any;
   getMush: any;
   path: string;
+  setIsTutorial: React.Dispatch<React.SetStateAction<boolean>>;
 }>({
   navigate: () => {},
   gameConstants: {} as GameConstants,
@@ -46,93 +48,106 @@ export const GamestateContext = createContext<{
   gameImages: {},
   getMush: (): any => {},
   path: "/",
+  setIsTutorial: () => {},
 });
 
 const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
-  // const testPlayer: Player = {
-  //   ...({} as Player),
-  //   id: "12345",
-  //   name: "player1",
-  //   hp: 73,
-  //   hand: [6, 8, 9, 10, 45],
-  //   ready: false,
-  //   play: -1,
-  //   damageReport: {
-  //     mushrooms: 90,
-  //     damageTaken: 27,
-  //     roundMushrooms: 3,
-  //     roundDamage: 5,
-  //     mushroomTypes: [1, 2, 3, 4],
-  //   },
-  // };
-
-  // const testRoom: Room = {
-  //   ...({} as Room),
-  //   mushrooms: {
-  //     0: {
-  //       name: "Shiitake",
-  //       damage: 1,
-  //       desc: "something special",
-  //       color: "brown",
-  //     },
-  //   },
-  //   played: "",
-  //   chooser: "",
-  //   id: "8888",
-  //   deck: [[1], [2], [3], [4]],
-  //   players: [
-  //     {
-  //       name: "player1",
-  //       hp: 0,
-  //       ready: false,
-  //     },
-  //     {
-  //       name: "player2",
-  //       hp: 67,
-  //       ready: true,
-  //     },
-  //     {
-  //       name: "player3",
-  //       hp: 89,
-  //       ready: false,
-  //     },
-  //     {
-  //       name: "player4",
-  //       hp: 30,
-  //       ready: false,
-  //     },
-  //     {
-  //       name: "player5",
-  //       hp: 67,
-  //       ready: true,
-  //     },
-  //     {
-  //       name: "leiloumou",
-  //       hp: 89,
-  //       ready: false,
-  //     },
-  //     {
-  //       name: "player7",
-  //       hp: 80,
-  //       ready: false,
-  //     },
-  //     {
-  //       name: "player8",
-  //       hp: 67,
-  //       ready: true,
-  //     },
-  //     {
-  //       name: "player9",
-  //       hp: 89,
-  //       ready: false,
-  //     },
-  //     {
-  //       name: "player10",
-  //       hp: 100,
-  //       ready: false,
-  //     },
-  //   ],
-  // };
+  const [isTutorial, setIsTutorial] = useState(false);
+  const tutGameData: GameData = {
+    player: {
+      ...({} as Player),
+      id: "12345",
+      name: "player1",
+      hp: 73,
+      hand: [6, 8, 9, 10, 45],
+      ready: false,
+      play: -1,
+      damageReport: {
+        mushrooms: 90,
+        damageTaken: 27,
+        roundMushrooms: 3,
+        roundDamage: 5,
+        mushroomTypes: [1, 2, 3, 4],
+      },
+    },
+    room: {
+      ...({} as Room),
+      mushrooms: {
+        0: {
+          name: "Shiitake",
+          damage: 1,
+          desc: "something special",
+          color: "brown",
+        },
+      },
+      played: "",
+      chooser: "",
+      id: "8888",
+      deck: [[1], [2], [3], [4]],
+      players: [
+        {
+          name: "player1",
+          hp: 0,
+          ready: false,
+          isBot: false,
+        },
+        {
+          name: "player2",
+          hp: 67,
+          ready: true,
+          isBot: false,
+        },
+        {
+          name: "player3",
+          hp: 89,
+          ready: false,
+          isBot: false,
+        },
+        {
+          name: "player4",
+          hp: 30,
+          ready: false,
+          isBot: false,
+        },
+        {
+          name: "player5",
+          hp: 67,
+          ready: true,
+          isBot: false,
+        },
+        {
+          name: "leiloumou",
+          hp: 89,
+          ready: false,
+          isBot: false,
+        },
+        {
+          name: "player7",
+          hp: 80,
+          ready: false,
+          isBot: false,
+        },
+        {
+          name: "player8",
+          hp: 67,
+          ready: true,
+          isBot: false,
+        },
+        {
+          name: "player9",
+          hp: 89,
+          ready: false,
+          isBot: false,
+        },
+        {
+          name: "player10",
+          hp: 100,
+          ready: false,
+          isBot: false,
+        },
+      ],
+    },
+  };
 
   const [path, setPath] = useState("/");
 
@@ -221,6 +236,7 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   // useQuery to fetch constants.
   const { data: constants, isLoading: constLoading } = useQuery({
     queryKey: ["constants"],
+    initialData: { states: {} },
     queryFn: async () => {
       const res = await axios.get(GET_CONSTANTS_API);
       // After fetching constants, fetch room data
@@ -277,6 +293,7 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
       ...prev,
       loading: false,
     }));
+
     // console.log("HANDLING");
     // console.log(m.current);
     // console.log(m);
@@ -287,6 +304,8 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
 
     let [room, player, State] = [res.data.room, res.data.player, states];
 
+    console.log(room);
+    console.log(player);
     if (Object.keys(gameImages).length === 0) {
       fetchImages(room);
     }
@@ -326,6 +345,14 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     if (room.state === State.INIT) {
       redirect("/lobby");
       // return;
+    }
+
+    if (room.state === State.CALCULATING) {
+      setGameStates((prev: GameStates) => ({
+        ...prev,
+        showPlaying: true,
+      }));
+      redirect("/game");
     }
 
     if (room.state === State.PROCESS || room.state === State.ROUND_END) {
@@ -426,37 +453,35 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  if (gameStates.loading) {
-    // console.log("General loading");
-    return <Loader />;
-  }
+  // Show Loaders
+  if (path !== "/" && !isTutorial) {
+    if (gameStates.loading) {
+      // console.log("General loading");
+      return <Loader />;
+    }
 
-  // Constant loading
-  if (constLoading) {
-    // console.log("Loading constants");
-    return <Loader />;
-  }
+    // Constant loading
+    if (constLoading) {
+      // console.log("Loading constants");
+      return <Loader />;
+    }
 
-  // Game data loading
-  if (
-    gameData.player === undefined &&
-    location.pathname !== "/" &&
-    location.pathname !== "/test"
-  ) {
-    // console.log("Loading data");
-    return <Loader />;
-  }
+    // Game data loading
+    if (gameData.player === undefined && path !== "/test") {
+      // console.log("Loading data");
+      return <Loader />;
+    }
 
-  if (
-    imageLoading &&
-    location.pathname !== "/"
-    // location.pathname !== "/test"
-  ) {
-    // console.log("Loading images");
-    return <Loader />;
-  }
+    if (
+      imageLoading
+      // location.pathname !== "/test"
+    ) {
+      // console.log("Loading images");
+      return <Loader />;
+    }
 
-  if (!checkLoc) return <Loader />;
+    if (!checkLoc) return <Loader />;
+  }
 
   // return <Loader />;
 
@@ -474,6 +499,7 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
         gameImages: gameImages,
         getMush: getMush,
         path: path,
+        setIsTutorial: setIsTutorial,
       }}
     >
       {children}

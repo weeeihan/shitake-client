@@ -163,7 +163,7 @@ const Playing = () => {
 
   return (
     <div {...doubleTap} className="flex h-screen flex-col items-center ">
-      <div {...doubleTap} className="relative z-1">
+      <div {...doubleTap} className="relative z-1 ">
         {currentDeck.length === 0 ? (
           <Deck data={room.deck} />
         ) : (

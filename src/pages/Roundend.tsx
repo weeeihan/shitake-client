@@ -46,7 +46,7 @@ const Roundend = () => {
   // };
 
   return (
-    <div className="flex flex-col py-[8rem] items-center">
+    <div className="flex flex-col py-[8rem] items-center font-patrick tracking-wide">
       <div className="border border-black w-11/12 rounded-2xl shadow-xl">
         <div className="m-5 space-y-2">
           <div className="text-2xl text-center">Damage Report Card</div>

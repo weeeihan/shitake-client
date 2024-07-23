@@ -6,6 +6,7 @@ import Roundend from "./pages/Roundend";
 import Gameend from "./pages/Gameend";
 import { useContext } from "react";
 import { GamestateContext } from "./modules/gamestate_provider";
+import Tutorial from "./pages/Tutorial";
 
 function App() {
   const { path } = useContext(GamestateContext);
@@ -16,6 +17,7 @@ function App() {
       {path === "/game" && <Game />}
       {path === "/roundend" && <Roundend />}
       {path === "/gameend" && <Gameend />}
+      {path === "/tutorial" && <Tutorial />}
     </>
   );
 }

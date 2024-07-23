@@ -25,14 +25,33 @@ const Lobby = () => {
     }
   };
 
-  const handleReady = (e: React.SyntheticEvent) => {
+  const handleClick = (
+    e: React.SyntheticEvent,
+    name: string,
+    isBot: boolean
+  ) => {
     e.preventDefault();
-    if (conn != null) {
-      if (player.ready == false) {
-        conn.send(utils.actions(State.READY));
-      } else {
-        conn.send(utils.actions(State.UNREADY));
+    if (name == player.name) {
+      if (conn != null) {
+        if (player.ready == false) {
+          conn.send(utils.actions(State.READY));
+        } else {
+          conn.send(utils.actions(State.UNREADY));
+        }
       }
+    }
+
+    if (isBot) {
+      // prompt if wanna remove bot
+      if (conn != null) {
+        conn.send(utils.actions(State.REMOVEBOT, ...[, ,], name));
+      }
+    }
+  };
+
+  const addBot = () => {
+    if (conn != null) {
+      conn.send(utils.actions(State.ADDBOT));
     }
   };
 
@@ -82,9 +101,7 @@ const Lobby = () => {
                     ? "z-10 absolute drop-shadow-lg cursor-pointer ml-[2.3rem] "
                     : "absolute scale-x-[-1] drop-shadow-lg -ml-[3.5rem] cursor-pointer"
                 }
-                onClick={
-                  player.name == p.name ? (e) => handleReady(e) : undefined
-                }
+                onClick={(e) => handleClick(e, p.name, p.isBot)}
               />
               <span
                 className="font-patrick tracking-wide absolute"
@@ -102,6 +119,33 @@ const Lobby = () => {
               />
             </div>
           ))}
+          <div className="-my-8">
+            <img
+              src={gameImages.mush2}
+              width={80}
+              alt="player mushrooms!"
+              className={
+                room.players.length % 2 == 0
+                  ? "z-10 absolute drop-shadow-lg cursor-pointer ml-[2.3rem] opacity-50"
+                  : "absolute scale-x-[-1] drop-shadow-lg -ml-[3.5rem] cursor-pointer opacity-30"
+              }
+              onClick={addBot}
+            />
+            <span
+              className="font-patrick tracking-wide absolute opacity-50"
+              style={{
+                marginLeft: room.players.length % 2 == 0 ? 120 : -80,
+              }}
+            >
+              Add
+            </span>
+            <img
+              src={gameImages.vlog}
+              alt="Vertical log"
+              width={60}
+              className="drop-shadow-lg "
+            />
+          </div>
           <img
             src={gameImages.vlog}
             alt="Vertical log"
@@ -123,6 +167,7 @@ const Lobby = () => {
               }
             />
           </div>
+          <button onClick={() => console.log(player)}>debug</button>
         </div>
       </div>
     </div>

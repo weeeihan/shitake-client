@@ -36,6 +36,8 @@ const modalStyle = {
     bottom: "auto",
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
+    borderRadius: "20px",
+    border: "1px solid black",
   },
   overlay: {
     zIndex: 1000,

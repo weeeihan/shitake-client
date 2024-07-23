@@ -14,6 +14,7 @@ export type PlayerDisplay = {
   name: string
   hp: number
   ready: boolean
+  isBot: boolean
 }
 
 export type Game = {
@@ -48,6 +49,7 @@ export type Player = {
   play: number
   end: number 
   damageReport: DamageReport
+  isBot: boolean
 } 
 
 export type DamageReport = {

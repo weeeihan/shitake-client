@@ -19,7 +19,10 @@ const Mushroom = ({
     return;
   }
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div
+      onClick={goBack}
+      className="flex flex-col  justify-center items-center font-patrick tracking-wide"
+    >
       <img alt="mush" src={`/images/${getMush(mush).name}.png`} width={150} />
       <div>
         {getMush(mush).name} {"["}
@@ -27,10 +30,8 @@ const Mushroom = ({
         {"]"}
       </div>
       <div>Damage : {getMush(mush).damage}</div>
-      <div>{getMush(mush).desc}</div>
-      <div>
-        <button onClick={goBack}>Back</button>
-      </div>
+      <div className="text-center">{getMush(mush).desc}</div>
+      <div className="mt-5">(Click on the card to return)</div>
     </div>
   );
 };

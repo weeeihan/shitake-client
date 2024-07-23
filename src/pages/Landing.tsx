@@ -15,6 +15,8 @@ const Landing = () => {
     gameConstants: { State },
     fetchData,
     setGameStates,
+    navigate,
+    setIsTutorial,
   } = useContext(GamestateContext);
   // const debug = () => {
   //   console.log(utils.GetID());
@@ -102,13 +104,13 @@ const Landing = () => {
         <input
           onChange={(e) => setName(e.target.value)}
           value={name}
-          className="outline border mt-2 w-60 py-0.5 rounded-md text-center drop-shadow-lg text-gray-700 leading-tight"
+          className=" border border-black mt-2 w-60 py-0.5 rounded-md text-center drop-shadow-lg text-gray-700 leading-tight"
         />
         <div className="pt-3 font-klee">Room code</div>
         <input
           onChange={(e) => setRoomID(e.target.value)}
           value={roomID}
-          className="outline border mt-2 w-60 py-0.5 rounded-md text-center drop-shadow-lg text-gray-700 leading-tight"
+          className=" border border-black mt-2 w-60 py-0.5 rounded-md text-center drop-shadow-lg text-gray-700 leading-tight"
         />
         {name === "" ? (
           <div>
@@ -130,6 +132,16 @@ const Landing = () => {
             </button>
           </div>
         )}
+        <button
+          className="text-blue-800 underline"
+          onClick={() => {
+            setIsTutorial(true);
+            navigate("/tutorial");
+          }}
+        >
+          How to play?
+        </button>
+
         {/* <button
         className="font-klee bg-black text-white mt-10 rounded-lg py-2 px-2 drop-shadow-md"
         onClick={debug}
