@@ -241,6 +241,7 @@ export function coloring(color: string) {
   if (color == "white") return "#ffffff"
   if (color == "brown") return "#ffdeba" 
   if (color == "red") return "#fcb3b3"
+  if (color == "yellow") return "#f7f48b"
 }
 
 

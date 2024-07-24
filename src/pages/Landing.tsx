@@ -99,7 +99,9 @@ const Landing = () => {
           />
         </div>
         <div className="text-7xl font-rubik">SHITAKE</div>
-        <div className="text-2xl font-reenie">A number game.</div>
+        <div className=" text-[0.9rem] font-patrick tracking-wide">
+          inspired by Wolfgang Kramer's 6 Nimmt!{" "}
+        </div>
         <div className="pt-20">Name</div>
         <input
           onChange={(e) => setName(e.target.value)}
@@ -133,7 +135,7 @@ const Landing = () => {
           </div>
         )}
         <button
-          className="text-blue-800 underline"
+          className="text-blue-800 underline absolute bottom-20"
           onClick={() => {
             setIsTutorial(true);
             navigate("/tutorial");

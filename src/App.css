@@ -64,10 +64,12 @@
 
 .decent {
   appearance: none;
-  height: 20px;
+  height: 10px;
   width: 100%;
-  /* border-radius: 5px; */
+  border-radius: 5px;
   border-width: 1px;
+  border-color: black;
+  /* border-width: 1px; */
   border-color: black;
     
   /* Chrome and Safari */
@@ -79,6 +81,7 @@
   &::-webkit-progress-value {
     /* border-radius: 5px; */
     border-width: 1px;
+    border-radius: 5px;
     border-color: black;
     background-color: #ffeb56 
   }
@@ -93,10 +96,12 @@
 
 .warning {
   appearance: none;
-  height: 20px;
+  height: 10px;
   width: 100%;
   border-radius: 5px;
   border-width: 1px;
+  border-color: black;
+  /* border-width: 1px; */
   border-color: black;
     
   /* Chrome and Safari */
@@ -106,7 +111,9 @@
   }
 
   &::-webkit-progress-value {
+    border-width: 1px;
     border-radius: 5px;
+    border-color: black;
     background-color: #fd5d30 
   }
 
