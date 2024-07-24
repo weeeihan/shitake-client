@@ -110,19 +110,6 @@ const testRoom: Room = {
   ],
 };
 
-const copy = (p: PlayerDisplay[]) => {
-  let newPlayers = [];
-  for (let i = 0; i < p.length; i++) {
-    newPlayers.push({
-      name: p[i].name,
-      hp: p[i].hp,
-      ready: p[i].ready,
-      isBot: p[i].isBot,
-    });
-  }
-  return newPlayers;
-};
-
 const modalStyle: Styles = {
   content: {
     backgroundColor: "white",
@@ -328,7 +315,7 @@ function health(hp: number) {
   return "warning";
 }
 const Tutorial = () => {
-  const [room, setRoom] = useState(testRoom);
+  let room = testRoom;
   const [mush, setMush] = useState(-1);
   const [dmg, setDmg] = useState(0);
   const [activeId, setActiveId] = useState(-1);
@@ -651,7 +638,6 @@ const Tutorial = () => {
   const handleTouchEnd = (event: any) => {
     const touch = event.changedTouches[0];
     const endpos = [touch.clientX, touch.clientY];
-    let d = [endpos[0] - startpos[0], endpos[1] - startpos[1]];
 
     // console.log(delta);
 
@@ -676,7 +662,7 @@ const Tutorial = () => {
                 {" "}
                 Now you can see the damage of the mushrooms on this row.
               </p>
-              <p className=" mb-4 w-[90vw] text-center ">
+              <p className=" mt-2 mb-4 w-[90vw] text-center ">
                 (You may also click on the rows at any time of the game to see
                 these info!)
               </p>
