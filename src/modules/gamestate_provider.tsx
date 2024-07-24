@@ -6,7 +6,6 @@ import {
   GameStates,
   Message,
   Room,
-  Player,
 } from "../utils/struct";
 // import { useNavigate, useLocation, NavigateFunction } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";

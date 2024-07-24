@@ -28,7 +28,7 @@ import {
   useInterval,
 } from "../utils/utils";
 import { motion } from "framer-motion";
-import { PlayerDisplay, Room } from "../utils/struct";
+import { Room } from "../utils/struct";
 import Draggable from "react-draggable";
 import { GamestateContext } from "../modules/gamestate_provider";
 
