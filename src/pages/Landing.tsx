@@ -135,7 +135,7 @@ const Landing = () => {
           </div>
         )}
         <button
-          className="text-blue-800 underline absolute bottom-20"
+          className="text-blue-800 underline mt-4"
           onClick={() => {
             setIsTutorial(true);
             navigate("/tutorial");

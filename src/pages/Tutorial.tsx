@@ -789,7 +789,6 @@ const Tutorial = () => {
               </p>
             </div>
           )}
-          <p className="absolute bottom-10 font-patrick tracking-wide">1 / 8</p>
         </div>
       ) : page == 2 ? (
         <div className="flex flex-col text-center justify-center items-center h-screen">
@@ -866,8 +865,6 @@ const Tutorial = () => {
               </p>
             </div>
           )}
-
-          <p className="absolute bottom-10 font-patrick tracking-wide">2 / 8</p>
         </div>
       ) : page == 3 ? (
         <div className="flex flex-col text-center justify-center items-center h-screen">
@@ -901,8 +898,6 @@ const Tutorial = () => {
               Next
             </button>
           </div>
-
-          <p className="absolute bottom-10 font-patrick tracking-wide">3 / 8</p>
         </div>
       ) : page == 4 ? (
         <div className="flex flex-col text-center justify-center items-center h-screen">
@@ -930,8 +925,6 @@ const Tutorial = () => {
               Next
             </button>
           </div>
-
-          <p className="absolute bottom-10 font-patrick tracking-wide">4 / 8</p>
         </div>
       ) : page == 5 ? (
         <div className="flex flex-col text-center justify-center items-center h-screen">
@@ -959,8 +952,6 @@ const Tutorial = () => {
               Next
             </button>
           </div>
-
-          <p className="absolute bottom-10 font-patrick tracking-wide">5 / 8</p>
         </div>
       ) : page == 6 ? (
         <div className="flex flex-col text-center justify-center items-center h-screen">
@@ -990,8 +981,6 @@ const Tutorial = () => {
               Next
             </button>
           </div>
-
-          <p className="absolute bottom-10 font-patrick tracking-wide">6 / 8</p>
         </div>
       ) : page == 7 ? (
         <div className="flex flex-col text-center justify-center items-center h-screen">
@@ -1021,8 +1010,6 @@ const Tutorial = () => {
               Next
             </button>
           </div>
-
-          <p className="absolute bottom-10 font-patrick tracking-wide">7 / 8</p>
         </div>
       ) : page == 8 ? (
         <div className="flex flex-col justify-center h-screen items-center">
@@ -1119,16 +1106,11 @@ const Tutorial = () => {
               </button>
             </div>
           )}
-
-          <p className="absolute bottom-10 font-patrick tracking-wide">8 / 8</p>
         </div>
       ) : (
         <div>Last Page</div>
       )}
-      <p
-        className="absolute bottom-10 underline left-3 text-blue-800"
-        onClick={() => navigate("/")}
-      >
+      <p className="ml-5 text-blue-800" onClick={() => navigate("/")}>
         ↩ Aite I got this!
       </p>
     </div>
