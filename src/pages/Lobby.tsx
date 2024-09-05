@@ -13,7 +13,7 @@ const Lobby = () => {
   const {
     gameData: { player, room },
     gameStates: { isAlready },
-    setGameStates,
+    setGameState,
     gameConstants: { State },
     gameImages,
   } = useContext(GamestateContext);
@@ -59,7 +59,7 @@ const Lobby = () => {
 
   return (
     <div>
-      <div className="flex flex-col py-20 h-screen">
+      <div className="flex flex-col ">
         <div className="text-7xl pl-7 py-10  text-center font-patrick tracking-superWide">
           {room.id}
         </div>
@@ -159,15 +159,9 @@ const Lobby = () => {
               alt="Door"
               width={45}
               className="relative -mt-[4.75rem] drop-shadow-lg cursor-pointer "
-              onClick={() =>
-                setGameStates((prevState: any) => ({
-                  ...prevState,
-                  onLeave: true,
-                }))
-              }
+              onClick={() => setGameState({ onLeave: true })}
             />
           </div>
-          <button onClick={() => console.log(player)}>debug</button>
         </div>
       </div>
     </div>

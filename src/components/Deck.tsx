@@ -2,7 +2,6 @@ import React, { useContext, useState } from "react";
 import { WebsocketContext } from "../modules/websocket_provider";
 import { GamestateContext } from "../modules/gamestate_provider";
 import { actions, getTotalDamge, getX, getY } from "../utils/utils";
-import { GameStates } from "../utils/struct";
 import Spore from "./Spore";
 
 const Deck = ({ data }: { data: number[][] }) => {
@@ -12,7 +11,7 @@ const Deck = ({ data }: { data: number[][] }) => {
     gameData: { player, room },
     gameConstants: { State },
     getMush,
-    setGameStates,
+    setGameState,
     gameImages,
   } = useContext(GamestateContext);
 
@@ -45,11 +44,7 @@ const Deck = ({ data }: { data: number[][] }) => {
 
     // If just checking row
     setIsChecking(row);
-    setGameStates((prevState: GameStates) => ({
-      ...prevState,
-      bottomDisp: "Blank",
-      handToggle: false,
-    }));
+    setGameState({ bottomDisp: "Blank", handToggle: false });
   };
 
   const handleChoose = (e: React.SyntheticEvent) => {
@@ -63,11 +58,7 @@ const Deck = ({ data }: { data: number[][] }) => {
 
   const checkLogOff = () => {
     setIsChecking(-1);
-    setGameStates((prevState: GameStates) => ({
-      ...prevState,
-      bottomDisp: "Dashboard",
-      handToggle: true,
-    }));
+    setGameState({ bottomDisp: "Dashboard", handToggle: true });
   };
 
   // Checking row
@@ -82,7 +73,10 @@ const Deck = ({ data }: { data: number[][] }) => {
     }
     return (
       <>
-        <div className="flex flex-col h-screen" onClick={checkLogOff}>
+        <div
+          className="flex flex-col items-center h-screen"
+          onClick={checkLogOff}
+        >
           <div className="text-[.8rem] my-10 flex flex-col items-center">
             {hasChosen ? (
               <div>{""}</div>
@@ -96,7 +90,7 @@ const Deck = ({ data }: { data: number[][] }) => {
                 src={gameImages[getMush(num).name]}
                 width={80}
                 alt="player mushrooms!"
-                className={" drop-shadow-lg cursor-pointer ml-[2.3rem] "}
+                className={" drop-shadow-lg cursor-pointer  "}
               />
               <div className="font-patrick tracking-wide">
                 {"["}
@@ -138,7 +132,7 @@ const Deck = ({ data }: { data: number[][] }) => {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className="flex  max-w-[430px] w-[100vw] flex-col mt-9 justify-left space-y-[5vh] ">
+      <div className="flex  max-w-[430px] w-[100vw] flex-col mt-9 justify-left space-y-[40px] ">
         {data != null &&
           data.map((row: number[], rowNumber: number) => (
             <div
@@ -150,7 +144,7 @@ const Deck = ({ data }: { data: number[][] }) => {
                 <div key={cardNumber} className="relative ">
                   <div className="z-10 absolute">
                     <img
-                      className="w-[15vw] max-w-[80px] drop-shadow-lg"
+                      className="w-[15vw] max-w-[60px] drop-shadow-lg"
                       src={gameImages[getMush(num).name]}
                       alt="Mushroom"
                       style={{ marginTop: getY(num), marginLeft: getX(num) }}
@@ -161,7 +155,7 @@ const Deck = ({ data }: { data: number[][] }) => {
                     <img
                       src={gameImages.hlog}
                       alt="Horizontal Log"
-                      className="w-[18vw] h-[6vh] max-w-[100px] min-h-[50px]"
+                      className="w-[18vw] h-[6vh] max-w-[72px] min-h-[50px]"
                       onClick={(e: any) => handleRowClick(e, rowNumber)}
                     />
                   </div>

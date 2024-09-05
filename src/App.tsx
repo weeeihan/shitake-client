@@ -11,14 +11,14 @@ import Tutorial from "./pages/Tutorial";
 function App() {
   const { path } = useContext(GamestateContext);
   return (
-    <>
+    <div>
       {path === "/" && <Landing />}
       {path === "/lobby" && <Lobby />}
       {path === "/game" && <Game />}
       {path === "/roundend" && <Roundend />}
       {path === "/gameend" && <Gameend />}
       {path === "/tutorial" && <Tutorial />}
-    </>
+    </div>
   );
 }
 

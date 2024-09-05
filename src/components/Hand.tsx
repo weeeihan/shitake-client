@@ -54,7 +54,7 @@ const Selection = ({ selected }: { selected: number }) => {
     return (
       <div
         ref={setNodeRef}
-        className="w-11/12 border border-black rounded-2xl h-1/2 flex flex-col justify-center items-center shadow-lg"
+        className="w-11/12 max-w-[400px] border border-black rounded-2xl h-[10rem] flex flex-col justify-center items-center shadow-lg"
         style={{
           backgroundColor: coloring("brown"),
         }}
@@ -66,20 +66,20 @@ const Selection = ({ selected }: { selected: number }) => {
   return (
     <div
       ref={setNodeRef}
-      className="relative w-11/12 h-1/2 border border-black rounded-2xl shadow-lg overflow-y-scroll "
+      className="relative max-w-[400px] w-11/12 h-[10rem] border border-black rounded-2xl shadow-lg overflow-y-scroll"
       style={{
         backgroundColor: coloring(getMush(selected).color),
       }}
     >
       <div className="absolute left-3 text-4xl">{selected}</div>
       <div className="absolute right-3 text-4xl">{selected}</div>
-      <div className="flex flex-col items-center my-1 mx-2">
+      <div className="flex flex-col items-center my-1 mx-2 font-patrick tracking-wide">
         <img src={img(getMush(selected).name)} width={80} />
         {/* <div className="text-4xl">{selected}</div> */}
         <div>
           {getMush(selected).name + " [" + getMush(selected).damage + "]"}
         </div>
-        <div>{getMush(selected).desc}</div>
+        <div className="text-center">{getMush(selected).desc}</div>
       </div>
     </div>
   );
@@ -93,7 +93,7 @@ const NumRow = ({
   active: number;
 }) => {
   return (
-    <div className="flex flex-wrap mt-4 w-screen gap-x-5 gap-y-5 items-center justify-center">
+    <div className=" flex flex-wrap mt-4 w-screen gap-x-5 gap-y-5 items-center justify-center">
       <SortableContext items={numballs} strategy={rectSortingStrategy}>
         {numballs.map((num: number) => (
           <Numball key={num} num={num} active={active} />
@@ -134,7 +134,7 @@ const Hand = () => {
   const {
     gameConstants: { State },
     gameStates: { selected, hand },
-    setGameStates,
+    setGameState,
   } = useContext(GamestateContext);
 
   const playCard = (card: number) => {
@@ -166,34 +166,23 @@ const Hand = () => {
     if (over.id === "selection") {
       if (selected !== -1) {
         const selPos = hand.indexOf(active.id);
-        setGameStates((prevState) => ({
-          ...prevState,
-          hand: [
-            ...prevState.hand.slice(0, selPos),
-            selected,
-            ...prevState.hand.slice(selPos),
-          ],
-        }));
+        setGameState({
+          hand: [...hand.slice(0, selPos), selected, ...hand.slice(selPos)],
+        });
       }
 
-      setGameStates((prevState) => ({
-        ...prevState,
+      setGameState({
         selected: active.id,
-        hand: prevState.hand.filter((num) => num !== active.id),
-      }));
+        hand: hand.filter((num) => num !== active.id),
+      });
 
       playCard(active.id);
       return;
     }
 
-    setGameStates((prevState) => ({
-      ...prevState,
-      hand: arrayMove(
-        prevState.hand,
-        prevState.hand.indexOf(active.id),
-        prevState.hand.indexOf(over.id)
-      ),
-    }));
+    setGameState({
+      hand: arrayMove(hand, hand.indexOf(active.id), hand.indexOf(over.id)),
+    });
 
     setActiveId(-1);
   };

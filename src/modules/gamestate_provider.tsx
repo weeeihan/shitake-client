@@ -18,7 +18,7 @@ export const GamestateContext = createContext<{
   gameConstants: GameConstants;
   gameStates: GameStates;
   gameData: GameData;
-  setGameStates: React.Dispatch<React.SetStateAction<GameStates>>;
+  setGameState: (newState: any) => void;
   fetchData: any;
   gameImages: any;
   getMush: any;
@@ -28,7 +28,7 @@ export const GamestateContext = createContext<{
   navigate: () => {},
   gameConstants: {} as GameConstants,
   gameStates: {
-    loading: false,
+    loading: true,
     isAlready: false,
     handToggle: true,
     showPlaying: false,
@@ -41,7 +41,7 @@ export const GamestateContext = createContext<{
     showHideLoc: [],
     onLeave: false,
   },
-  setGameStates: () => {},
+  setGameState: () => {},
   gameData: {} as GameData,
   fetchData: () => {},
   gameImages: {},
@@ -142,10 +142,17 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     queryKey: ["constants"],
     initialData: { states: {} },
     queryFn: async () => {
-      const res = await axios.get(GET_CONSTANTS_API);
-      // After fetching constants, fetch room data
-      fetchData(res.data.states);
-      return res.data;
+      try {
+        const res = await axios.get(GET_CONSTANTS_API);
+        console.log(res);
+        // After fetching constants, fetch room data
+        fetchData(res.data.states);
+        return res.data;
+      } catch (err) {
+        setGameState({ loading: false });
+        console.log(err);
+      }
+      return { states: {}, mushrooms: {} };
     },
   });
 
@@ -160,15 +167,23 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     selected: -1,
     played: [],
     prevPlayed: {},
-    showHideLoc: [165, 400],
+    showHideLoc: [165, 100],
     onLeave: false,
-    loading: false,
+    loading: true,
   });
+
+  const setGameState = (newStates: any) => {
+    setGameStates((prev: GameStates) => ({
+      ...prev,
+      ...newStates,
+    }));
+  };
 
   // Fetch API
   const fetchData = async (states: any, msg?: Message | undefined) => {
     id = GetID();
     if (id === "none") {
+      setGameState({ loading: false });
       redirect("/");
       fetchImages();
       setGameData({} as GameData);
@@ -180,6 +195,7 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
       const res = await axios.get(GET_DATA_API(id));
       handleData(states, res, msg);
     } catch (err) {
+      setGameState({ loading: false });
       // console.log(err);
       if (err instanceof AxiosError) {
         if (err.response?.data.Message === "Room does not exist") {
@@ -193,10 +209,7 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
 
   // Handling data after fetched
   const handleData = (states: any, res: any, m?: Message | undefined) => {
-    setGameStates((prev: GameStates) => ({
-      ...prev,
-      loading: false,
-    }));
+    setGameState({ loading: false });
 
     // console.log("HANDLING");
     // console.log(m.current);
@@ -220,19 +233,15 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
       room: res.data.room,
     }));
 
-    // Populate hand
-    setGameStates((prevState: GameStates) => ({
-      ...prevState,
-      hand: player.hand,
-    }));
+    // populate hand
+    setGameState({ hand: player.hand });
 
     // Reset player choice
     if (player.play !== -1) {
-      setGameStates((prevState: GameStates) => ({
-        ...prevState,
+      setGameState({
         selected: player.play,
         hand: player.hand.filter((num: number) => num !== player.play),
-      }));
+      });
     }
 
     // Handle redirections ==============================================
@@ -252,35 +261,21 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     if (room.state === State.CALCULATING) {
-      setGameStates((prev: GameStates) => ({
-        ...prev,
-        showPlaying: true,
-      }));
+      setGameState({ showPlaying: true });
       redirect("/game");
     }
 
     if (room.state === State.PROCESS || room.state === State.ROUND_END) {
-      setGameStates((prev: GameStates) => ({
-        ...prev,
-        handToggle: false,
-        showPlaying: true,
-      }));
+      setGameState({ handToggle: false, showPlaying: true });
     }
 
     if (room.state === State.CHOOSE_ROW) {
-      setGameStates((prev: GameStates) => ({
-        ...prev,
-        currentDeck: room.deck,
-        bottomDisp: "blank",
-      }));
+      setGameState({ currentDeck: room.deck, bottomDisp: "blank" });
       redirect("/game");
     }
 
     if (room.state === State.CHOOSE_CARD) {
-      setGameStates((prev: GameStates) => ({
-        ...prev,
-        currentDeck: room.deck,
-      }));
+      setGameState({ currentDeck: room.deck });
       redirect("/game");
     }
 
@@ -288,10 +283,7 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
     // Ready messages
     if (m !== undefined) {
       if (m.state == State.REGISTERED) {
-        setGameStates((prev) => ({
-          ...prev,
-          isAlready: false,
-        }));
+        setGameState({ isAlready: false });
       }
 
       if (
@@ -300,26 +292,16 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
         m.state == State.READY
       ) {
         if (m.state == State.ALREADY) {
-          setGameStates((prev) => ({
-            ...prev,
-            isAlready: true,
-          }));
+          setGameState({ isAlready: true });
         }
         if (m.state == State.UNREADY) {
-          setGameStates((prev) => ({
-            ...prev,
-            isAlready: false,
-          }));
+          setGameState({ isAlready: false });
         }
       }
 
       // Start game!
       if (m.state == State.START) {
-        setGameStates((prev) => ({
-          ...prev,
-          isAlready: false,
-          showPlaying: false,
-        }));
+        setGameState({ isAlready: false, showPlaying: false });
       }
 
       // Show playing (During process)
@@ -328,42 +310,28 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
         m.state == State.ROUND_END ||
         m.state == State.GAME_END
       ) {
-        setGameStates((prev) => ({
-          ...prev,
-          showPlaying: true,
-          selected: -1,
-        }));
+        setGameState({ showPlaying: true, selected: -1 });
       }
 
       // Handle row choosing
       if (m.state == State.CHOOSE_ROW) {
-        setGameStates((prev) => ({
-          ...prev,
-          handToggle: false,
-          bottomDisp: "Blank",
-          // currentDeck: room.deck,
-        }));
+        setGameState({ handToggle: false, bottomDisp: "blank" });
         // Hide hands
       }
 
       // Show playing
       if (m.state == State.ROW_SELECTED) {
-        setGameStates((prev) => ({
-          ...prev,
-          showPlaying: true,
-          selected: -1,
-        }));
+        setGameState({ showPlaying: true, selected: -1 });
       }
     }
   };
 
   // Show Loaders
+  if (gameStates.loading) {
+    console.log("General loading");
+    return <Loader />;
+  }
   if (path !== "/" && !isTutorial) {
-    if (gameStates.loading) {
-      // console.log("General loading");
-      return <Loader />;
-    }
-
     // Constant loading
     if (constLoading) {
       // console.log("Loading constants");
@@ -397,7 +365,7 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
           State: constants.states,
         },
         gameStates: gameStates,
-        setGameStates: setGameStates,
+        setGameState: setGameState,
         gameData: gameData,
         fetchData: fetchData,
         gameImages: gameImages,

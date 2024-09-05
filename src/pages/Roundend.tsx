@@ -9,7 +9,7 @@ const Roundend = () => {
   const {
     gameConstants: { State },
     gameImages,
-    setGameStates,
+    setGameState,
   } = useContext(GamestateContext);
 
   const { conn } = useContext(WebsocketContext);
@@ -46,8 +46,8 @@ const Roundend = () => {
   // };
 
   return (
-    <div className="flex flex-col py-[8rem] items-center font-patrick tracking-wide">
-      <div className="border border-black w-11/12 rounded-2xl shadow-xl">
+    <div className="flex flex-col mt-4 items-center font-patrick tracking-wide">
+      <div className="border border-black max-w-[400px] w-11/12 rounded-2xl shadow-xl">
         <div className="m-5 space-y-2">
           <div className="text-2xl text-center">Damage Report Card</div>
           <hr />
@@ -113,12 +113,7 @@ const Roundend = () => {
         alt="Door"
         width={45}
         className="mt-8"
-        onClick={() =>
-          setGameStates((prevState: any) => ({
-            ...prevState,
-            onLeave: true,
-          }))
-        }
+        onClick={() => setGameState({ onLeave: true })}
       />
       {/* <button onClick={debug}>Debug-test</button> */}
     </div>

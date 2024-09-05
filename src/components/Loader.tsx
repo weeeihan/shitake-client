@@ -2,7 +2,7 @@ import { TypeAnimation } from "react-type-animation";
 
 const Loader = () => {
   return (
-    <div className="flex flex-col h-screen justify-center items-center">
+    <div className="flex flex-col  h-screen justify-center items-center">
       <TypeAnimation
         sequence={[
           "Loading...",

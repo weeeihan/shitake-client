@@ -27,7 +27,7 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
     gameStates: { onLeave },
     fetchData,
     navigate,
-    setGameStates,
+    setGameState,
     gameImages,
     path,
   } = useContext(GamestateContext);
@@ -78,10 +78,7 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.clear();
       navigate("/");
       conn.send(utils.actions(State.LEAVE));
-      setGameStates((prev: any) => ({
-        ...prev,
-        onLeave: false,
-      }));
+      setGameState({ onLeave: false });
     }
   };
 
@@ -101,12 +98,7 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
           <span className="text-3xl font-patrick tracking-wide mx-10">|</span>
           <span
             className="cursor-pointer text-3xl font-patrick tracking-wide"
-            onClick={() =>
-              setGameStates((prevState: any) => ({
-                ...prevState,
-                onLeave: false,
-              }))
-            }
+            onClick={() => setGameState({ onLeave: false })}
           >
             NO{" "}
           </span>

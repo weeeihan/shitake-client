@@ -16,7 +16,7 @@ const Playing = () => {
   });
   const {
     navigate,
-    setGameStates,
+    setGameState,
     gameConstants: { State },
     gameData: { room },
     gameStates: { currentDeck },
@@ -64,29 +64,35 @@ const Playing = () => {
     let vh = document.documentElement.clientHeight;
     // now space between is 5vh, and the height of the log is 6vh so total 11vh
     // thus 0.11 * vh
-    return -133 - (3 - p) * 0.11 * vh;
+    return -70 - (3 - p) * 90;
   }
 
   function getDesX(p: number) {
+    // Width of the log
     if (p == 0) p += 1;
     let vw = document.documentElement.clientWidth;
 
-    // vw / 2 is the rightmost location
-    // since each mushroom is 18% vw apart, vw*0.18
-    // and the additional 50 is really just to offset to right
-    let dMush = vw * 0.18 >= 100 ? 100 : vw * 0.18;
+    // clamp viewport
+    if (vw > 400) {
+      vw = 400;
+    }
+    let width = 0.18 * vw;
 
-    return vw / 2 - dMush * (6 - p);
-    // return -150 + (p - 1) * 80;
+    // console.log("vw: ", vw);
+    // console.log("divRef: ", divRef.current?.clientWidth);
+    // console.log("width: ", width);
+    // - (vw/2 - 0.5*width) is initial position. vw/2 is leftmost, we go right by 0.5 of the log width
+    // Then we move down the log in increments of width
+    // console.log("X: ", -(vw / 2 - 0.5 * width) + (p - 1) * width);
+    return -(vw / 2 - 0.5 * width) + (p - 1) * width;
   }
 
   const nextPlay = () => {
-    setGameStates((prev) => ({
-      ...prev,
+    setGameState({
       handToggle: true,
       bottomDisp: "Dashboard",
       showPlaying: false,
-    }));
+    });
 
     if (conn !== null && conn !== undefined) {
       if (room.state === State.ROUND_END) {
@@ -109,7 +115,7 @@ const Playing = () => {
     // console.log(index);
     if (index < moves.length && currentDeck.length > 0) {
       return (
-        <div className="flex flex-col items-center justify-center mt-20">
+        <div className="flex flex-col items-center mt-4 justify-center">
           <motion.div
             key={index}
             variants={{
@@ -162,7 +168,7 @@ const Playing = () => {
   }, 1500);
 
   return (
-    <div {...doubleTap} className="flex h-screen flex-col items-center ">
+    <div {...doubleTap} className="flex h-screen  flex-col items-center ">
       <div {...doubleTap} className="relative z-1 ">
         {currentDeck.length === 0 ? (
           <Deck data={room.deck} />

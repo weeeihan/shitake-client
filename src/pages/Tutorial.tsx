@@ -31,6 +31,7 @@ import { motion } from "framer-motion";
 import { Room } from "../utils/struct";
 import Draggable from "react-draggable";
 import { GamestateContext } from "../modules/gamestate_provider";
+import { DraggableData } from "react-rnd";
 
 const testRoom: Room = {
   ...({} as Room),
@@ -229,7 +230,7 @@ const Selection = ({ selected }: { selected: number }) => {
   return (
     <div
       ref={setNodeRef}
-      className="relative w-11/12 h-[10rem] border border-black rounded-2xl shadow-lg overflow-y-scroll "
+      className="relative w-11/12 h-[10rem] border border-black rounded-2xl shadow-lg overflow-y-scroll"
       style={{
         backgroundColor: coloring(getMush(selected).color),
       }}
@@ -241,7 +242,7 @@ const Selection = ({ selected }: { selected: number }) => {
         {/* <div className="text-4xl">{selected}</div> */}
         <div>{getMush(selected).name}</div>
         <div>{"Damage: " + getMush(selected).damage}</div>
-        <div>{getMush(selected).desc}</div>
+        <div className="text-center">{getMush(selected).desc}</div>
       </div>
     </div>
   );
@@ -256,7 +257,7 @@ const Spore = ({ n }: { n: string }) => {
         backgroundColor: coloring(getMush(num).color),
         zIndex: 100,
       }}
-      className=" mt-2 border border-black w-14 h-14 flex rounded-full shadow-lg  justify-center items-center text-[1.5rem]"
+      className=" border border-black w-14 h-14 flex rounded-full shadow-lg  justify-center items-center text-[1.5rem]"
     >
       {num}
     </div>
@@ -271,7 +272,7 @@ const NumRow = ({
   active: number;
 }) => {
   return (
-    <div className="flex flex-wrap mt-4 w-screen gap-x-5 gap-y-5 items-center justify-center">
+    <div className="flex justify-center flex-wrap mt-4 gap-3 mx-2 ">
       <SortableContext items={numballs} strategy={rectSortingStrategy}>
         {numballs.map((num: number) => (
           <Numball key={num} num={num} active={active} />
@@ -296,7 +297,7 @@ const Numball = ({ num, active }: { num: number; active: number }) => {
     <div
       ref={setNodeRef}
       style={style}
-      className=" touch-none"
+      className=" touch-none cursor-grab"
       {...listeners}
       {...attributes}
     >
@@ -327,7 +328,7 @@ const Tutorial = () => {
   const nodeRef = useRef(null);
   const [showHand, setShowHand] = useState(false);
   const [startpos, setStartpos] = useState<number[]>([]);
-
+  const divRef = useRef<any>();
   const { navigate } = useContext(GamestateContext);
 
   const deck = [[19], [23], [91], [3]];
@@ -374,13 +375,13 @@ const Tutorial = () => {
       return;
     }
     return (
-      <>
+      <div className="flex flex-col items-center ">
         <p className="text-center mb-5">
           (You can see the mushroom details here.)
         </p>
         <div
           onClick={goBack}
-          className="flex relative border border-black rounded-2xl mx-4  flex-col justify-center items-center font-patrick tracking-wide"
+          className="flex relative max-w-[400px] border border-black rounded-2xl mx-4  flex-col justify-center items-center font-patrick tracking-wide "
         >
           <div className="absolute left-5 top-3 text-5xl font-sans">{mush}</div>
           <div className="absolute right-5 top-3 text-5xl font-sans">
@@ -389,14 +390,14 @@ const Tutorial = () => {
           <img alt="mush" src={img(getMush(mush).name)} width={150} />
           <div>{getMush(mush).name}</div>
           <div>Damage : {getMush(mush).damage}</div>
-          <div className="text-center">{getMush(mush).desc}</div>
+          <div className="text-center mx-5">{getMush(mush).desc}</div>
           <div className="mt-5">(Click on the card to return)</div>
         </div>
         <p className="mt-5 text-center">
           The damage is how much % of your health will be reduced after eating
           it.
         </p>
-      </>
+      </div>
     );
   };
 
@@ -409,7 +410,7 @@ const Tutorial = () => {
   const Deck = ({ data }: { data: number[][] }) => {
     return (
       <div className="flex flex-col items-center justify-center">
-        <div className="flex  max-w-[430px] w-[100vw] flex-col mt-9 justify-left space-y-[5vh] ">
+        <div className="flex  max-w-[430px] w-[100vw] flex-col mt-9 justify-left space-y-[40px] ">
           {data != null &&
             data.map((row: number[], rowNumber: number) => (
               <div
@@ -419,19 +420,21 @@ const Tutorial = () => {
               >
                 {row.map((num: number, cardNumber: number) => (
                   <div key={cardNumber} className="relative ">
-                    <div className="z-10 absolute">
+                    <div className="z-10 absolute ">
                       <img
-                        className="w-[15vw] max-w-[80px] drop-shadow-lg"
+                        className="w-[15vw] max-w-[60px] drop-shadow-lg"
                         src={img(getMush(num).name)}
                         alt="Mushroom"
                         style={{ marginTop: getY(num), marginLeft: getX(num) }}
                       />
                     </div>
-                    <div className=" ">
+                    <div className="">
                       <img
+                        ref={divRef}
                         src={img("hlog")}
                         alt="Horizontal Log"
-                        className="w-[18vw] h-[6vh] max-w-[100px] min-h-[50px]"
+                        className="w-[18vw] h-[6vh] max-w-[72px] min-h-[50px]"
+
                         // onClick={(e: any) => handleRowClick(e, rowNumber)}
                       />
                     </div>
@@ -455,34 +458,45 @@ const Tutorial = () => {
     decks: number[][][];
     moves: string[][];
   }) => {
+    // console.log(moves);
     function getDesY(p: number) {
-      let vh = document.documentElement.clientHeight;
       // now space between is 5vh, and the height of the log is 6vh so total 11vh
       // thus 0.11 * vh
-      return -50 - (3 - p) * 0.11 * vh;
+      // console.log("Y: ", -50 - (3 - p) * 0.11 * vh);
+      return -60 - (3 - p) * 90;
     }
 
     function getDesX(p: number) {
+      // Width of the log
       if (p == 0) p += 1;
       let vw = document.documentElement.clientWidth;
 
-      // vw / 2 is the rightmost location
-      // since each mushroom is 18% vw apart, vw*0.18
-      // and the additional 50 is really just to offset to right
-      let dMush = vw * 0.18 >= 100 ? 100 : vw * 0.18;
+      // clamp viewport
+      if (vw > 400) {
+        vw = 400;
+      }
+      let width = 0.18 * vw;
 
-      return vw / 2 - dMush * (6 - p);
-      // return -150 + (p - 1) * 80;
+      // console.log("vw: ", vw);
+      // console.log("divRef: ", divRef.current?.clientWidth);
+      // console.log("width: ", width);
+      // - (vw/2 - 0.5*width) is initial position. vw/2 is leftmost, we go right by 0.5 of the log width
+      // Then we move down the log in increments of width
+      // console.log("X: ", -(vw / 2 - 0.5 * width) + (p - 1) * width);
+      return -(vw / 2 - 0.5 * width) + (p - 1) * width;
     }
 
+    // console.log(moves);
     const [index, setIndex] = useState(0);
     useInterval(() => {
+      // console.log(index);
       if (index == decks.length - 1) {
         setIndex(0);
         testRoom.players[0].hp += dmg;
       } else {
         testRoom.players[0].hp -= dmg;
         setIndex((prev) => prev + 1);
+        // console.log("here?");
         // setRoom((prev) => ({
         //   ...prev,
         //   players: newplayers,
@@ -531,7 +545,7 @@ const Tutorial = () => {
           </>
         )}
         {page == 7 && (
-          <div className="w-11/12 max-h-[15vh] bg-white border border-black flex flex-col rounded-2xl shadow-xl ">
+          <div className="w-11/12 mt-4 max-h-[15vh] bg-white border border-black flex flex-col rounded-2xl shadow-xl ">
             <div className="my-4 mx-4 overflow-y-auto">
               {room.players.map((player, index) => (
                 <div key={index} className="mt-1 font-patrick tracking-wide">
@@ -617,27 +631,15 @@ const Tutorial = () => {
       arrayMove(prev, prev.indexOf(active.id), prev.indexOf(over.id))
     );
 
-    //   setGameStates((prevState) => ({
-    //     ...prevState,
-    //     selected: active.id,
-    //     hand: prevState.hand.filter((num) => num !== active.id),
-    //   }));
-
-    //   playCard(active.id);
-    //   return;
-    // }
-
     setActiveId(-1);
   };
 
-  const handleTouchStart = (event: any) => {
-    const touch = event.touches[0];
-    setStartpos([touch.clientX, touch.clientY]);
+  const handleTouchStart = (data: DraggableData) => {
+    setStartpos([data.x, data.y]);
   };
 
-  const handleTouchEnd = (event: any) => {
-    const touch = event.changedTouches[0];
-    const endpos = [touch.clientX, touch.clientY];
+  const handleTouchEnd = (data: DraggableData) => {
+    const endpos = [data.x, data.y];
 
     // console.log(delta);
 
@@ -654,11 +656,11 @@ const Tutorial = () => {
   if (row !== -1 && page == 6) {
     // console.log(row);
     return (
-      <>
-        <div className="flex flex-col h-screen items-center">
-          <div className="mt-28 mb-4 w-[90vw] text-center ">
+      <div className="flex flex-col items-center w-screen">
+        <div className="  w-max-[400px]">
+          <div className="mt-10 mb-4 text-center ">
             <div className=" shadow-lg rounded-2xl border border-black">
-              <p className="mt-4">
+              <p className="mt-4 mx-2">
                 {" "}
                 Now you can see the damage of the mushrooms on this row.
               </p>
@@ -668,26 +670,25 @@ const Tutorial = () => {
               </p>
             </div>
           </div>
-          <div className="flex flex-col w-full">
-            {deckTwo[row].map((num: number, index: number) => (
-              <div
-                key={index}
-                className="flex flex-row items-left items-center"
-              >
-                <img
-                  src={img(getMush(num).name)}
-                  width={80}
-                  alt="player mushrooms!"
-                  className={" drop-shadow-lg cursor-pointer ml-[2.3rem] "}
-                />
-                <div className="font-patrick tracking-wide">
-                  {"["}
-                  {num}
-                  {"]"} {getMush(num).name}, {"("}Damage: {getMush(num).damage}%
-                  {")"}
+          <div className="flex flex-col  justify-left ">
+            <div>
+              {deckTwo[row].map((num: number, index: number) => (
+                <div key={index} className="flex flex-row items-center ">
+                  <img
+                    src={img(getMush(num).name)}
+                    width={80}
+                    alt="player mushrooms!"
+                    className={" drop-shadow-lg cursor-pointer "}
+                  />
+                  <div className="font-patrick tracking-wide">
+                    {"["}
+                    {num}
+                    {"]"} {getMush(num).name}, {"("}Damage:{" "}
+                    {getMush(num).damage}%{")"}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
 
           <div className="font-patrick text-2xl mt-10 tracking-wide flex justify-center">
@@ -721,373 +722,382 @@ const Tutorial = () => {
             </p>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
   return (
-    <div>
-      {page == 1 ? (
-        <div className="flex flex-col text-center justify-center items-center h-screen">
-          <Modal
-            isOpen={mush !== -1}
-            onRequestClose={() => setMush(-1)}
-            appElement={document.getElementById("root") as HTMLElement}
-            style={modalStyle}
-          >
-            <Mushroom />
-          </Modal>
-
-          <p className="w-[90vw] my-10">
-            Welcome to Shitake, this game is about growing and eating mushrooms!
-            (and not dying 🫢)
-          </p>
-          <p>Firstly, you have a bunch of spores. (Drag around!)</p>
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            onDragOver={handleDragOver}
-          >
-            {/* <Selection selected={selected} /> */}
-
-            <NumRow numballs={hand} active={activeId} />
-            <DragOverlay>
-              {activeId !== -1 ? <Numball num={activeId} active={-1} /> : null}
-            </DragOverlay>
-          </DndContext>
-          <p className="mt-5">Each spore grows a mushroom. (Tap on a spore!)</p>
-          <p className="mt-5 w-[90vw]">
-            The number on the spore indicates the{" "}
-            <span className="font-bold">weight</span> of the mushroom.
-          </p>
-          <p className="mt-5 w-[90vw]">
-            There are no repeating numbers in one round of game, but there may
-            be repeating mushroom types. (Spore 1,4,7,8 are all Shiitakes)
-          </p>
-          {next ? (
-            <button
-              className="mt-10 border-2 border-black px-8 py-2 rounded-xl shadow-lg"
-              onClick={() => {
-                setPage(2);
-                setNext(false);
-                setSelected(-1);
-                setHand([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-              }}
+    <div className=" w-screen flex flex-col items-center justify-center">
+      <div className="max-w-[400px]">
+        {page == 1 ? (
+          <div className=" flex flex-col text-center justify-center items-center ">
+            <Modal
+              isOpen={mush !== -1}
+              onRequestClose={() => setMush(-1)}
+              appElement={document.getElementById("root") as HTMLElement}
+              style={modalStyle}
             >
-              Next
-            </button>
-          ) : (
-            <div className="relative flex flex-col items-center">
-              <button className="mt-10 border-2 border-black px-8 py-2 rounded-xl shadow-lg opacity-50">
-                Next
-              </button>
-              <p className="absolute opacity-50 w-[20rem] mt-28 text-center">
-                {" "}
-                Drag the spores!
-              </p>
-            </div>
-          )}
-        </div>
-      ) : page == 2 ? (
-        <div className="flex flex-col text-center justify-center items-center h-screen">
-          <Modal
-            isOpen={mush !== -1}
-            onRequestClose={() => setMush(-1)}
-            appElement={document.getElementById("root") as HTMLElement}
-            style={modalStyle}
-          >
-            <Mushroom />
-          </Modal>
+              <Mushroom />
+            </Modal>
 
-          <p className="w-[90vw] my-5">
-            At every turn, each player <span className="font-bold">must</span>{" "}
-            choose a spore and drag into the{" "}
-            {<span className="italic">selection box</span>} which says "Toss a
-            spore!"
-          </p>
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            onDragOver={handleDragOver}
-          >
-            <Selection selected={selected} />
+            <p className="w-[90vw] mt-10">
+              Welcome to Shitake, this game is about growing and eating
+              mushrooms! <br /> (and not dying 🫢)
+            </p>
+            <p>
+              Firstly, you have a bunch of spores. <br /> (Drag around!)
+            </p>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDragOver={handleDragOver}
+            >
+              {/* <Selection selected={selected} /> */}
 
-            <NumRow numballs={hand} active={activeId} />
-            <DragOverlay>
-              {activeId !== -1 ? <Numball num={activeId} active={-1} /> : null}
-            </DragOverlay>
-          </DndContext>
-
-          <p className="w-[90vw] mt-5">
-            You may repeatedly change your selection by dragging another spore
-            into the box. Once every player has selected, a{" "}
-            <span className="font-bold">5-second timer</span> will start.
-          </p>
-
-          <p className="w-[90vw] mt-5">
-            It is your final 5 seconds to change your selection.
-          </p>
-          {next ? (
-            <div className="flex flex-row space-x-4">
+              <NumRow numballs={hand} active={activeId} />
+              <DragOverlay>
+                {activeId !== -1 ? (
+                  <Numball num={activeId} active={-1} />
+                ) : null}
+              </DragOverlay>
+            </DndContext>
+            <p>
+              Each spore grows a mushroom. <br /> (Tap on a spore!)
+            </p>
+            <p>
+              The number on the spore indicates the{" "}
+              <span className="font-bold">weight</span> of the mushroom.
+            </p>
+            <p>There are no repeating numbers in a round.</p>
+            {next ? (
               <button
                 className="mt-10 border-2 border-black px-8 py-2 rounded-xl shadow-lg"
                 onClick={() => {
-                  setPage(1);
-                  setHand([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+                  setPage(2);
                   setNext(false);
+                  setSelected(-1);
+                  setHand([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+                }}
+              >
+                Next
+              </button>
+            ) : (
+              <div className="relative flex flex-col items-center">
+                <button className="mt-10 border-2 border-black px-8 py-2 rounded-xl shadow-lg opacity-50">
+                  Next
+                </button>
+                <p className="absolute opacity-50 w-[20rem]  text-center">
+                  {" "}
+                  Drag the spores!
+                </p>
+              </div>
+            )}
+          </div>
+        ) : page == 2 ? (
+          <div className="flex flex-col items-center text-center ">
+            <Modal
+              isOpen={mush !== -1}
+              onRequestClose={() => setMush(-1)}
+              appElement={document.getElementById("root") as HTMLElement}
+              style={modalStyle}
+            >
+              <Mushroom />
+            </Modal>
+
+            <p className="mb-4">
+              At every turn, each player <span className="font-bold">must</span>{" "}
+              choose a spore and drag into the{" "}
+              {<span className="italic">selection box</span>} which says "Toss a
+              spore!"
+            </p>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDragOver={handleDragOver}
+            >
+              <Selection selected={selected} />
+
+              <NumRow numballs={hand} active={activeId} />
+              <DragOverlay>
+                {activeId !== -1 ? (
+                  <Numball num={activeId} active={-1} />
+                ) : null}
+              </DragOverlay>
+            </DndContext>
+
+            <p className="w-[90vw] mt-5">
+              You may repeatedly change your selection by dragging another spore
+              into the box. Once every player has selected, a{" "}
+              <span className="font-bold">5-second timer</span> will start.
+            </p>
+
+            <p className="w-[90vw] mt-5">
+              It is your final 5 seconds to change your selection.
+            </p>
+            {next ? (
+              <div className="flex flex-row space-x-4">
+                <button
+                  className="mt-10 border-2 border-black px-8 py-2 rounded-xl shadow-lg"
+                  onClick={() => {
+                    setPage(1);
+                    setHand([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+                    setNext(false);
+                  }}
+                >
+                  Back
+                </button>
+                <button
+                  className="mt-10 border-2 border-black px-8 py-2 rounded-xl shadow-lg"
+                  onClick={() => setPage(3)}
+                >
+                  Next
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center opacity-50">
+                <div className="flex flex-row space-x-4  relative">
+                  <button className="mt-10 border-2 border-black px-8 py-2 rounded-xl shadow-lg">
+                    Back
+                  </button>
+                  <button className="mt-10 border-2 border-black px-8 py-2 rounded-xl shadow-lg">
+                    Next
+                  </button>
+                </div>
+                <p className="absolute w-[90vw]">
+                  Toss a spore into the selection box!
+                </p>
+              </div>
+            )}
+          </div>
+        ) : page == 3 ? (
+          <div className="flex flex-col text-center  items-center">
+            <p className="w-[90vw] ">
+              Once the timer is up, the spores will{" "}
+              <span className="italic">fly</span> to 1 of the 4 logs to grow,
+              one by one.
+            </p>
+            <Deck data={deck} />
+
+            <p className="w-[90vw] ">
+              The number at the end of the log is the weight of the rightmost
+              mushroom
+            </p>
+            <p className="w-[90vw] ">
+              The spore will only grow next to a{" "}
+              <span className="font-bold">lighter</span> mushroom with the{" "}
+              <span className="font-bold"> most similar weight </span>
+            </p>
+            <div className="flex flex-row space-x-4 ">
+              <button
+                className="border-2 border-black px-8 py-2 mt-10 rounded-xl shadow-lg"
+                onClick={() => setPage(2)}
+              >
+                Back
+              </button>
+              <button
+                className="border-2 border-black px-8 py-2 mt-10 rounded-xl shadow-lg"
+                onClick={() => setPage(4)}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        ) : page == 4 ? (
+          <div className="flex flex-col text-center items-center ">
+            <p className="w-[90vw]">
+              The spore with the smallest number will grow first, since it is
+              the lightest
+            </p>
+            <ChangingDeck decks={decksOne} moves={movesOne} />
+
+            <p className="w-[90vw] my-5">
+              Followed by the spore with the next smallest number, one by one.
+            </p>
+
+            <div className="flex flex-row space-x-4 ">
+              <button
+                className=" border-2 border-black px-8 py-2 rounded-xl shadow-lg"
+                onClick={() => setPage(3)}
+              >
+                Back
+              </button>
+              <button
+                className=" border-2 border-black px-8 py-2 rounded-xl shadow-lg"
+                onClick={() => setPage(5)}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        ) : page == 5 ? (
+          <div className="flex flex-col text-center items-center">
+            <p className="w-[90vw] ">
+              However, the log is only long enough to grow 5 mushrooms.
+            </p>
+            <ChangingDeck decks={decksTwo} moves={movesTwo} />
+
+            <p className="w-[90vw] my-5">
+              Thus, Player 3 (with spore 28) must eat the whole row of mushroom
+              to grow one on that row
+            </p>
+
+            <div className="flex flex-row space-x-4">
+              <button
+                className=" border-2 border-black px-8 py-2 rounded-xl shadow-lg"
+                onClick={() => setPage(4)}
+              >
+                Back
+              </button>
+              <button
+                className=" border-2 border-black px-8 py-2 rounded-xl shadow-lg"
+                onClick={() => setPage(6)}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        ) : page == 6 ? (
+          <div className="flex flex-col text-center items-center ">
+            <p className="w-[90vw] ">
+              If your spore is lighter than the rightmost mushroom of every
+              row...
+            </p>
+            <Deck data={deckTwo} />
+
+            <Spore n={"1"} />
+            <div>Your name</div>
+            <p className="w-[90vw] my-5">
+              You must choose a row to eat and grow your spore on that row.
+              (Click a row and eat!)
+            </p>
+
+            <div className="flex flex-row space-x-4">
+              <button
+                className=" border-2 border-black px-8 py-2 rounded-xl shadow-lg"
+                onClick={() => setPage(5)}
+              >
+                Back
+              </button>
+              <button
+                className=" border-2 border-black px-8 py-2 rounded-xl shadow-lg opacity-50"
+                // onClick={() => setPage(7)}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        ) : page == 7 ? (
+          <div className="flex flex-col text-center items-center ">
+            <ChangingDeck
+              decks={decksThree()}
+              moves={[["Your name", "1", row.toString(), "1"]]}
+            />
+            <p className="mt-5">
+              Here you can see a dashboard which shows the health of every
+              player! You can see your health is reduced after eating the row
+              you picked.
+            </p>
+
+            <div className="flex flex-row space-x-4 my-4">
+              <button
+                className=" border-2 border-black px-8 py-2 rounded-xl shadow-lg"
+                onClick={() => {
+                  setRow(-1);
+                  setPage(6);
                 }}
               >
                 Back
               </button>
               <button
-                className="mt-10 border-2 border-black px-8 py-2 rounded-xl shadow-lg"
-                onClick={() => setPage(3)}
+                className=" border-2 border-black px-8 py-2 rounded-xl shadow-lg"
+                onClick={() => setPage(8)}
               >
                 Next
               </button>
             </div>
-          ) : (
-            <div className="flex flex-col items-center opacity-50">
-              <div className="flex flex-row space-x-4  relative">
-                <button className="mt-10 border-2 border-black px-8 py-2 rounded-xl shadow-lg">
-                  Back
-                </button>
-                <button className="mt-10 border-2 border-black px-8 py-2 rounded-xl shadow-lg">
-                  Next
-                </button>
-              </div>
-              <p className="absolute mt-28 w-[90vw]">
-                Toss a spore into the selection box!
-              </p>
-            </div>
-          )}
-        </div>
-      ) : page == 3 ? (
-        <div className="flex flex-col text-center justify-center items-center h-screen">
-          <p className="w-[90vw] mt-[5rem]">
-            Once the timer is up, the spores will{" "}
-            <span className="italic">fly</span> to 1 of the 4 logs to grow, one
-            by one.
-          </p>
-          <Deck data={deck} />
-
-          <p className="w-[90vw] my-5">
-            The number at the end of the log is the weight of the rightmost
-            mushroom
-          </p>
-          <p className="w-[90vw] mb-5">
-            The spore will only grow next to a{" "}
-            <span className="font-bold">lighter</span> mushroom with the{" "}
-            <span className="font-bold"> most similar weight </span>
-          </p>
-          <div className="flex flex-row space-x-4 mb-20">
-            <button
-              className="border-2 border-black px-8 py-2 rounded-xl shadow-lg"
-              onClick={() => setPage(2)}
-            >
-              Back
-            </button>
-            <button
-              className="border-2 border-black px-8 py-2 rounded-xl shadow-lg"
-              onClick={() => setPage(4)}
-            >
-              Next
-            </button>
           </div>
-        </div>
-      ) : page == 4 ? (
-        <div className="flex flex-col text-center justify-center items-center h-screen">
-          <p className="w-[90vw] mt-[5rem]">
-            The spore with the smallest number will grow first, since it is the
-            lightest
-          </p>
-          <ChangingDeck decks={decksOne} moves={movesOne} />
-
-          <p className="w-[90vw] my-5">
-            Followed by the spore with the next smallest number, one by one.
-          </p>
-
-          <div className="flex flex-row space-x-4 mb-16">
-            <button
-              className=" border-2 border-black px-8 py-2 rounded-xl shadow-lg"
-              onClick={() => setPage(3)}
+        ) : page == 8 ? (
+          <div className="flex flex-col items-center">
+            <Draggable
+              nodeRef={nodeRef}
+              onStart={(_, data) => handleTouchStart(data)}
+              onStop={(_, data) => handleTouchEnd(data)}
             >
-              Back
-            </button>
-            <button
-              className=" border-2 border-black px-8 py-2 rounded-xl shadow-lg"
-              onClick={() => setPage(5)}
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      ) : page == 5 ? (
-        <div className="flex flex-col text-center justify-center items-center h-screen">
-          <p className="w-[90vw] mt-[5rem]">
-            However, the log is only long enough to grow 5 mushrooms.
-          </p>
-          <ChangingDeck decks={decksTwo} moves={movesTwo} />
+              {/* Testing */}
+              <div
+                ref={nodeRef}
+                style={{
+                  width: 50,
+                  height: 50,
+                  background: `url(${img("bagClose")})`,
+                  backgroundSize: "cover",
+                }}
+              ></div>
+              {/* <img src={img("bagClose")} alt="bag" width={60} /> */}
+            </Draggable>
 
-          <p className="w-[90vw] my-5">
-            Thus, Player 3 (with spore 28) must eat the whole row of mushroom to
-            grow one on that row
-          </p>
-
-          <div className="flex flex-row space-x-4 mb-16">
-            <button
-              className=" border-2 border-black px-8 py-2 rounded-xl shadow-lg"
-              onClick={() => setPage(4)}
-            >
-              Back
-            </button>
-            <button
-              className=" border-2 border-black px-8 py-2 rounded-xl shadow-lg"
-              onClick={() => setPage(6)}
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      ) : page == 6 ? (
-        <div className="flex flex-col text-center justify-center items-center h-screen">
-          <p className="w-[90vw] mt-[5rem]">
-            If your spore is lighter than the rightmost mushroom of every row...
-          </p>
-          <Deck data={deckTwo} />
-
-          <Spore n={"1"} />
-          <div>Your name</div>
-          <p className="w-[90vw] my-5">
-            You must choose a row to eat and grow your spore on that row. (Click
-            a row and eat!)
-          </p>
-
-          <div className="flex flex-row space-x-4 mb-16">
-            <button
-              className=" border-2 border-black px-8 py-2 rounded-xl shadow-lg"
-              onClick={() => setPage(5)}
-            >
-              Back
-            </button>
-            <button
-              className=" border-2 border-black px-8 py-2 rounded-xl shadow-lg opacity-50"
-              // onClick={() => setPage(7)}
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      ) : page == 7 ? (
-        <div className="flex flex-col text-center justify-center items-center h-screen">
-          <ChangingDeck
-            decks={decksThree()}
-            moves={[["Your name", "1", row.toString(), "1"]]}
-          />
-          <p className="mt-5">
-            Here you can see a dashboard which shows the health of every player!
-            You can see your health is reduced after eating the row you picked.
-          </p>
-
-          <div className="flex flex-row space-x-4 my-4">
-            <button
-              className=" border-2 border-black px-8 py-2 rounded-xl shadow-lg"
-              onClick={() => {
-                setRow(-1);
-                setPage(6);
-              }}
-            >
-              Back
-            </button>
-            <button
-              className=" border-2 border-black px-8 py-2 rounded-xl shadow-lg"
-              onClick={() => setPage(8)}
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      ) : page == 8 ? (
-        <div className="flex flex-col justify-center h-screen items-center">
-          <Draggable nodeRef={nodeRef}>
-            <a
-              ref={nodeRef}
-              onTouchStart={handleTouchStart}
-              onTouchEndCapture={handleTouchEnd}
-              className=""
-            >
-              <div className=" ">
-                <img src={img("bagClose")} alt="bag" width={60} />
-              </div>
-            </a>
-          </Draggable>
-
-          {showHand ? (
-            <div className="flex flex-col items-center">
-              <Selection selected={selected} />
-
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onDragOver={handleDragOver}
-              >
-                {/* <Selection selected={selected} /> */}
-
-                <NumRow numballs={hand} active={activeId} />
-                <DragOverlay>
-                  {activeId !== -1 ? (
-                    <Numball num={activeId} active={-1} />
-                  ) : null}
-                </DragOverlay>
-              </DndContext>
-              <button
-                className="mt-[16.7rem] border-2 border-black px-8 py-2 rounded-xl shadow-lg"
-                onClick={() => navigate("/")}
-              >
-                Let's goooooo 🎉
-              </button>
-            </div>
-          ) : (
             <div className="flex flex-col items-center ">
               <p className="text-center w-[90vw]">
                 This is your spore bag! Tap this to switch between your spores
                 and the dashboard.{" "}
               </p>
-              <p className="mt-5 text-center w-[90vw]">
+              <p className="text-center w-[90vw]">
                 You can drag it and place it wherever you want on the screen!
               </p>
-              <div className="w-11/12 max-h-[15vh] bg-white border border-black flex flex-col rounded-2xl shadow-xl ">
-                <div className="my-4 mx-4 overflow-y-auto">
-                  {room.players.map((player, index) => (
-                    <div
-                      key={index}
-                      className="mt-1 font-patrick tracking-wide"
-                    >
-                      <div className="-mb-1">
-                        {player.name +
-                          "   (" +
-                          player.hp +
-                          "/100) " +
-                          (player.ready ? "🍄" : "") +
-                          (player.hp < 0 ? "💀" : "")}
-                      </div>
+              {showHand && (
+                <div className="flex flex-col mt-4 items-center">
+                  {/* <Selection selected={selected} /> */}
 
-                      <progress
-                        max={100}
-                        value={player.hp >= 0 ? player.hp : 0}
-                        className={health(player.hp)}
-                      />
-                    </div>
-                  ))}
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                    onDragOver={handleDragOver}
+                  >
+                    <Selection selected={selected} />
+
+                    <NumRow numballs={hand} active={activeId} />
+                    <DragOverlay>
+                      {activeId !== -1 ? (
+                        <Numball num={activeId} active={-1} />
+                      ) : null}
+                    </DragOverlay>
+                  </DndContext>
                 </div>
-              </div>
-              <p className="text-center mt-11">
+              )}
+              {!showHand && (
+                <div className="mt-4 mx-10 max-h-[300px] bg-white border border-black flex flex-col rounded-2xl shadow-xl ">
+                  <div className="w-[300px] my-4 mx-4 overflow-y-auto">
+                    {room.players.map((player, index) => (
+                      <div
+                        key={index}
+                        className="mt-1 font-patrick tracking-wide"
+                      >
+                        <div className="-mb-1">
+                          {player.name +
+                            "   (" +
+                            player.hp +
+                            "/100) " +
+                            (player.ready ? "🍄" : "") +
+                            (player.hp < 0 ? "💀" : "")}
+                        </div>
+
+                        <progress
+                          max={100}
+                          value={player.hp >= 0 ? player.hp : 0}
+                          className={health(player.hp)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <p className="text-center mt-6 ">
                 After you finished the spores, the round ends. If one or more
                 person died, the game ends. Else, the next round begins{" "}
                 <br></br>
@@ -1095,24 +1105,24 @@ const Tutorial = () => {
                 (The health is carried to the next round, so if you're left with
                 1%, you will start a new round with 1%).
               </p>
-              <p className="text-center mt-11">
+              <p className="text-center ">
                 Now you should be all ready to play the game!
               </p>
               <button
-                className="mt-20 border-2 border-black px-8 py-2 rounded-xl shadow-lg"
+                className="mt-10 border-2 border-black px-8 py-2 rounded-xl shadow-lg"
                 onClick={() => navigate("/")}
               >
                 Let's goooooo 🎉
               </button>
             </div>
-          )}
-        </div>
-      ) : (
-        <div>Last Page</div>
-      )}
-      <p className="ml-5 text-blue-800" onClick={() => navigate("/")}>
-        ↩ Aite I got this!
-      </p>
+          </div>
+        ) : (
+          <div>Last Page</div>
+        )}
+        <p className="ml-5 mt-20 text-blue-800" onClick={() => navigate("/")}>
+          ↩ Aite I got this!
+        </p>
+      </div>
     </div>
   );
 };

@@ -5,15 +5,14 @@ import Dashboard from "../components/Dashboard";
 import Playing from "../components/Playing";
 import { WebsocketContext } from "../modules/websocket_provider";
 import { GamestateContext } from "../modules/gamestate_provider";
-import Draggable from "react-draggable";
-import { GameStates } from "../utils/struct";
+import Draggable, { DraggableData } from "react-draggable";
 import { actions, img } from "../utils/utils";
 
 const Game = () => {
   const nodeRef = useRef(null);
   const {
     navigate,
-    setGameStates,
+    setGameState,
     gameStates: { bottomDisp, handToggle, showPlaying, showHideLoc, onLeave },
     gameConstants: { State },
     gameData: { room },
@@ -35,10 +34,7 @@ const Game = () => {
 
   // For processing the showhide button
   useEffect(() => {
-    setGameStates((prevState: GameStates) => ({
-      ...prevState,
-      showHideLoc: [vw - 80 + delta[0], vh - 450 + delta[1]],
-    }));
+    setGameState({ showHideLoc: [vw - 150 + delta[0], vh - 500 + delta[1]] });
   }, [handToggle]);
 
   const handleLeave = (e: React.SyntheticEvent) => {
@@ -49,25 +45,13 @@ const Game = () => {
       navigate("/");
     }
   };
-  // const debug = () => {
-  //   console.log(gameImages);
 
-  //   // console.log(room);
-  //   // setGameStates((prevState: GameStates) => ({
-  //   //   ...prevState,
-  //   //   handToggle: !prevState.handToggle,
-  //   // }));
-  // };
-
-  // console.log(showHideLoc);
-  const handleTouchStart = (event: any) => {
-    const touch = event.touches[0];
-    setStartpos([touch.clientX, touch.clientY]);
+  const handleTouchStart = (data: DraggableData) => {
+    setStartpos([data.x, data.y]);
   };
 
-  const handleTouchEnd = (event: any) => {
-    const touch = event.changedTouches[0];
-    const endpos = [touch.clientX, touch.clientY];
+  const handleTouchEnd = (data: DraggableData) => {
+    const endpos = [data.x, data.y];
     let d = [endpos[0] - startpos[0], endpos[1] - startpos[1]];
 
     // console.log(delta);
@@ -85,16 +69,10 @@ const Game = () => {
 
   const handleShowHand = () => {
     if (bottomDisp == "Hand") {
-      setGameStates((prevState: GameStates) => ({
-        ...prevState,
-        bottomDisp: "Dashboard",
-      }));
+      setGameState({ bottomDisp: "Dashboard" });
       return;
     }
-    setGameStates((prevState: GameStates) => ({
-      ...prevState,
-      bottomDisp: "Hand",
-    }));
+    setGameState({ bottomDisp: "Hand" });
   };
 
   if (showPlaying) {
@@ -102,7 +80,7 @@ const Game = () => {
       return <div>LOADING</div>;
     }
     return (
-      <div className="py-20">
+      <div>
         <Playing />
       </div>
     );
@@ -124,12 +102,7 @@ const Game = () => {
           <span className="text-3xl font-patrick tracking-wide mx-10">|</span>
           <span
             className="cursor-pointer text-3xl font-patrick tracking-wide"
-            onClick={() =>
-              setGameStates((prevState: GameStates) => ({
-                ...prevState,
-                onLeave: false,
-              }))
-            }
+            onClick={() => setGameState({ onLeav: false })}
           >
             NO{" "}
           </span>
@@ -148,13 +121,14 @@ const Game = () => {
 
   // DISABLE USER TO CHECK HAND IF NUMBER OF HAND = 0
   return (
-    <div className="relative flex flex-col h-screen">
+    <div className="relative flex flex-col ">
       {countDown !== 0 && (
-        <>
-          <div className="absolute z-[100] text-center text-[20rem] left-1/4 top-1/5 opacity-70">
-            {countDown}
-          </div>
-        </>
+        <div
+          className="absolute  z-[100] text-[20rem] opacity-70 "
+          style={{ left: vw / 2 - 100 }}
+        >
+          {countDown}
+        </div>
       )}
       {/*Show hide button*/}
       <div
@@ -165,21 +139,26 @@ const Game = () => {
         }}
       >
         {room.state === State.CHOOSE_CARD && handToggle && (
-          <Draggable nodeRef={nodeRef}>
-            <a
+          <Draggable
+            nodeRef={nodeRef}
+            onStart={(_, data) => handleTouchStart(data)}
+            onStop={(_, data) => handleTouchEnd(data)}
+          >
+            {/* Testing */}
+            <div
               ref={nodeRef}
-              onTouchStart={handleTouchStart}
-              onTouchEndCapture={handleTouchEnd}
-              className=""
-            >
-              <div className=" ">
-                <img src={gameImages.bagClose} alt="bag" width={60} />
-              </div>
-            </a>
+              style={{
+                width: 60,
+                height: 60,
+                background: `url(${img("bagClose")})`,
+                backgroundSize: "cover",
+              }}
+            ></div>
+            {/* <img src={img("bagClose")} alt="bag" width={60} /> */}
           </Draggable>
         )}
       </div>
-      <div className="mt-20 mb-9">
+      <div className="mb-9">
         <Deck data={room.deck} />
       </div>
       <div className="flex flex-col h-full items-center">
@@ -193,17 +172,11 @@ const Game = () => {
               alt="Door"
               width={45}
               className="mt-8"
-              onClick={() =>
-                setGameStates((prevState: any) => ({
-                  ...prevState,
-                  onLeave: true,
-                }))
-              }
+              onClick={() => setGameState({ onLeave: true })}
             />
           </div>
         )}
         {/* {bottomDisp === "ChooseRow" && <div>Chossing row!</div>} */}
-        {/* <button onClick={debug}>Debug main game screen</button> */}
       </div>
     </div>
   );
