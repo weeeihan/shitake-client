@@ -14,6 +14,7 @@ const Roundend = () => {
 
   const { conn } = useContext(WebsocketContext);
   const {
+    path: path,
     gameData: { player },
   } = useContext(GamestateContext);
 
@@ -41,9 +42,9 @@ const Roundend = () => {
       conn.send(actions(State.READY));
     }
   };
-  // const debug = () => {
-  //   console.log(room);
-  // };
+  const debug = () => {
+    console.log(path);
+  };
 
   return (
     <div className="flex flex-col mt-4 items-center font-patrick tracking-wide">
@@ -115,7 +116,7 @@ const Roundend = () => {
         className="mt-8"
         onClick={() => setGameState({ onLeave: true })}
       />
-      {/* <button onClick={debug}>Debug-test</button> */}
+      <button onClick={debug}>Debug-test</button>
     </div>
   );
 };

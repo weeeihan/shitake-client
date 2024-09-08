@@ -27,14 +27,10 @@ const Game = () => {
     document.documentElement.clientWidth || 0,
     window.innerWidth || 0
   );
-  let vh = Math.max(
-    document.documentElement.clientHeight || 0,
-    window.innerHeight || 0
-  );
 
   // For processing the showhide button
   useEffect(() => {
-    setGameState({ showHideLoc: [vw - 150 + delta[0], vh - 500 + delta[1]] });
+    setGameState({ showHideLoc: [vw / 2 + 140 + delta[0], 370 + delta[1]] });
   }, [handToggle]);
 
   const handleLeave = (e: React.SyntheticEvent) => {
@@ -53,9 +49,10 @@ const Game = () => {
   const handleTouchEnd = (data: DraggableData) => {
     const endpos = [data.x, data.y];
     let d = [endpos[0] - startpos[0], endpos[1] - startpos[1]];
-
+    // console.log(data.deltaX, ",", data.deltaY);
     // console.log(delta);
     setDelta([delta[0] + d[0], delta[1] + d[1]]);
+    console.log(delta);
 
     const distance = Math.sqrt(
       Math.pow(endpos[0] - startpos[0], 2) +
@@ -75,6 +72,9 @@ const Game = () => {
     setGameState({ bottomDisp: "Hand" });
   };
 
+  const debug = () => {
+    setGameState({ handToggle: !handToggle });
+  };
   if (showPlaying) {
     if (room.moves.length === 0) {
       return <div>LOADING</div>;
@@ -178,6 +178,7 @@ const Game = () => {
         )}
         {/* {bottomDisp === "ChooseRow" && <div>Chossing row!</div>} */}
       </div>
+      <button onClick={debug}>Debug</button>
     </div>
   );
 };

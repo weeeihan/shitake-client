@@ -167,23 +167,23 @@ const Deck = ({ data }: { data: number[][] }) => {
               </div>
             </div>
           ))}
-        {isChoosing && (
-          <div className="flex flex-col justify-center items-center">
-            <Spore n={room.played[room.chooser].toString()} />
-            <div>{room.chooser}</div>
-          </div>
-        )}
-        {isChooser && (
-          <div className="w-screen flex justify-center items-center">
-            Please choose a row to eat!
-          </div>
-        )}
-        {isChoosing && !isChooser && (
-          <div className="w-screen flex justify-center items-center">
-            Waiting for {room.chooser} to eat...
-          </div>
-        )}
       </div>
+      {isChoosing && (
+        <div className="flex flex-col mt-10 justify-center items-center">
+          <Spore n={room.played[room.chooser].toString()} />
+          <div>{room.chooser}</div>
+        </div>
+      )}
+      {isChooser && (
+        <div className="w-screen flex justify-center items-center">
+          Please choose a row to eat!
+        </div>
+      )}
+      {isChoosing && !isChooser && (
+        <div className="w-screen flex justify-center items-center">
+          Waiting for {room.chooser} to eat...
+        </div>
+      )}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, useRef } from "react";
 import { GetID, img } from "../utils/utils";
 import {
   GameData,
@@ -52,14 +52,9 @@ export const GamestateContext = createContext<{
 
 const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
   const [isTutorial, setIsTutorial] = useState(false);
-
   const [path, setPath] = useState("/");
+  const pathRef = useRef("/");
 
-  // const navigate = useNavigate();
-  const navigate = (des: string) => {
-    setPath(des);
-  };
-  // const location = useLocation();
   const [gameImages, setGameImages] = useState<any>({});
   const [gameData, setGameData] = useState<GameData>({} as GameData);
   const [imageLoading, setImageLoading] = useState(true);
@@ -69,7 +64,6 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
 
   const getMush = (num: number) => {
     const room = gameData.room;
-    // const room = testRoom;
     if (room.mushrooms[num] === undefined) {
       return room.mushrooms[0];
     }
@@ -78,14 +72,19 @@ const GamestateProvider = ({ children }: { children: React.ReactNode }) => {
 
   function redirect(des: string) {
     // if (loc.pathname === "/test") return;
-    if (path === des) {
+    if (pathRef.current === des) {
       setCheckLoc(true);
       return;
     }
-    console.log("REDIRECTED");
-    navigate(des);
+    pathRef.current = des;
+    setPath(des);
     setCheckLoc(true);
   }
+
+  const navigate = (d: string) => {
+    pathRef.current = d;
+    setPath(d);
+  };
 
   let id = GetID();
   const fetchImages = async (room?: Room) => {

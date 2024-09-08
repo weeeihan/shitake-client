@@ -71,6 +71,11 @@ const Landing = () => {
       return;
     }
 
+    if (utils.hasSpecialChar(name)) {
+      alert("NO SPECIAL CHARACTERS ALLOWED IN NAME");
+      return;
+    }
+
     setLoading();
     // Set loading true
 
@@ -131,7 +136,7 @@ const Landing = () => {
         </div>
       )}
       <button
-        className="text-blue-800 underline mt-4 "
+        className="text-blue-800 underline mt-10 "
         onClick={() => {
           setIsTutorial(true);
           navigate("/tutorial");

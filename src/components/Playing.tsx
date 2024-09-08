@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { GamestateContext } from "../modules/gamestate_provider";
-import { useInterval, actions } from "../utils/utils";
+import { useInterval, actions, getTotalDamge } from "../utils/utils";
 
 import Deck from "../components/Deck";
 import Spore from "../components/Spore";
@@ -28,6 +28,7 @@ const Playing = () => {
   const moves = room.moves;
 
   const [index, setIndex] = useState<number>(0);
+  const [eats, setEats] = useState<string[]>([]);
 
   // const Spore = ({ n }: { n: string }) => {
   //   let num = Number(n);
@@ -45,13 +46,11 @@ const Playing = () => {
     let row = Number(p[2]);
     let num = Number(p[1]);
     let desX = Number(p[3]);
+    setEats([]);
 
-    if (desX == 0) {
-      temp[row] = [num];
-      return temp;
-    }
-
-    if (temp[row].length === 5) {
+    if (desX == 0 || temp[row].length === 5) {
+      let dmg = getTotalDamge(temp[row], room.mushrooms);
+      setEats([p[0], row.toString(), dmg.toString()]);
       temp[row] = [num];
       return temp;
     }
@@ -61,15 +60,16 @@ const Playing = () => {
   }
 
   function getDesY(p: number) {
-    let vh = document.documentElement.clientHeight;
     // now space between is 5vh, and the height of the log is 6vh so total 11vh
     // thus 0.11 * vh
-    return -70 - (3 - p) * 90;
+    return -100 - (3 - p) * 98;
+    // return -70 - 98 - 98 - 98;
   }
 
   function getDesX(p: number) {
     // Width of the log
     if (p == 0) p += 1;
+
     let vw = document.documentElement.clientWidth;
 
     // clamp viewport
@@ -111,11 +111,24 @@ const Playing = () => {
     }
   };
 
+  const Eating = () => {
+    if (eats.length != 0) {
+      let r = Number(eats[1]);
+      r += 1;
+      return (
+        <div className="text-2xl text-center">
+          {eats[0] + " - " + eats[2] + "% HP"}{" "}
+        </div>
+      );
+    }
+    return null;
+  };
+
   const Farming = () => {
     // console.log(index);
     if (index < moves.length && currentDeck.length > 0) {
       return (
-        <div className="flex flex-col items-center mt-4 justify-center">
+        <div className="flex flex-col items-center mt-10 justify-center">
           <motion.div
             key={index}
             variants={{
@@ -156,7 +169,6 @@ const Playing = () => {
 
   useInterval(() => {
     if (currentDeck.length === 0) {
-      console.log("NO DECK");
       return;
     }
 
@@ -164,6 +176,8 @@ const Playing = () => {
       console.log("here?");
       showPlay(moves[index]);
       setIndex(index + 1);
+    } else {
+      setEats([]);
     }
   }, 1500);
 
@@ -178,6 +192,9 @@ const Playing = () => {
       </div>
       <div {...doubleTap} className="relative z-10">
         <Farming />
+      </div>
+      <div>
+        <Eating />
       </div>
       <div {...doubleTap} className=" footer">
         {"Double tap anywhere to continue"}

@@ -84,11 +84,11 @@ const WebSocketProvider = ({ children }: { children: React.ReactNode }) => {
 
   if (onLeave)
     return (
-      <div className="text-center flex flex-col items-center justify-center h-screen">
-        <div className="font-patrick text-2xl my-10 tracking-wide">
+      <div className="text-center flex flex-col items-center justify-center ">
+        <div className="font-patrick text-2xl  tracking-wide mt-[10rem]">
           Leaving already? 😢
         </div>
-        <div className="mb-10">
+        <div className="mb-10 mt-10">
           <span
             className="cursor-pointer text-3xl font-patrick tracking-wide"
             onClick={handleLeaveRoom}

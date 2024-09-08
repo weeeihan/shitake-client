@@ -105,10 +105,16 @@ const randomHundred = [51, 9, 98, 8, 84, 46, 28, 22, 7, 86, 80, 67, 74, 49, 82, 
 export function getY(weight: number) {
   // console.log(weight)
   // console.log((randomHundred[weight]/2.5 ))
+  if (weight > 100) {
+    weight -= 100
+  }
   return (randomHundred[weight]/2.5 ) - 50 
 }
 
 export function getX(weight: number) {
+  if (weight > 100) {
+    weight -= 100
+  }
   return (randomHundred[weight]/3.5 - 5) 
 }
 
@@ -253,4 +259,8 @@ export function health(hp: number) {
     return "decent";
   }
   return "warning";
+}
+
+export function hasSpecialChar(s: string) {
+  return /[^a-zA-Z0-9]/.test(s);
 }

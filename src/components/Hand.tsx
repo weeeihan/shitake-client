@@ -38,6 +38,7 @@ const modalStyle = {
     transform: "translate(-50%, -50%)",
     borderRadius: "20px",
     border: "1px solid black",
+    maxWidth: "400px",
   },
   overlay: {
     zIndex: 1000,
@@ -76,9 +77,8 @@ const Selection = ({ selected }: { selected: number }) => {
       <div className="flex flex-col items-center my-1 mx-2 font-patrick tracking-wide">
         <img src={img(getMush(selected).name)} width={80} />
         {/* <div className="text-4xl">{selected}</div> */}
-        <div>
-          {getMush(selected).name + " [" + getMush(selected).damage + "]"}
-        </div>
+        <div>{getMush(selected).name}</div>
+        <div>{"Damage: " + getMush(selected).damage}</div>
         <div className="text-center">{getMush(selected).desc}</div>
       </div>
     </div>
@@ -93,7 +93,7 @@ const NumRow = ({
   active: number;
 }) => {
   return (
-    <div className=" flex flex-wrap mt-4 w-screen gap-x-5 gap-y-5 items-center justify-center">
+    <div className=" flex flex-wrap mt-4 w-[400px] gap-x-5 gap-y-5 items-center justify-center">
       <SortableContext items={numballs} strategy={rectSortingStrategy}>
         {numballs.map((num: number) => (
           <Numball key={num} num={num} active={active} />
